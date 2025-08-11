@@ -1,11 +1,12 @@
 import React from "react";
 import Hero from "../components/Hero";
-import ServiceCard from "../components/ServiceCard";
 import services from "../data/services";
+import ServiceCard from "../components/ServiceCard";
 import doctors from "../data/doctors";
 import DoctorCard from "../components/DoctorCard";
 import treatments from "../data/treatments";
 import TreatmentCard from "../components/TreatmentCard";
+import Stats from "../components/Stats";
 
 export default function Home() {
   return (
@@ -20,6 +21,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <Stats />
 
       <section className="bg-gray-50 py-12">
         <div className="container mx-auto px-4">
