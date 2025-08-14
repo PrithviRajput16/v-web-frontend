@@ -1,6 +1,7 @@
 import DoctorCard from "../components/DoctorCard";
 import Hero from "../components/Hero";
 import ServiceCard from "../components/ServiceCard";
+import Services from "../components/Services";
 import Stats from "../components/Stats";
 import TreatmentCard from "../components/TreatmentCard";
 import doctors from "../data/doctors";
@@ -14,7 +15,7 @@ export default function Home() {
 
       <Stats />
 
-      <section className="bg-sectiondiv">
+      {/* <section className="bg-sectiondiv">
         <div className="container mx-auto px-4 py-12">
           <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -23,8 +24,9 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
+      <Services />
 
       <section className="bg-gray-50 py-12">
         <div className="container mx-auto px-4">
@@ -36,6 +38,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* <Services /> */}
 
       <section className="container mx-auto px-4 py-12">
         <h2 className="text-2xl font-semibold mb-6">Popular Treatments</h2>
