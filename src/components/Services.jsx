@@ -1,23 +1,27 @@
-import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import url_prefix from '../data/variable';
 import ServiceCard from './ServiceCard';
-
 
 export default function Services() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch(url_prefix+'api/services/all');
-        if (!response.ok) throw new Error('Failed to fetch services');
-        const data = await response.json();
-        setServices(data);
+        // 1. Make the API request
+        const response = await fetch('http://localhost:6003/api/services/all');
+        const result = await response.json();
+        setServices(result.data);
+        setError(null);
       } catch (err) {
+        console.error('Fetch error:', {
+          error: err,
+          message: err.message,
+          timestamp: new Date().toISOString()
+        });
         setError(err.message);
-        console.error('API Error:', err);
+        setServices([]);
       } finally {
         setLoading(false);
       }
@@ -28,12 +32,8 @@ export default function Services() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64"> 
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full"
-        />
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
@@ -41,36 +41,33 @@ export default function Services() {
   if (error) {
     return (
       <div className="text-center py-10">
-        <p className="text-red-500 mb-4">Error loading services: {error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition"
-        >
-          Try Again
-        </button>
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg max-w-md mx-auto">
+          <p className="font-bold">Error loading services</p>
+          <p className="mt-2">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-
-
     <section className="bg-sectiondiv">
         <div className="container mx-auto px-4 py-12">
-        <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl font-bold text-center mb-12 text-gray-800"
-        >
-            Our Medical Services
-        </motion.h2>          
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {services.map((s) => (
-             <ServiceCard key={s.id} service={s} />
-            ))}
-          </div>
+          <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 max-w-6xl mx-auto">
+                {services.map((service) => (
+                    <ServiceCard 
+                    key={service._id} 
+                    service={service} 
+                    />
+                ))}
+             </div>
         </div>
-      </section>
+    </section>
   );
 }

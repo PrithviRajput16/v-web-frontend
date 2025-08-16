@@ -1,20 +1,21 @@
 const express = require('express');
-const { connectDB, closeDB } = require('../config/db.cjs');
+const mongoose = require('mongoose');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  let db;
   try {
-    db = await connectDB();
-    const collections = await db.listCollections().toArray();
+    // Get all collection names
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    
     res.json(collections.map(col => col.name));
-   
   } catch (err) {
     console.error('Error:', err);
-    res.status(500).json({ error: 'Failed to fetch collections' });
-  } finally {
-    await closeDB();
+    res.status(500).json({ 
+      error: 'Failed to fetch collections',
+      details: err.message 
+    });
   }
+  // No need to manually close connection with Mongoose
 });
 
 module.exports = router;

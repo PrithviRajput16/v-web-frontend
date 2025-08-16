@@ -50,7 +50,8 @@ export default function About() {
             transition={{ duration: 0.6 }}
           >
             <img
-              src="https://images.unsplash.com/photo-1580281657527-47b48f8d1d3f?auto=format&fit=crop&w=800&q=80"
+              // src="https://images.unsplash.com/photo-1580281657527-47b48f8d1d3f?auto=format&fit=crop&w=800&q=80"
+              src=""
               alt="Healthcare team"
               className="rounded-2xl shadow-lg"
             />
