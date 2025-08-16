@@ -9,6 +9,7 @@ module.exports = {
         lightbg: "#FAFAFA",
         darktext: "#1E293B",
         lighttext: "#64748B",
+        sectiondiv: "#eff5f2",
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"],
