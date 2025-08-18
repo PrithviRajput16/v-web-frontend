@@ -57,9 +57,9 @@ export default function Services() {
 
   return (
     <section className="bg-sectiondiv">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto  py-12">
           <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4  mx-auto">
                 {services.map((service) => (
                     <ServiceCard 
                     key={service._id} 
@@ -71,3 +71,6 @@ export default function Services() {
     </section>
   );
 }
+// row row-cols-lg-3 row-cols-2 g-3 mt-0 g-xl-4 treatment-cnt
+
+// grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4

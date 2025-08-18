@@ -1,33 +1,29 @@
 import DoctorCard from "../components/DoctorCard";
 import Hero from "../components/Hero";
-import ServiceCard from "../components/ServiceCard";
+import HospitalCard from "../components/HospitalCard";
+import HospitalCarousel from "../components/HospitalCarousel";
 import Services from "../components/Services";
 import Stats from "../components/Stats";
 import TreatmentCard from "../components/TreatmentCard";
 import doctors from "../data/doctors";
-import services from "../data/services";
+import hospitals from "../data/hospitals";
 import treatments from "../data/treatments";
+import Hospitals from "./Hospitals";
 
 export default function Home() {
   return (
     <div>
       <Hero />
 
+      {/* Services */}
+      
       <Stats />
-
-      {/* <section className="bg-sectiondiv">
-        <div className="container mx-auto px-4 py-12">
-          <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {services.map((s) => (
-             <ServiceCard key={s.id} service={s} />
-            ))}
-          </div>
-        </div>
-      </section> */}
-
+      
       <Services />
 
+       <HospitalCarousel hospitals={hospitals}/>
+
+      {/* Doctors */}
       <section className="bg-gray-50 py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-semibold mb-6">Top Doctors</h2>
@@ -39,8 +35,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* <Services /> */}
-
+      {/* Treatments */}
       <section className="container mx-auto px-4 py-12">
         <h2 className="text-2xl font-semibold mb-6">Popular Treatments</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -49,6 +44,20 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Hospitals */}
+      {/* <section className="bg-gray-50 py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-semibold mb-6">Our Partner Hospitals</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {hospitals.map((h) => (
+              <HospitalCard key={h.id} hospital={h} />
+            ))}
+          </div>
+        </div>
+      </section> */}
+
+     
     </div>
   );
 }

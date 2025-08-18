@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { FiPhone, FiMenu, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { FiMenu, FiPhone, FiX } from "react-icons/fi";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -26,6 +26,7 @@ export default function Header() {
       className="fixed w-full z-50"
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="w-10 h-10 bg-primary rounded-md flex items-center justify-center text-white font-bold">
             W
@@ -35,6 +36,7 @@ export default function Header() {
           </div>
         </Link>
 
+        {/* Desktop Navbar */}
         <nav className="hidden md:flex gap-6 items-center">
           <NavLink
             to="/"
@@ -67,6 +69,16 @@ export default function Header() {
             Doctors
           </NavLink>
           <NavLink
+            to="/hospitals"
+            className={({ isActive }) =>
+              isActive
+                ? "text-primary font-semibold"
+                : "text-darktext hover:text-primary transition"
+            }
+          >
+            Hospitals
+          </NavLink>
+          <NavLink
             to="/about"
             className={({ isActive }) =>
               isActive
@@ -78,6 +90,7 @@ export default function Header() {
           </NavLink>
         </nav>
 
+        {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-4">
           <Link
             to="/appointment"
@@ -93,6 +106,7 @@ export default function Header() {
           </a>
         </div>
 
+        {/* Mobile Menu Button */}
         <button
           className="md:hidden p-2"
           onClick={() => setOpen(!open)}
@@ -102,7 +116,7 @@ export default function Header() {
         </button>
       </div>
 
-      {/* mobile menu */}
+      {/* Mobile Menu */}
       {open && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
@@ -119,6 +133,9 @@ export default function Header() {
             </NavLink>
             <NavLink to="/doctors" onClick={() => setOpen(false)}>
               Doctors
+            </NavLink>
+            <NavLink to="/hospitals" onClick={() => setOpen(false)}>
+              Hospitals
             </NavLink>
             <NavLink to="/about" onClick={() => setOpen(false)}>
               About

@@ -9,7 +9,9 @@ module.exports = {
         lightbg: "#FAFAFA",
         darktext: "#1E293B",
         lighttext: "#64748B",
-        sectiondiv: "#eff5f2",
+        // sectiondiv: "#eff5f2",
+        // sectiondiv: "#d8e8e8ff",
+        sectiondiv: "#d8e8e8b0",
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"],

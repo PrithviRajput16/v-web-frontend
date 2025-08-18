@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 export default function ServiceCard({ service, index }) {
   return (
+    <div className = "col" >
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
@@ -17,7 +18,9 @@ export default function ServiceCard({ service, index }) {
         scale: 1.03,
         boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)",
       }}
-      className=" relative p-[2px] rounded-2xl bg-gradient-to-tr from-emerald-400 to-green-600"
+      className=" relative p-[2px] rounded-2xl bg-gradient-to-tr  from-white to-[#006080]"
+      // className=" relative p-[2px] rounded-2xl bg-gradient-to-tr to-[#004080] from-[#808080]"
+      // to-green-600 Removed this from classname from-emrald-400 from-[#008080]
     >
       {/* Glassmorphic Card */}
       <div className="bg-white/80 flex items-center gap-4 backdrop-blur-md rounded-2xl p-6 transition-all duration-300">
@@ -32,20 +35,27 @@ export default function ServiceCard({ service, index }) {
           }}
           className="text-4xl text-emerald-600"
         >
-          {service.icon}
+          {/* {service.icon} */}
+           <img
+          src={service.icon}
+          // alt={hospital.name}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
         </motion.div>
           <div>
-        <h3 className="text-lg font-semibold text-gray-800">
+        <h3 className="text-md font-semibold text-gray-900">
           {service.title}
         </h3>
         
         <p className="text-sm text-gray-600 mt-2 leading-relaxed">
           {service.desc}
         </p>
+       
         </div>
         
       </div>
     </motion.div>
+    </div>
   );
 }
 /* 

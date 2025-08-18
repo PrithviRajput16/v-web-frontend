@@ -1,13 +1,13 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
+import { Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import Doctors from "./pages/Doctors";
-import Treatments from "./pages/Treatments";
+import Header from "./components/Header";
 import About from "./pages/About";
-import Contact from "./pages/Contact";
 import Appointment from "./pages/Appointment";
+import Contact from "./pages/Contact";
+import Doctors from "./pages/Doctors";
+import Home from "./pages/Home";
+import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
+import Treatments from "./pages/Treatments";
 
 export default function App() {
   return (
@@ -18,6 +18,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/treatments" element={<Treatments />} />
+          <Route path="/hospitals" element={<Hospitals />} />{" "}
+          {/* ✅ New route */}
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/appointment" element={<Appointment />} />
