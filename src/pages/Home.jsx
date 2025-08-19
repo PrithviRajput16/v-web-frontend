@@ -5,6 +5,7 @@ import ProcedureCost from "../components/ProcedureCost";
 import Services from "../components/Services";
 import Stats from "../components/Stats";
 import TreatmentCard from "../components/TreatmentCard";
+import WhatsAppButton from "../components/WhatsAppButton";
 import doctors from "../data/doctors";
 import hospitals from "../data/hospitals";
 import treatments from "../data/treatments";
@@ -25,6 +26,8 @@ export default function Home() {
 
       <ProcedureCost />
 
+      <WhatsAppButton />
+
 
     <section className="bg-sectiondiv py-12">
         <div className="container mx-auto px-4">
@@ -40,6 +43,7 @@ export default function Home() {
             </div>
             <div className="bg-white col-md-4">
               dfdf
+              
             </div>
           </div>
         </div>
