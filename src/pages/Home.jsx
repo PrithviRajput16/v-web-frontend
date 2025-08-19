@@ -5,6 +5,7 @@ import ProcedureCost from "../components/ProcedureCost";
 import Services from "../components/Services";
 import Stats from "../components/Stats";
 import TreatmentCard from "../components/TreatmentCard";
+import WhatsAppButton from "../components/WhatsAppButton";
 import doctors from "../data/doctors";
 import hospitals from "../data/hospitals";
 import treatments from "../data/treatments";
@@ -23,6 +24,7 @@ export default function Home() {
       <HospitalCarousel hospitals={hospitals} />
 
       <ProcedureCost />
+      <WhatsAppButton />
 
       <section className="bg-sectiondiv py-16">
         <div className="container mx-auto px-6 md:px-12">
