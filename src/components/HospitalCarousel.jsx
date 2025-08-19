@@ -1,5 +1,5 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import HospitalCard from './HospitalCard';
 
 const HospitalCarousel = ({ hospitals }) => {
@@ -83,7 +83,26 @@ const HospitalCarousel = ({ hospitals }) => {
             </motion.div>
           </AnimatePresence>
         </div>
+        
       </div>
+      {/* Actions */}
+        {/* <div className="mt-5 flex items-center justify-between">
+          <a
+            href="/appointment"
+            className="px-4 py-2 rounded-lg text-white shadow-sm hover:shadow-md transition-all"
+            style={{ backgroundColor: "rgb(0 128 128)" }} // match 'Book' button
+          >
+            Book Consultation
+          </a>
+          <a
+            // href= {⁠tel:${hospital.phone?.replace(/\s/g, "")} ⁠}
+            className="flex items-center gap-2 text-teal-700 hover:text-teal-800 transition"
+            title="Call hospital"
+          >
+            <MdLocalPhone />
+            Call
+          </a>
+        </div> */}
     </section>
   );
 };

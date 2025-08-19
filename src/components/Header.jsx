@@ -19,7 +19,7 @@ export default function Header() {
       animate={{
         backgroundColor: scrolled
           ? "rgba(255,255,255,0.96)"
-          : "rgba(255,255,255,0)",
+          : "rgba(228, 244, 242, 0.55)",
         boxShadow: scrolled ? "0 4px 18px rgba(16,24,40,0.06)" : "none",
       }}
       transition={{ duration: 0.25 }}

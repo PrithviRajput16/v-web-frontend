@@ -12,7 +12,7 @@ export default function HospitalCard({ hospital }) {
       <div className="relative h-48 overflow-hidden">
         <img
           src={hospital.image}
-          alt={hospital.name}
+        //   alt={hospital.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         
