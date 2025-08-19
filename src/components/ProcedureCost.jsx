@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import ServiceCard from './ServiceCard';
+import ProcedureCostCard from './ProcedureCostCard';
 
-export default function Services() {
+export default function ProcedureCost() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -56,12 +56,12 @@ export default function Services() {
   }
 
   return (
-    <section className="bg-sectiondiv">
+    <section>
         <div className="container mx-auto  py-12">
           <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4  mx-auto">
                 {services.map((service) => (
-                    <ServiceCard 
+                    <ProcedureCostCard 
                     key={service._id} 
                     service={service} 
                     />

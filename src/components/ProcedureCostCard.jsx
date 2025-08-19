@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-export default function ServiceCard({ service, index }) {
+export default function ProcedureCostCard({ service, index }) {
   return (
     <div className = "col" >
     <motion.div

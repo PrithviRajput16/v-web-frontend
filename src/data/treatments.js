@@ -11,7 +11,7 @@ const treatments = [
     title: "Knee Replacement",
     summary: "Total/partial knee replacement",
     image:
-      "https://images.unsplash.com/photo-1580281657520-8b7c6b4c9faa?q=80&w=1200&auto=format&fit=crop",
+      "src/assets/lowest_price/RHEUMATOLOGY-51.svg",
   },
 ];
 export default treatments;

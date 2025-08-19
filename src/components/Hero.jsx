@@ -1,25 +1,3 @@
-// import React from 'react'
-// import { Link } from 'react-router-dom'
-// import { motion } from 'framer-motion'
-
-// export default function Hero(){
-//   return (
-//     <section className="hero-gradient min-h-[70vh] flex items-center">
-//       <div className="container mx-auto px-4 py-20">
-//         <div className="max-w-2xl">
-//           <motion.h1 initial={{y:20,opacity:0}} animate={{y:0,opacity:1}} transition={{duration:0.7}} className="text-4xl md:text-5xl font-bold text-darktext">Find trusted hospitals & doctors — Book appointments online</motion.h1>
-//           <motion.p initial={{y:10,opacity:0}} animate={{y:0,opacity:1}} transition={{delay:0.2}} className="mt-4 text-gray-600">Compare hospitals, check doctor profiles and schedule visits in a few clicks.</motion.p>
-
-//           <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.45}} className="mt-8 flex gap-4">
-//             <Link to="/doctors" className="px-6 py-3 bg-primary text-white rounded-lg shadow-md hover:scale-105 transition">Find Doctors</Link>
-//             <Link to="/treatments" className="px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition">Explore Treatments</Link>
-//           </motion.div>
-//         </div>
-//       </div>
-//     </section>
-//   )
-// }
-
 import { motion } from "framer-motion";
 
 export default function Hero() {

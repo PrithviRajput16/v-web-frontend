@@ -1,11 +1,12 @@
 import DoctorCard from "../components/DoctorCard";
 import Hero from "../components/Hero";
-import ServiceCard from "../components/ServiceCard";
+import HospitalCarousel from "../components/HospitalCarousel";
+import ProcedureCost from "../components/ProcedureCost";
 import Services from "../components/Services";
 import Stats from "../components/Stats";
 import TreatmentCard from "../components/TreatmentCard";
 import doctors from "../data/doctors";
-import services from "../data/services";
+import hospitals from "../data/hospitals";
 import treatments from "../data/treatments";
 
 export default function Home() {
@@ -13,21 +14,38 @@ export default function Home() {
     <div>
       <Hero />
 
+      {/* Services */}
+      
       <Stats />
-
-      {/* <section className="bg-sectiondiv">
-        <div className="container mx-auto px-4 py-12">
-          <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {services.map((s) => (
-             <ServiceCard key={s.id} service={s} />
-            ))}
-          </div>
-        </div>
-      </section> */}
-
+      
       <Services />
 
+      <HospitalCarousel hospitals={hospitals}/>
+
+
+      <ProcedureCost />
+
+
+    <section className="bg-sectiondiv py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl text-center font-semibold mb-6">How Do We Work?</h2>
+          <div className="row flex justify-around">
+            <div className="col-md-8">
+              <div className="row flex justify-evenly">
+                <div className="col position-relative">dsafdsafads</div>
+                <div className="col position-relative">dsafdsafads</div>
+                <div className="col position-relative">dsafdsafads</div>
+                <div className="col position-relative">dsafdsafads</div>
+              </div>
+            </div>
+            <div className="bg-white col-md-4">
+              dfdf
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Doctors */}
       <section className="bg-gray-50 py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-semibold mb-6">Top Doctors</h2>
@@ -39,8 +57,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* <Services /> */}
-
+      {/* Treatments */}
       <section className="container mx-auto px-4 py-12">
         <h2 className="text-2xl font-semibold mb-6">Popular Treatments</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -49,6 +66,22 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Hospitals */}
+      {/* <section className="bg-gray-50 py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-semibold mb-6">Our Partner Hospitals</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {hospitals.map((h) => (
+              <HospitalCard key={h.id} hospital={h} />
+            ))}
+          </div>
+        </div>
+      </section> */}
+
+      
+
+     
     </div>
   );
 }
