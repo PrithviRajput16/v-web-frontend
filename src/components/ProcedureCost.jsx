@@ -1,42 +1,42 @@
 import { useEffect, useState } from 'react';
 import ProcedureCostCard from './ProcedureCostCard';
 
-export default function ProcedureCost() {
+export default function ProcedureCost({procedurecost}) {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        // 1. Make the API request
-        const response = await fetch('http://localhost:6003/api/services/all');
-        const result = await response.json();
-        setServices(result.data);
-        setError(null);
-      } catch (err) {
-        console.error('Fetch error:', {
-          error: err,
-          message: err.message,
-          timestamp: new Date().toISOString()
-        });
-        setError(err.message);
-        setServices([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchServices = async () => {
+  //     try {
+  //       // 1. Make the API request
+  //       const response = await fetch('http://localhost:6003/api/services/all');
+  //       const result = await response.json();
+  //       setServices(result.data);
+  //       setError(null);
+  //     } catch (err) {
+  //       console.error('Fetch error:', {
+  //         error: err,
+  //         message: err.message,
+  //         timestamp: new Date().toISOString()
+  //       });
+  //       setError(err.message);
+  //       setServices([]);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchServices();
-  }, []);
+  //   fetchServices();
+  // }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-64">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -59,11 +59,11 @@ export default function ProcedureCost() {
     <section>
         <div className="container mx-auto  py-12">
           <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4  mx-auto">
-                {services.map((service) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-9 p-4  mx-auto">
+                {procedurecost.map((pc) => (
                     <ProcedureCostCard 
-                    key={service._id} 
-                    service={service} 
+                    key={pc._id} 
+                    service={pc} 
                     />
                 ))}
              </div>

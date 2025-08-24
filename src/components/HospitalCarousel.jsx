@@ -47,7 +47,7 @@ const HospitalCarousel = ({ hospitals }) => {
         
         {/* Country tabs */}
         {/* Just put flex-center to center the names */}
-        <div className="flex flex-row-reverse mb-8 border-b border-gray-200">
+        <div className="flex justify-center mb-8 border-b border-gray-200">
           <div className="flex space-x-1">
             {countryNames.map((country, index) => (
               <button

@@ -23,7 +23,7 @@ export default function ProcedureCostCard({ service, index }) {
       // to-green-600 Removed this from classname from-emrald-400 from-[#008080]
     >
       {/* Glassmorphic Card */}
-      <div className="bg-white/80 flex items-center gap-4 backdrop-blur-md rounded-2xl p-6 transition-all duration-300">
+      <div className="bg-white/80 flex justify-evenly gap-2 backdrop-blur-md rounded-2xl p-6 transition-all duration-300">
         <motion.div
           whileHover={{ 
             rotate: 10, 
@@ -33,24 +33,22 @@ export default function ProcedureCostCard({ service, index }) {
             type: "spring", 
             stiffness: 200 
           }}
-          className="text-4xl text-emerald-600"
+          className="text-4xl text-emerald-600  flex items-center justify-center"
         >
-          {/* {service.icon} */}
-           <img
-          src={service.icon}
-          // alt={hospital.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
+          {service.icon}
+          
         </motion.div>
-          <div>
-        <h3 className="text-md font-semibold text-gray-900">
-          {service.title}
-        </h3>
-        
-        <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-          {service.desc}
-        </p>
-       
+
+        <div>
+          <h3 className="text-md font-semibold text-gray-900">
+            {service.title}
+          </h3>
+          
+          <p className="text-md text-gray-600 mt-1 leading-relaxed">
+            Starting: ${service.price}
+          </p>
+
+          <button className="text-sm bg-[#008080] mt-2 py-2 px-3 text-white rounded">Get Quote</button>
         </div>
         
       </div>

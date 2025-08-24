@@ -1,0 +1,176 @@
+/* ProcessFlow.css */
+
+/* Container styles */
+.process-container {
+  padding: 3rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.process-title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #2d3748;
+}
+
+/* Flowchart styles */
+.flowchart-container {
+  position: relative;
+}
+
+.flow-connector-vertical {
+  position: absolute;
+  left: 1.5rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #bfdbfe;
+}
+
+.flow-connector-horizontal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background-color: #bfdbfe;
+  display: none;
+}
+
+/* Step card styles */
+.step-card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 2px solid #dbeafe;
+  transition: all 0.3s ease;
+}
+
+.step-card:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+  transform: translateY(-5px);
+}
+
+.step-icon {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.step-badge {
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 0.5rem;
+}
+
+.step-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.step-desc {
+  color: #4a5568;
+  font-size: 0.875rem;
+}
+
+/* Arrow connector styles */
+.arrow-connector {
+  font-size: 1.5rem;
+  color: #93c5fd;
+  margin: 0.5rem 0;
+}
+
+.arrow-connector-horizontal {
+  font-size: 1.5rem;
+  color: #93c5fd;
+  margin: 0 0.5rem;
+  display: none;
+}
+
+/* Timeline styles */
+.timeline-dot {
+  position: absolute;
+  left: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  background-color: #3b82f6;
+  border: 4px solid white;
+  z-index: 10;
+}
+
+.timeline-content {
+  margin-left: 3rem;
+}
+
+.timeline-card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 1.25rem;
+  border-left: 4px solid #3b82f6;
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+  .flow-connector-vertical {
+    display: none;
+  }
+  
+  .flow-connector-horizontal {
+    display: block;
+  }
+  
+  .arrow-connector {
+    display: none;
+  }
+  
+  .arrow-connector-horizontal {
+    display: block;
+  }
+  
+  .timeline-dot {
+    left: 50%;
+    margin-left: -0.75rem;
+  }
+  
+  .timeline-content {
+    margin-left: 0;
+    width: 41.666%;
+  }
+  
+  .timeline-content-even {
+    margin-right: auto;
+    padding-right: 2rem;
+  }
+  
+  .timeline-content-odd {
+    margin-left: auto;
+    padding-left: 2rem;
+  }
+}
+
+/* Animation for arrows */
+.arrow-pulse {
+  animation: pulseArrow 2s infinite;
+}
+
+@keyframes pulseArrow {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
