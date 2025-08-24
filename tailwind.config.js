@@ -12,6 +12,7 @@ module.exports = {
         // sectiondiv: "#eff5f2",
         // sectiondiv: "#d8e8e8ff",
         sectiondiv: "#d8e8e8b0",
+        sectiondivgradient: "linear-gradient(135deg, #e6f2f2 0%, #d8e8e8 100%)",
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"],

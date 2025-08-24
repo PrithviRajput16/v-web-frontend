@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ProcedureCostCard from './ProcedureCostCard';
+import SectionHeading from './home/SectionHeading';
 
 export default function ProcedureCost({procedurecost}) {
   const [services, setServices] = useState([]);
@@ -56,10 +57,16 @@ export default function ProcedureCost({procedurecost}) {
   }
 
   return (
-    <section>
+    <section classn>
+      
         <div className="container mx-auto  py-12">
-          <h1 className="text-2xl font-semibold mb-12 text-center">Our Specialities</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-9 p-4  mx-auto">
+          <SectionHeading
+            center={true}
+            title="Lowest Quotes Assured"
+            subtitle="Quality Care at Best Prices"
+            description="We constantly negotiate better prices and alternatives without compromising treatment quality. Our prices are consistently lower."
+          />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9 p-2  mx-auto">
                 {procedurecost.map((pc) => (
                     <ProcedureCostCard 
                     key={pc._id} 

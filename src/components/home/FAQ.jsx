@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronDown, FaQuestionCircle } from 'react-icons/fa';
 import './FAQ.css';
+import faqdata from '../../data/faqdata';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -9,7 +10,10 @@ const FAQ = () => {
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
+// faqData;
 
+
+console.log(faqdata)
   const faqData = [
     {
       question: "How do I start the process of medical treatment?",
@@ -50,7 +54,7 @@ const FAQ = () => {
   const rightColumn = faqData.slice(Math.ceil(faqData.length / 2));
 
   return (
-    <section className="faq-section py-16 bg-gradient-to-b from-white to-blue-50 relative overflow-hidden">
+    <section className="faq-section bg-gray-100 py-16 relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-32 h-32 bg-blue-100/30 rounded-full -translate-x-16 -translate-y-16"></div>
       <div className="absolute bottom-0 right-0 w-40 h-40 bg-indigo-100/30 rounded-full translate-x-20 translate-y-20"></div>
@@ -104,7 +108,7 @@ const FAQ = () => {
 
         {/* CTA Section */}
         <motion.div 
-          className="text-center mt-12 bg-blue-50 rounded-2xl p-8 border border-blue-100"
+          className="text-center mt-12 bg-sectiondiv rounded-2xl p-8 border border-blue-100"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -117,10 +121,10 @@ const FAQ = () => {
             Our care coordinators are available 24/7 to answer any questions you may have about your medical journey.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+            <button className="bg-[#008080] hover:bg-[#006080] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300">
               Contact Us Now
             </button>
-            <button className="border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+            <button className="border border-[#008080] text-[#008080] hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors duration-300">
               Request a Call Back
             </button>
           </div>

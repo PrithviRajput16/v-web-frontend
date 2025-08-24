@@ -1,6 +1,7 @@
 import DoctorCard from "../components/DoctorCard";
 import Hero from "../components/Hero";
 import FAQ from "../components/home/FAQ";
+import OurServices from "../components/home/OurServices";
 import PatientOpinions from "../components/home/PatientOpinions";
 import ProcessFlow from "../components/home/ProcessFlow";
 import HospitalCarousel from "../components/HospitalCarousel";
@@ -31,12 +32,14 @@ export default function Home() {
       <WhatsAppButton />
 
       <ProcessFlow />
-      <ProcedureCost procedurecost={procedurecost}/>
+
+      <OurServices />
 
       <PatientOpinions />
 
-      {/* Doctors */}
-      <section className="bg-gray-50 py-12">
+      <FAQ />
+ {/* Doctors */}
+      {/* <section className="bg-gray-50 py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-semibold mb-6">Top Doctors</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -45,20 +48,17 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Treatments */}
-      <section className="container mx-auto px-4 py-12">
+      {/* <section className="container mx-auto px-4 py-12">
         <h2 className="text-2xl font-semibold mb-6">Popular Treatments</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {treatments.map((t) => (
             <TreatmentCard key={t.id} t={t} />
           ))}
         </div>
-      </section>
-
-      <FAQ />
-
+      </section> */}
       
     </div>
   );

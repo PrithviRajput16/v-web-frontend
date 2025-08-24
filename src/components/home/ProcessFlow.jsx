@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import processflow from '../../data/processflow';
 import './ProcessFlow.css';
+import SectionHeading from './SectionHeading';
 
 export default function ProcessFlow() {
+  
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -41,14 +43,12 @@ export default function ProcessFlow() {
   return (
     <section className="bg-sectiondiv py-16">
       <div className="container mx-auto px-6 md:px-12">
-        <motion.h2 
-          className="text-3xl text-center font-bold mb-12 text-gray-800"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          How Do We Work?
-        </motion.h2>
+        <SectionHeading
+            center={true}
+            title="Our Process"
+            subtitle="Simple & Transparent"
+            description="From initial consultation to post-treatment care, we guide you through every step of your medical journey"
+          />
 
         <div className="max-w-4xl mx-auto">
           <div className="relative">

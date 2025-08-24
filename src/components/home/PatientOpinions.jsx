@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaQuoteLeft, FaStar, FaChevronLeft, FaChevronRight, FaMapMarkerAlt, FaStethoscope } from 'react-icons/fa';
 import './PatientOpinions.css';
+import SectionHeading from "./SectionHeading";
 
 const PatientOpinions = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

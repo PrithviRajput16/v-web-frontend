@@ -1,61 +1,67 @@
-
-
 import { motion } from "framer-motion";
 
 export default function ProcedureCostCard({ service, index }) {
   return (
-    <div className = "col" >
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        delay: index * 0.15, 
-        type: "spring", 
-        stiffness: 80 
-      }}
-      whileHover={{
-        y: -8,
-        scale: 1.03,
-        boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)",
-      }}
-      className=" relative p-[2px] rounded-2xl bg-gradient-to-tr  from-white to-[#006080]"
-      // className=" relative p-[2px] rounded-2xl bg-gradient-to-tr to-[#004080] from-[#808080]"
-      // to-green-600 Removed this from classname from-emrald-400 from-[#008080]
-    >
-      {/* Glassmorphic Card */}
-      <div className="bg-white/80 flex justify-evenly gap-2 backdrop-blur-md rounded-2xl p-6 transition-all duration-300">
-        <motion.div
-          whileHover={{ 
-            rotate: 10, 
-            scale: 1.2 
-          }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 200 
-          }}
-          className="text-4xl text-emerald-600  flex items-center justify-center"
-        >
-          {service.icon}
-          
-        </motion.div>
+    <div className="col">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          delay: index * 0.15, 
+          type: "spring", 
+          stiffness: 80 
+        }}
+        whileHover={{
+          y: -8,
+          scale: 1.03,
+          boxShadow: "0 15px 40px rgba(0, 96, 128, 0.2)",
+        }}
+        className="relative p-[2px] rounded-2xl bg-gradient-to-tr from-white to-[#006080]"
+      >
+        {/* Glassmorphic Card */}
+        <div className="bg-white/90 flex items-center gap-4 backdrop-blur-md rounded-2xl p-5 transition-all duration-300 h-full">
+          {/* Icon Container */}
+          <motion.div
+            whileHover={{ 
+              rotate: 10, 
+              scale: 1.2 
+            }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 200 
+            }}
+            className="flex-shrink-0 w-14 h-14 bg-teal-100 rounded-xl flex items-center justify-center"
+          >
+            <span className="text-2xl text-teal-600">
+              {service.icon}
+            </span>
+          </motion.div>
 
-        <div>
-          <h3 className="text-md font-semibold text-gray-900">
-            {service.title}
-          </h3>
-          
-          <p className="text-md text-gray-600 mt-1 leading-relaxed">
-            Starting: ${service.price}
-          </p>
-
-          <button className="text-sm bg-[#008080] mt-2 py-2 px-3 text-white rounded">Get Quote</button>
+          {/* Content */}
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 mb-1">
+              {service.title}
+            </h3>
+            
+            <div className="flex items-center justify-between mt-3">
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Starting from</p>
+                <p className="text-xl font-bold text-teal-700">
+                  ${service.price}
+                </p>
+              </div>
+              
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-md"
+              >
+                Get Quote
+              </motion.button>
+            </div>
+          </div>
         </div>
-        
-      </div>
-    </motion.div>
+      </motion.div>
     </div>
   );
 }
-/* 
-made the div flex so that icon and heading/content comes in columns
-*/
