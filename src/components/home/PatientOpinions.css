@@ -1,0 +1,54 @@
+.patient-opinions-section {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Animation for the testimonial cards */
+.testimonial-enter {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.testimonial-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+.testimonial-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.testimonial-exit-active {
+  opacity: 0;
+  transform: translateX(-100px);
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+/* Custom styles for the carousel */
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .patient-opinions-section {
+    padding: 3rem 1rem;
+  }
+  
+  .testimonial-content {
+    text-align: center;
+  }
+}
+
+/* Hover effects for navigation buttons */
+.nav-button {
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
