@@ -1,5 +1,6 @@
 import DoctorCard from "../components/DoctorCard";
 import Hero from "../components/Hero";
+import PatientOpinions from "../components/home/PatientOpinions";
 import ProcessFlow from "../components/home/ProcessFlow";
 import HospitalCarousel from "../components/HospitalCarousel";
 import ProcedureCost from "../components/ProcedureCost";
@@ -29,6 +30,8 @@ export default function Home() {
       <WhatsAppButton />
 
       <ProcessFlow />
+
+      <PatientOpinions />
 
       {/* Doctors */}
       <section className="bg-gray-50 py-12">
