@@ -1,35 +1,68 @@
 .patient-opinions-section {
   font-family: 'Inter', sans-serif;
-}
-
-/* Animation for the testimonial cards */
-.testimonial-enter {
-  opacity: 0;
-  transform: translateX(100px);
-}
-
-.testimonial-enter-active {
-  opacity: 1;
-  transform: translateX(0);
-  transition: opacity 0.4s, transform 0.4s;
-}
-
-.testimonial-exit {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.testimonial-exit-active {
-  opacity: 0;
-  transform: translateX(-100px);
-  transition: opacity 0.4s, transform 0.4s;
-}
-
-/* Custom styles for the carousel */
-.carousel-container {
   position: relative;
-  overflow: hidden;
-  border-radius: 12px;
+}
+
+/* Floating animation for decorative circles */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.patient-opinions-section > div:first-child {
+  animation: float 8s ease-in-out infinite;
+}
+
+.patient-opinions-section > div:nth-child(2) {
+  animation: float 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.patient-opinions-section > div:nth-child(3) {
+  animation: float 12s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* Custom gradient background */
+.gradient-bg {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+/* Testimonial card hover effect */
+.testimonial-card {
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.testimonial-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+}
+
+/* Pulse animation for active indicator */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+.bg-blue-600 {
+  animation: pulse 2s infinite;
+}
+
+/* Smooth transitions for navigation */
+.nav-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Responsive adjustments */
@@ -41,14 +74,18 @@
   .testimonial-content {
     text-align: center;
   }
+  
+  .patient-image {
+    margin: 0 auto 1.5rem;
+  }
 }
 
-/* Hover effects for navigation buttons */
-.nav-button {
-  transition: all 0.3s ease;
+/* Custom scrollbar for carousel */
+.carousel-container::-webkit-scrollbar {
+  display: none;
 }
 
-.nav-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Text selection color */
+::selection {
+  background-color: rgba(37, 99, 235, 0.2);
 }
