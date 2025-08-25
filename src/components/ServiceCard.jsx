@@ -18,7 +18,7 @@ export default function ServiceCard({ service, index }) {
         scale: 1.03,
         boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)",
       }}
-      className=" relative p-[2px] rounded-2xl bg-gradient-to-tr  from-white to-[#006080]"
+      className="relative p-[2px] rounded-2xl bg-gradient-to-tr  from-white to-[#006080]"
       // className=" relative p-[2px] rounded-2xl bg-gradient-to-tr to-[#004080] from-[#808080]"
       // to-green-600 Removed this from classname from-emrald-400 from-[#008080]
     >
@@ -39,7 +39,7 @@ export default function ServiceCard({ service, index }) {
            <img
           src={service.icon}
           // alt={hospital.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover  transition-transform duration-500 group-hover:scale-110"
         />
         </motion.div>
           <div>

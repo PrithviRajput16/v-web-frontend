@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
+import SectionHeading from "../components/home/SectionHeading";
 import HospitalCard from './HospitalCard';
+
 
 const HospitalCarousel = ({ hospitals }) => {
   // Group hospitals by country
@@ -43,11 +45,17 @@ const HospitalCarousel = ({ hospitals }) => {
   return (
     <section className="bg-gray-50 py-12">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Our Partner Hospitals</h2>
+        {/* <h2 className="text-2xl font-semibold mb-6 text-center">Our Partner Hospitals</h2> */}
+         <SectionHeading
+            center={true}
+            title="Partner Hospitals"
+            subtitle="World-Class Healthcare Facilities"
+            description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
+          />
         
         {/* Country tabs */}
         {/* Just put flex-center to center the names */}
-        <div className="flex flex-row-reverse mb-8 border-b border-gray-200">
+        <div className="flex justify-center mb-8 border-b border-gray-200">
           <div className="flex space-x-1">
             {countryNames.map((country, index) => (
               <button
