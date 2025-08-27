@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate:hospitals": "node src/backend/migrations/migrateHospitals.cjs",
+    "migrate:all": "npm run migrate && npm run migrate:hospitals"
   },
   "dependencies": {
     "axios": "^1.11.0",
