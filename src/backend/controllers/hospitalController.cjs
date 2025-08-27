@@ -4,18 +4,18 @@ const Hospital = require('../models/Hospital.cjs');
 // @route   GET /api/hospitals
 // @access  Public
 exports.getHospitalStatus = async (req, res) => {
-  try {
-    res.json({ 
-      status: 'Hospitals API is healthy',
-      dbStatus: req.dbStatus || 'Unknown' // Injected from middleware
-    });
-  } catch (err) {
-    console.error('Health check error:', err);
-    res.status(500).json({ 
-      error: 'Service unavailable',
-      details: err.message
-    });
-  }
+    try {
+        res.json({
+            status: 'Hospitals API is healthy',
+            dbStatus: req.dbStatus || 'Unknown' // Injected from middleware
+        });
+    } catch (err) {
+        console.error('Health check error:', err);
+        res.status(500).json({
+            error: 'Service unavailable',
+            details: err.message
+        });
+    }
 };
 
 exports.getHospitals = async (req, res) => {

@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "migrate:hospitals": "node src/backend/migrations/migrateHospitals.cjs",
     "migrate:procedure-costs": "node src/backend/migrations/migrateProcedureCosts.cjs",
+    "migrate:patient-opinions": "node src/backend/migrations/migratePatientOpinions.cjs",
     "migrate:all": "npm run migrate && npm run migrate:hospitals"
   },
   "dependencies": {
