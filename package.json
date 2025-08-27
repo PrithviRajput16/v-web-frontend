@@ -11,6 +11,7 @@
     "migrate:hospitals": "node src/backend/migrations/migrateHospitals.cjs",
     "migrate:procedure-costs": "node src/backend/migrations/migrateProcedureCosts.cjs",
     "migrate:patient-opinions": "node src/backend/migrations/migratePatientOpinions.cjs",
+    "migrate:faqs": "node src/backend/migrations/migrateFAQS.cjs",
     "migrate:all": "npm run migrate && npm run migrate:hospitals"
   },
   "dependencies": {

@@ -8,6 +8,7 @@ const serviceRouter = require('./routes/services.cjs');
 const hospitalRouter = require('./routes/hospitals.cjs')
 const procedureCostsRouter = require('./routes/procedureCosts.cjs');
 const patientOpinionsRouter = require('./routes/patientOpinion.cjs');
+const faqsRouter = require('./routes/faqs.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 6002;
@@ -40,6 +41,7 @@ app.use('/api/services', serviceRouter);
 app.use('/api/hospitals', hospitalRouter);
 app.use('/api/procedure-costs', procedureCostsRouter);
 app.use('/api/patient-opinions', patientOpinionsRouter);
+app.use('/api/faqs', faqsRouter);
 
 // Health check with DB status
 app.get('/', (req, res) => {
