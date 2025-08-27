@@ -26,7 +26,7 @@ export default function Home() {
 
       <Services />
 
-      <HospitalCarousel hospitals={hospitals} />
+      <HospitalCarousel  />
 
       <ProcedureCost procedurecost={procedurecost}/>
       <WhatsAppButton />
