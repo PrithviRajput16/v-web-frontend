@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "migrate:hospitals": "node src/backend/migrations/migrateHospitals.cjs",
+    "migrate:procedure-costs": "node src/backend/migrations/migrateProcedureCosts.cjs",
     "migrate:all": "npm run migrate && npm run migrate:hospitals"
   },
   "dependencies": {

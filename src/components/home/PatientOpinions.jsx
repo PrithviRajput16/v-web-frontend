@@ -1,12 +1,11 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaQuoteLeft, FaStar, FaChevronLeft, FaChevronRight, FaMapMarkerAlt, FaStethoscope } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaMapMarkerAlt, FaQuoteLeft, FaStar, FaStethoscope } from 'react-icons/fa';
 import './PatientOpinions.css';
-import SectionHeading from "./SectionHeading";
 
 const PatientOpinions = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   // Sample patient opinions data
   const opinions = [
     {
@@ -48,13 +47,13 @@ const PatientOpinions = () => {
   ];
 
   const nextOpinion = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === opinions.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevOpinion = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? opinions.length - 1 : prevIndex - 1
     );
   };
@@ -78,9 +77,9 @@ const PatientOpinions = () => {
       <div className="absolute top-10 left-10 w-24 h-24 rounded-full bg-blue-100/30"></div>
       <div className="absolute bottom-10 right-10 w-32 h-32 rounded-full bg-indigo-100/30"></div>
       <div className="absolute top-1/3 right-1/4 w-16 h-16 rounded-full bg-blue-200/20"></div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -96,7 +95,7 @@ const PatientOpinions = () => {
 
         <div className="max-w-5xl mx-auto relative">
           {/* Navigation Arrows */}
-          <motion.button 
+          <motion.button
             onClick={prevOpinion}
             className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 md:-translate-x-8 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-blue-50 transition-all duration-300 border border-blue-100"
             whileHover={{ scale: 1.1 }}
@@ -105,8 +104,8 @@ const PatientOpinions = () => {
           >
             <FaChevronLeft className="text-blue-600 text-lg" />
           </motion.button>
-          
-          <motion.button 
+
+          <motion.button
             onClick={nextOpinion}
             className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 md:translate-x-8 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-blue-50 transition-all duration-300 border border-blue-100"
             whileHover={{ scale: 1.1 }}
@@ -129,7 +128,7 @@ const PatientOpinions = () => {
               >
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                   {/* Patient Image */}
-                  <motion.div 
+                  <motion.div
                     className="flex-shrink-0"
                     initial={{ scale: 0.9 }}
                     animate={{ scale: 1 }}
@@ -137,8 +136,8 @@ const PatientOpinions = () => {
                   >
                     <div className="relative">
                       <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                        <img 
-                          src={opinions[currentIndex].image} 
+                        <img
+                          src={opinions[currentIndex].image}
                           alt={opinions[currentIndex].name}
                           className="w-full h-full object-cover"
                         />
@@ -148,7 +147,7 @@ const PatientOpinions = () => {
                       </div>
                     </div>
                   </motion.div>
-                  
+
                   {/* Testimonial Content */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="mb-6">
@@ -161,31 +160,31 @@ const PatientOpinions = () => {
                             animate={{ scale: 1 }}
                             transition={{ delay: i * 0.1, type: "spring", stiffness: 300 }}
                           >
-                            <FaStar 
-                              className={i < opinions[currentIndex].rating ? "text-yellow-400" : "text-gray-300"} 
+                            <FaStar
+                              className={i < opinions[currentIndex].rating ? "text-yellow-400" : "text-gray-300"}
                               size={20}
                             />
                           </motion.div>
                         ))}
                       </div>
-                      
+
                       <p className="text-gray-700 text-lg italic mb-6 relative">
                         <FaQuoteLeft className="text-blue-200 text-3xl absolute -left-8 -top-2" />
                         {opinions[currentIndex].text}
                       </p>
                     </div>
-                    
+
                     <div>
                       <h3 className="font-semibold text-xl text-gray-800 mb-2">
                         {opinions[currentIndex].name}
                       </h3>
-                      
+
                       <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-gray-600 text-sm">
                         <div className="flex items-center justify-center md:justify-start">
                           <FaMapMarkerAlt className="text-blue-400 mr-2" />
                           <span>{opinions[currentIndex].location}</span>
                         </div>
-                        
+
                         <div className="flex items-center justify-center md:justify-start">
                           <FaStethoscope className="text-blue-400 mr-2" />
                           <span>{opinions[currentIndex].treatment}</span>
@@ -204,9 +203,8 @@ const PatientOpinions = () => {
               <motion.button
                 key={index}
                 onClick={() => goToOpinion(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex ? 'bg-blue-600' : 'bg-gray-300 hover:bg-blue-400'
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-blue-600' : 'bg-gray-300 hover:bg-blue-400'
+                  }`}
                 whileHover={{ scale: 1.3 }}
                 aria-label={`Go to testimonial ${index + 1}`}
               />
@@ -215,7 +213,7 @@ const PatientOpinions = () => {
         </div>
 
         {/* Decorative bottom element */}
-        <motion.div 
+        <motion.div
           className="flex justify-center mt-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
