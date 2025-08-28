@@ -1,108 +1,60 @@
+// src/data/hospitals.js
+
 const hospitals = [
   {
     id: 1,
-    name: "Apollo Hospitals, Delhi",
-    country: "India",
-    city: "Delhi",
+    name: "Apollo Hospitals",
+    location: "New Delhi, India",
+    specialties: ["Cardiology", "Oncology", "Neurology"],
+    rating: 4.7,
     image:
-      "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=1200&auto=format&fit=crop",
-    specialties: ["Cardiology", "Oncology", "Orthopedics"],
-    rating: 4.6,
-    beds: 700,
-    accreditation: ["JCI", "NABH"],
-    phone: "+91 11 2345 6789",
-    blurb:
-      "A leading multi-specialty hospital known for advanced cardiac and cancer care.",
+      "https://images.unsplash.com/photo-1576765607935-3c8b8bbaab9d?w=600&h=400&fit=crop",
   },
   {
     id: 2,
-    name: "Fortis Memorial, Gurgaon",
-    country: "India",
-    city: "Gurgaon",
+    name: "Fortis Memorial Research Institute",
+    location: "Gurgaon, India",
+    specialties: ["Orthopedics", "Neurosciences", "Transplants"],
+    rating: 4.6,
     image:
-      "https://images.unsplash.com/photo-1576765608642-ff4b3f0c3a22?q=80&w=1200&auto=format&fit=crop",
-    specialties: ["Neurosurgery", "Transplants", "Pediatrics"],
-    rating: 4.7,
-    beds: 1000,
-    accreditation: ["JCI"],
-    phone: "+91 124 678 9900",
-    blurb:
-      "High-end quaternary care with international patient services and advanced ICUs.",
+      "https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=600&h=400&fit=crop",
   },
   {
     id: 3,
-    name: "Max Super Speciality, Saket",
-    country: "India",
-    city: "Delhi",
+    name: "Medanta - The Medicity",
+    location: "Gurgaon, India",
+    specialties: ["Cardiac Surgery", "Cancer Care", "Liver Transplants"],
+    rating: 4.8,
     image:
-      "https://images.unsplash.com/photo-1580281658629-6c3b5b7c5c2b?q=80&w=1200&auto=format&fit=crop",
-    specialties: ["Oncology", "ENT", "GI Surgery"],
-    rating: 4.5,
-    beds: 500,
-    accreditation: ["NABH"],
-    phone: "+91 11 4500 6500",
-    blurb:
-      "Comprehensive cancer and GI programs with minimally invasive surgery.",
+      "https://images.unsplash.com/photo-1581093588401-22d95c3cc1b1?w=600&h=400&fit=crop",
   },
   {
     id: 4,
-    name: "Kokilaben Dhirubhai Ambani, Mumbai",
-    country: "India",
-    city: "Mumbai",
+    name: "Max Super Specialty Hospital",
+    location: "Saket, New Delhi, India",
+    specialties: ["Gastroenterology", "Oncology", "Robotic Surgery"],
+    rating: 4.5,
     image:
-      "https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=1200&auto=format&fit=crop",
-    specialties: ["Cardiology", "Robotics", "Orthopedics"],
-    rating: 4.6,
-    beds: 750,
-    accreditation: ["JCI", "NABH"],
-    phone: "+91 22 3099 9999",
-    blurb:
-      "Robotic surgery programs and holistic tertiary care with global standards.",
+      "https://images.unsplash.com/photo-1584982752564-3f6a3f6fadc7?w=600&h=400&fit=crop",
   },
   {
     id: 5,
-    name: "Kokilaben Dhirubhai Ambani, Mumbai",
-    country: "America",
-    city: "Mumbai",
+    name: "AIIMS - All India Institute of Medical Sciences",
+    location: "New Delhi, India",
+    specialties: ["General Medicine", "Pediatrics", "Surgery"],
+    rating: 4.9,
     image:
-      "https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=1200&auto=format&fit=crop",
-    specialties: ["Cardiology", "Robotics", "Orthopedics"],
-    rating: 4.6,
-    beds: 750,
-    accreditation: ["JCI", "NABH"],
-    phone: "+91 22 3099 9999",
-    blurb:
-      "Robotic surgery programs and holistic tertiary care with global standards.",
+      "https://images.unsplash.com/photo-1580281657521-6a9b02af1c2b?w=600&h=400&fit=crop",
   },
   {
     id: 6,
-    name: "Kokilaben Dhirubhai Ambani, Mumbai",
-    country: "America",
-    city: "Mumbai",
+    name: "Manipal Hospitals",
+    location: "Bangalore, India",
+    specialties: ["Nephrology", "Pulmonology", "Dermatology"],
+    rating: 4.4,
     image:
-      "https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=1200&auto=format&fit=crop",
-    specialties: ["Cardiology", "Robotics", "Orthopedics"],
-    rating: 4.6,
-    beds: 750,
-    accreditation: ["JCI", "NABH"],
-    phone: "+91 22 3099 9999",
-    blurb:
-      "Robotic surgery programs and holistic tertiary care with global standards.",
+      "https://images.unsplash.com/photo-1627856018303-3edddc3e8a2a?w=600&h=400&fit=crop",
   },
-  {
-    id: 7,
-    name: "Kokilaben Dhirubhai Ambani, Mumbai",
-    country: "Dubai",
-    city: "Mumbai",
-    image:
-      "https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=1200&auto=format&fit=crop",
-    specialties: ["Cardiology", "Robotics", "Orthopedics"],
-    rating: 4.6,
-    beds: 750,
-    accreditation: ["JCI", "NABH"],
-    phone: "+91 22 3099 9999",
-    blurb:
-      "Robotic surgery programs and holistic tertiary care with global standards.",
-  }
 ];
+
 export default hospitals;
