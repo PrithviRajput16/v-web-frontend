@@ -57,19 +57,19 @@ const HospitalCarousel = () => { // Removed hospitals prop
   // Animation variants
   const variants = {
     enter: (direction) => ({
-      x: direction > 0 ? '100%' : '-100%',
-      opacity: 0.5
+      x: direction > 0 ? "100%" : "-100%",
+      opacity: 0.5,
     }),
     center: {
       x: 0,
       opacity: 1,
-      transition: { duration: 0.5 }
+      transition: { duration: 0.5 },
     },
     exit: (direction) => ({
-      x: direction < 0 ? '100%' : '-100%',
+      x: direction < 0 ? "100%" : "-100%",
       opacity: 0.5,
-      transition: { duration: 0.5 }
-    })
+      transition: { duration: 0.5 },
+    }),
   };
 
   // Loading state
@@ -163,6 +163,7 @@ const HospitalCarousel = () => { // Removed hospitals prop
             ))}
           </div>
         </div>
+
 
         {/* Animated hospital cards */}
         <div className="relative bg-sectiondiv p-10 rounded-lg min-h-[400px]">
