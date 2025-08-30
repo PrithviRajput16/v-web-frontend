@@ -9,7 +9,7 @@ import {
 export default function HowWeWork() {
   const steps = [
     {
-      icon: <ClipboardCheck className="w-10 h-10 text-blue-600" />,
+      icon: <ClipboardCheck className="w-10 h-10 text-teal-600" />,
       title: "Submit Your Query",
       description:
         "Tell us your medical concerns and requirements through our secure form.",

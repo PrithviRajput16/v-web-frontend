@@ -1,7 +1,14 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { FaChevronLeft, FaChevronRight, FaMapMarkerAlt, FaQuoteLeft, FaStar, FaStethoscope } from 'react-icons/fa';
-import './PatientOpinions.css';
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaMapMarkerAlt,
+  FaQuoteLeft,
+  FaStar,
+  FaStethoscope,
+} from "react-icons/fa";
+import "./PatientOpinions.css";
 
 const PatientOpinions = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,7 +20,9 @@ const PatientOpinions = () => {
   useEffect(() => {
     const fetchOpinions = async () => {
       try {
-        const response = await fetch('http://localhost:6003/api/patient-opinions');
+        const response = await fetch(
+          "http://localhost:6003/api/patient-opinions"
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -22,13 +31,13 @@ const PatientOpinions = () => {
         const result = await response.json();
 
         if (!result.success || !Array.isArray(result.data)) {
-          throw new Error('Invalid API response structure');
+          throw new Error("Invalid API response structure");
         }
 
         setOpinions(result.data);
         setError(null);
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error("Fetch error:", err);
         setError(err.message);
         setOpinions([]);
       } finally {
@@ -72,14 +81,16 @@ const PatientOpinions = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-              Stories of <span className="text-blue-600">Healing</span> & <span className="text-blue-600">Hope</span>
+              Stories of <span className="text-teal-600">Healing</span> &{" "}
+              <span className="text-teal-600">Hope</span>
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover what our patients have to say about their healthcare journey with us
+              Discover what our patients have to say about their healthcare
+              journey with us
             </p>
           </div>
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
           </div>
         </div>
       </section>
@@ -93,14 +104,15 @@ const PatientOpinions = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-              Stories of <span className="text-blue-600">Healing</span> & <span className="text-blue-600">Hope</span>
+              Stories of <span className="text-teal-600">Healing</span> &{" "}
+              <span className="text-teal-600">Hope</span>
             </h2>
           </div>
           <div className="text-center text-red-600 py-8">
             <p>Error loading patient opinions: {error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md"
             >
               Try Again
             </button>
@@ -117,7 +129,8 @@ const PatientOpinions = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-              Stories of <span className="text-blue-600">Healing</span> & <span className="text-blue-600">Hope</span>
+              Stories of <span className="text-teal-600">Healing</span> &{" "}
+              <span className="text-teal-600">Hope</span>
             </h2>
           </div>
           <div className="text-center text-gray-500 py-8">
@@ -143,10 +156,12 @@ const PatientOpinions = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-            Stories of <span className="text-blue-600">Healing</span> & <span className="text-blue-600">Hope</span>
+            Stories of <span className="text-teal-600">Healing</span> &{" "}
+            <span className="text-teal-600">Hope</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover what our patients have to say about their healthcare journey with us
+            Discover what our patients have to say about their healthcare
+            journey with us
           </p>
         </motion.div>
 
@@ -159,7 +174,7 @@ const PatientOpinions = () => {
             whileTap={{ scale: 0.95 }}
             aria-label="Previous testimonial"
           >
-            <FaChevronLeft className="text-blue-600 text-lg" />
+            <FaChevronLeft className="text-teal-600 text-lg" />
           </motion.button>
 
           <motion.button
@@ -169,7 +184,7 @@ const PatientOpinions = () => {
             whileTap={{ scale: 0.95 }}
             aria-label="Next testimonial"
           >
-            <FaChevronRight className="text-blue-600 text-lg" />
+            <FaChevronRight className="text-teal-600 text-lg" />
           </motion.button>
 
           {/* Testimonial Carousel */}
@@ -215,10 +230,18 @@ const PatientOpinions = () => {
                             key={i}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: i * 0.1, type: "spring", stiffness: 300 }}
+                            transition={{
+                              delay: i * 0.1,
+                              type: "spring",
+                              stiffness: 300,
+                            }}
                           >
                             <FaStar
-                              className={i < opinions[currentIndex].rating ? "text-yellow-400" : "text-gray-300"}
+                              className={
+                                i < opinions[currentIndex].rating
+                                  ? "text-yellow-400"
+                                  : "text-gray-300"
+                              }
                               size={20}
                             />
                           </motion.div>
@@ -260,8 +283,11 @@ const PatientOpinions = () => {
               <motion.button
                 key={index}
                 onClick={() => goToOpinion(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-blue-600' : 'bg-gray-300 hover:bg-blue-400'
-                  }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? "bg-teal-600"
+                    : "bg-gray-300 hover:bg-blue-400"
+                }`}
                 whileHover={{ scale: 1.3 }}
                 aria-label={`Go to testimonial ${index + 1}`}
               />

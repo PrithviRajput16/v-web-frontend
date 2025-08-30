@@ -1,7 +1,7 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { FaChevronDown, FaQuestionCircle } from 'react-icons/fa';
-import './FAQ.css';
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { FaChevronDown, FaQuestionCircle } from "react-icons/fa";
+import "./FAQ.css";
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -13,7 +13,7 @@ const FAQ = () => {
   useEffect(() => {
     const fetchFAQs = async () => {
       try {
-        const response = await fetch('http://localhost:6003/api/faqs');
+        const response = await fetch("http://localhost:6003/api/faqs");
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -22,13 +22,13 @@ const FAQ = () => {
         const result = await response.json();
 
         if (!result.success || !Array.isArray(result.data)) {
-          throw new Error('Invalid API response structure');
+          throw new Error("Invalid API response structure");
         }
 
         setFaqData(result.data);
         setError(null);
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error("Fetch error:", err);
         setError(err.message);
         setFaqData([]);
       } finally {
@@ -54,14 +54,14 @@ const FAQ = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-              <FaQuestionCircle className="text-blue-600 text-2xl" />
+              <FaQuestionCircle className="text-teal-600 text-2xl" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-              Frequently Asked <span className="text-blue-600">Questions</span>
+              Frequently Asked <span className="text-teal-600">Questions</span>
             </h2>
           </div>
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
           </div>
         </div>
       </section>
@@ -75,14 +75,14 @@ const FAQ = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-              Frequently Asked <span className="text-blue-600">Questions</span>
+              Frequently Asked <span className="text-teal-600">Questions</span>
             </h2>
           </div>
           <div className="text-center text-red-600 py-8">
             <p>Error loading FAQs: {error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md"
             >
               Try Again
             </button>
@@ -99,7 +99,7 @@ const FAQ = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-              Frequently Asked <span className="text-blue-600">Questions</span>
+              Frequently Asked <span className="text-teal-600">Questions</span>
             </h2>
           </div>
           <div className="text-center text-gray-500 py-8">
@@ -125,10 +125,10 @@ const FAQ = () => {
           viewport={{ once: true }}
         >
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-            <FaQuestionCircle className="text-blue-600 text-2xl" />
+            <FaQuestionCircle className="text-teal-600 text-2xl" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-            Frequently Asked <span className="text-blue-600">Questions</span>
+            Frequently Asked <span className="text-teal-600">Questions</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Find answers to common questions about our medical treatment process
@@ -175,7 +175,8 @@ const FAQ = () => {
             Still have questions?
           </h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Our care coordinators are available 24/7 to answer any questions you may have about your medical journey.
+            Our care coordinators are available 24/7 to answer any questions you
+            may have about your medical journey.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-[#008080] hover:bg-[#006080] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300">
@@ -227,22 +228,20 @@ const FAQItem = ({ faq, index, isActive, onClick }) => {
               opacity: 1,
               transition: {
                 height: { duration: 0.3 },
-                opacity: { duration: 0.4, delay: 0.1 }
-              }
+                opacity: { duration: 0.4, delay: 0.1 },
+              },
             }}
             exit={{
               height: 0,
               opacity: 0,
               transition: {
                 height: { duration: 0.3 },
-                opacity: { duration: 0.2 }
-              }
+                opacity: { duration: 0.2 },
+              },
             }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 text-gray-600">
-              {faq.answer}
-            </div>
+            <div className="px-5 pb-5 text-gray-600">{faq.answer}</div>
           </motion.div>
         )}
       </AnimatePresence>

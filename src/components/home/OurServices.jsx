@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   FaBed,
   FaCalendarCheck,
@@ -9,8 +9,8 @@ import {
   FaPassport,
   FaPlane,
   FaUserMd,
-  FaUserNurse
-} from 'react-icons/fa';
+  FaUserNurse,
+} from "react-icons/fa";
 
 // Icon mapping
 const iconComponents = {
@@ -22,7 +22,7 @@ const iconComponents = {
   FaCar,
   FaBed,
   FaCalendarCheck,
-  FaUserNurse
+  FaUserNurse,
 };
 
 const OurServices = () => {
@@ -34,7 +34,7 @@ const OurServices = () => {
   useEffect(() => {
     const fetchAssistance = async () => {
       try {
-        const response = await fetch('http://localhost:6003/api/assistance');
+        const response = await fetch("http://localhost:6003/api/assistance");
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -43,13 +43,13 @@ const OurServices = () => {
         const result = await response.json();
 
         if (!result.success || !Array.isArray(result.data)) {
-          throw new Error('Invalid API response structure');
+          throw new Error("Invalid API response structure");
         }
 
         setServices(result.data);
         setError(null);
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error("Fetch error:", err);
         setError(err.message);
         setServices([]);
       } finally {
@@ -67,10 +67,11 @@ const OurServices = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-darktext mb-4">
-              Our Services Cover <span className="text-primary">Every Need</span>
+              Our Services Cover{" "}
+              <span className="text-primary">Every Need</span>
             </h2>
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
             </div>
           </div>
         </div>
@@ -85,14 +86,15 @@ const OurServices = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-darktext mb-4">
-              Our Services Cover <span className="text-primary">Every Need</span>
+              Our Services Cover{" "}
+              <span className="text-primary">Every Need</span>
             </h2>
           </div>
           <div className="text-center text-red-600 py-8">
             <p>Error loading services: {error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md"
             >
               Try Again
             </button>
@@ -109,7 +111,8 @@ const OurServices = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-darktext mb-4">
-              Our Services Cover <span className="text-primary">Every Need</span>
+              Our Services Cover{" "}
+              <span className="text-primary">Every Need</span>
             </h2>
           </div>
           <div className="text-center text-gray-500 py-8">
@@ -129,12 +132,15 @@ const OurServices = () => {
             Our Services Cover <span className="text-primary">Every Need</span>
           </h2>
           <p className="text-lg text-lighttext max-w-3xl mx-auto mb-6">
-            You will be assisted by a dedicated case manager from our team.
-            List of services you can expect from us, for <span className="text-primary font-semibold">FREE!</span>
+            You will be assisted by a dedicated case manager from our team. List
+            of services you can expect from us, for{" "}
+            <span className="text-primary font-semibold">FREE!</span>
           </p>
           <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full">
             <FaHeadset className="mr-2" />
-            <span className="font-semibold">Dedicated Case Manager Included</span>
+            <span className="font-semibold">
+              Dedicated Case Manager Included
+            </span>
           </div>
         </div>
 
@@ -150,18 +156,16 @@ const OurServices = () => {
                 <div className="flex items-start mb-4">
                   <div className="bg-blue-100 p-3 rounded-lg mr-4">
                     {IconComponent ? (
-                      <IconComponent className="text-2xl text-blue-600" />
+                      <IconComponent className="text-2xl text-teal-600" />
                     ) : (
-                      <FaHeadset className="text-2xl text-blue-600" />
+                      <FaHeadset className="text-2xl text-teal-600" />
                     )}
                   </div>
                   <h3 className="text-xl font-semibold text-darktext">
                     {service.title}
                   </h3>
                 </div>
-                <p className="text-lighttext">
-                  {service.description}
-                </p>
+                <p className="text-lighttext">{service.description}</p>
               </div>
             );
           })}
@@ -173,7 +177,8 @@ const OurServices = () => {
             All Services Included at No Extra Cost
           </h4>
           <p className="text-lighttext">
-            These comprehensive services are provided free of charge when you choose our medical care coordination.
+            These comprehensive services are provided free of charge when you
+            choose our medical care coordination.
           </p>
         </div>
       </div>
