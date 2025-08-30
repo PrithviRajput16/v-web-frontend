@@ -1,66 +1,123 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { FaChevronDown, FaQuestionCircle } from 'react-icons/fa';
 import './FAQ.css';
-import faqdata from '../../data/faqdata';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
+  const [faqData, setFaqData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch FAQs from API
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        const response = await fetch('http://localhost:6003/api/faqs');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (!result.success || !Array.isArray(result.data)) {
+          throw new Error('Invalid API response structure');
+        }
+
+        setFaqData(result.data);
+        setError(null);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+        setFaqData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFAQs();
+  }, []);
 
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
-// faqData;
-
-
-console.log(faqdata)
-  const faqData = [
-    {
-      question: "How do I start the process of medical treatment?",
-      answer: "Starting your medical journey is simple. Contact us through our website, phone, or email. Our team will guide you through the initial consultation, medical history review, and help you choose the right hospital and doctor for your condition."
-    },
-    {
-      question: "What information do I need to provide for a treatment estimate?",
-      answer: "For an accurate estimate, please share your medical reports, diagnosis details, current medications, and any previous treatments. The more information you provide, the more precise our cost estimation and treatment plan will be."
-    },
-    {
-      question: "How long does it take to get a treatment plan and cost estimate?",
-      answer: "We typically provide a preliminary treatment plan and cost estimate within 24-48 hours after reviewing your medical documents. In urgent cases, we can expedite this process."
-    },
-    {
-      question: "Do you help with travel arrangements and visas?",
-      answer: "Yes, we provide complete assistance with medical visas, travel arrangements, airport transfers, and local accommodation. Our team will guide you through the entire process to make your medical journey smooth."
-    },
-    {
-      question: "What happens after I complete my treatment?",
-      answer: "Post-treatment, we provide follow-up care instructions and connect you with our team for any questions. We also assist with arranging follow-up consultations and can help facilitate communication with your doctors back home."
-    },
-    {
-      question: "Are the doctors and hospitals you work with accredited?",
-      answer: "Absolutely. We partner only with accredited hospitals and highly qualified doctors who have international recognition and expertise in their respective specialties."
-    },
-    {
-      question: "What languages do your coordinators speak?",
-      answer: "Our care coordinators are fluent in English, Hindi, Arabic, Spanish, and several other languages to assist patients from different regions effectively."
-    },
-    {
-      question: "How do you ensure patient privacy and data security?",
-      answer: "We take patient privacy seriously. All your medical information is handled with strict confidentiality and secured through encrypted channels in compliance with international healthcare privacy standards."
-    }
-  ];
 
   // Split FAQ data into two columns
   const leftColumn = faqData.slice(0, Math.ceil(faqData.length / 2));
   const rightColumn = faqData.slice(Math.ceil(faqData.length / 2));
+
+  // Loading state
+  if (loading) {
+    return (
+      <section className="faq-section bg-gray-100 py-16 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+              <FaQuestionCircle className="text-blue-600 text-2xl" />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
+              Frequently Asked <span className="text-blue-600">Questions</span>
+            </h2>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section className="faq-section bg-gray-100 py-16 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
+              Frequently Asked <span className="text-blue-600">Questions</span>
+            </h2>
+          </div>
+          <div className="text-center text-red-600 py-8">
+            <p>Error loading FAQs: {error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // No FAQs found
+  if (faqData.length === 0) {
+    return (
+      <section className="faq-section bg-gray-100 py-16 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
+              Frequently Asked <span className="text-blue-600">Questions</span>
+            </h2>
+          </div>
+          <div className="text-center text-gray-500 py-8">
+            <p>No FAQs found.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="faq-section bg-gray-100 py-16 relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-32 h-32 bg-blue-100/30 rounded-full -translate-x-16 -translate-y-16"></div>
       <div className="absolute bottom-0 right-0 w-40 h-40 bg-indigo-100/30 rounded-full translate-x-20 translate-y-20"></div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -82,23 +139,23 @@ console.log(faqdata)
           {/* Left Column */}
           <div className="space-y-4">
             {leftColumn.map((faq, index) => (
-              <FAQItem 
-                key={index} 
-                faq={faq} 
-                index={index} 
+              <FAQItem
+                key={faq._id}
+                faq={faq}
+                index={index}
                 isActive={activeIndex === index}
                 onClick={() => toggleFAQ(index)}
               />
             ))}
           </div>
-          
+
           {/* Right Column */}
           <div className="space-y-4">
             {rightColumn.map((faq, index) => (
-              <FAQItem 
-                key={index + leftColumn.length} 
-                faq={faq} 
-                index={index + leftColumn.length} 
+              <FAQItem
+                key={faq._id}
+                faq={faq}
+                index={index + leftColumn.length}
                 isActive={activeIndex === index + leftColumn.length}
                 onClick={() => toggleFAQ(index + leftColumn.length)}
               />
@@ -107,7 +164,7 @@ console.log(faqdata)
         </div>
 
         {/* CTA Section */}
-        <motion.div 
+        <motion.div
           className="text-center mt-12 bg-sectiondiv rounded-2xl p-8 border border-blue-100"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -134,10 +191,10 @@ console.log(faqdata)
   );
 };
 
-// FAQ Item Component for better code organization
+// FAQ Item Component
 const FAQItem = ({ faq, index, isActive, onClick }) => {
   return (
-    <motion.div 
+    <motion.div
       className="bg-white rounded-xl shadow-sm overflow-hidden border border-blue-100"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -165,16 +222,16 @@ const FAQItem = ({ faq, index, isActive, onClick }) => {
         {isActive && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ 
-              height: "auto", 
+            animate={{
+              height: "auto",
               opacity: 1,
               transition: {
                 height: { duration: 0.3 },
                 opacity: { duration: 0.4, delay: 0.1 }
               }
             }}
-            exit={{ 
-              height: 0, 
+            exit={{
+              height: 0,
               opacity: 0,
               transition: {
                 height: { duration: 0.3 },

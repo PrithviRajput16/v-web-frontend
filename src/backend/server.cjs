@@ -5,6 +5,11 @@ require('dotenv').config({ path: './config.env' });
 
 const collectionsRouter = require('./routes/collections.cjs');
 const serviceRouter = require('./routes/services.cjs');
+const hospitalRouter = require('./routes/hospitals.cjs')
+const procedureCostsRouter = require('./routes/procedureCosts.cjs');
+const patientOpinionsRouter = require('./routes/patientOpinion.cjs');
+const faqsRouter = require('./routes/faqs.cjs');
+const assistanceRouter = require('./routes/assistance.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 6002;
@@ -34,6 +39,11 @@ app.use(express.json());
 // Routes
 app.use('/api/collections', collectionsRouter);
 app.use('/api/services', serviceRouter);
+app.use('/api/hospitals', hospitalRouter);
+app.use('/api/procedure-costs', procedureCostsRouter);
+app.use('/api/patient-opinions', patientOpinionsRouter);
+app.use('/api/faqs', faqsRouter);
+app.use('/api/assistance', assistanceRouter);
 
 // Health check with DB status
 app.get('/', (req, res) => {
