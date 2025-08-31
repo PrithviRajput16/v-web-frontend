@@ -3,6 +3,7 @@ import { FaMapMarkerAlt, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 export default function HospitalCard({ hospital }) {
+  // console.log(hospital._id);
   return (
     <motion.div
       whileHover={{ y: -6, scale: 1.01 }}

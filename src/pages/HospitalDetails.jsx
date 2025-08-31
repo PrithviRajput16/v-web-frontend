@@ -1,165 +1,87 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaArrowLeft,
   FaAward,
   FaBed,
-  FaBone,
-  FaBrain,
   FaCalendarCheck,
   FaEnvelope,
-  FaEye,
   FaGlobe,
-  FaHeart,
   FaMapMarkerAlt,
   FaPhone,
   FaPlane,
-  FaPlusSquare,
+  FaSpinner,
   FaStar,
   FaStethoscope,
-  FaSyringe,
   FaTrain
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-// Dummy hospital data for I.A.U VM Medical Park Florya Hospital
-const dummyHospitals = [
-  {
-    _id: "68af55a071a94271f1e08cd3",
-    name: "I.A.U VM Medical Park Florya Hospital",
-    country: { name: "Turkey" },
-    city: { name: "Istanbul" },
-    address: "Besyol, Florya, Akasya Sk. No:4 D:1, Istanbul, 34295, Turkey",
-    coordinates: { lat: 40.9760, lng: 28.7836 },
-    accreditation: ["JCI", "NABH"],
-    facilities: [
-      "TV in room", "Private rooms", "Free Wifi", "Phone in Room", "Mobility accessible rooms",
-      "Family accommodation", "Laundry", "Welcome Safe", "Nursery services", "Dry cleaning",
-      "Personal concierge", "Prayer room", "Fitness center", "Spa and wellness", "Café",
-      "Business center", "Shopping", "Beauty Salon", "Parking", "ATM", "Hairdressing salon",
-      "Newspaper service", "Restaurants", "Vegetarian menu", "Diet menu", "Interpreter services"
-    ],
-    specialties: [
-      { _id: "cardio", name: "Cardiology & Cardiac Surgery", icon: "FaHeart" },
-      { _id: "neuro", name: "Neurology & Neurosurgery", icon: "FaBrain" },
-      { _id: "ortho", name: "Orthopedics", icon: "FaBone" },
-      { _id: "onco", name: "Oncology", icon: "FaPlusSquare" },
-      { _id: "gastro", name: "Gastroenterology", icon: "FaStethoscope" },
-      { _id: "hepatology", name: "Hepatology", icon: "FaStethoscope" },
-      { _id: "ophthal", name: "Ophthalmology", icon: "FaEye" },
-      { _id: "spine", name: "Spine Surgery", icon: "FaBone" },
-      { _id: "plastic", name: "Cosmetic & Plastic Surgery", icon: "FaSyringe" },
-      { _id: "general", name: "General Surgery", icon: "FaStethoscope" },
-      { _id: "nephro", name: "Nephrology", icon: "FaStethoscope" },
-      { _id: "bariatric", name: "Bariatric Surgery", icon: "FaStethoscope" },
-      { _id: "gyneco", name: "Obstetrics & Gynecology", icon: "FaStethoscope" }
-    ],
-    rating: 4.8,
-    totalRatings: 16,
-    beds: 300,
-    established: 2017,
-    area: "51,000 m²",
-    operationRooms: 13,
-    outpatientFacilities: 92,
-    image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800&h=400&fit=crop",
-    phone: "+90 212 867 0000",
-    email: "info@medicalparkflorya.com",
-    website: "https://medicalpark.com.tr/florya",
-    languages: ["Arabic", "English", "French", "German", "Greek", "Russian", "Swedish", "Turkish", "Romanian"],
-    description: `Established in 2017, I.A.U. V.M. Medical Park Florya Hospital is a multidisciplinary JCI-accredited hospital with 300-bed capacity. The hospital provides comprehensive medical treatments including Cardiac Surgery, Oncology, Obstetrics & Gynecology, General Surgery, and Orthopedics.
-
-The hospital features modern diagnostic methods such as Biopsy, Transesophageal echocardiography, Colonoscopy, Hormone Tests, and Heart M.R.I. They have a team of highly professional medical staff fluent in multiple languages for international patients' comfort.
-
-Based on the 360-degree concept of service, the hospital offers world-class healthcare infrastructure with rooms designed like 5-star hotels, ensuring maximum comfort during treatment.`,
-
-    transportation: {
-      airport: { distance: "44 km", time: "41 minutes" },
-      railway: { distance: "22.7 km", time: "26 minutes" }
-    },
-
-    doctors: [
-      {
-        id: 1,
-        name: "Op. Dr. Semih Tiber Mentese",
-        specialty: "Aesthetics and Plastic Surgeon",
-        rating: 4.6,
-        ratingsCount: 97,
-        experience: 14,
-        image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face"
-      },
-      {
-        id: 2,
-        name: "Assoc. Dr. Sami Sökücü",
-        specialty: "Orthopaedic and Joint Replacement Surgeon",
-        experience: 20,
-        image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face"
-      },
-      {
-        id: 3,
-        name: "Dr. Ahmet Alperen Koc",
-        specialty: "Ophthalmologist",
-        experience: 14,
-        image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop&crop=face"
-      },
-      {
-        id: 4,
-        name: "Dr. Baris Demiriz",
-        specialty: "General Surgeon",
-        experience: 17,
-        image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face"
-      }
-    ],
-
-    patientReviews: [
-      {
-        id: 1,
-        patientName: "Mrs. Eva Vigario",
-        country: "Angola",
-        rating: 5,
-        comment: "My gastric sleeve surgery took place at Medical Park Hospital, and it was a success. The nurses and doctors provided exceptional care throughout my stay! Thanks!",
-        date: "2024-01-15"
-      },
-      {
-        id: 2,
-        patientName: "Seth Wiggins",
-        country: "United States",
-        rating: 5,
-        comment: "I travelled from the USA to Turkey for rhinoplasty and hair transplantation at Medical Park Hospital. The experience was outstanding. Highly recommended!",
-        date: "2024-02-20"
-      }
-    ]
-  }
-];
-
-// Icon mapping component
-const IconRenderer = ({ iconName, className }) => {
-  const iconMap = {
-    FaHeart: FaHeart,
-    FaBrain: FaBrain,
-    FaBone: FaBone,
-    FaPlusSquare: FaPlusSquare,
-    FaStethoscope: FaStethoscope,
-    FaEye: FaEye,
-    FaSyringe: FaSyringe
-  };
-
-  const IconComponent = iconMap[iconName] || FaStethoscope;
-  return <IconComponent className={className} />;
-};
-
 const HospitalDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [hospital, setHospital] = useState(null);
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Directly find the hospital from dummy data
-  const hospital = dummyHospitals.find(h => h._id === id);
+  useEffect(() => {
+    const fetchHospitalData = async () => {
+      try {
+        setLoading(true);
 
-  if (!hospital) {
+        // Fetch hospital basic info
+        const hospitalResponse = await fetch(`http://localhost:6003/api/hospitals/${id}`);
+        if (!hospitalResponse.ok) {
+          throw new Error('Failed to fetch hospital data');
+        }
+        const hospitalResult = await hospitalResponse.json();
+
+        if (!hospitalResult.success) {
+          throw new Error('Invalid hospital data received');
+        }
+
+        setHospital(hospitalResult.data);
+
+        // Fetch hospital details
+        const detailsResponse = await fetch(`http://localhost:6003/api/hospitals/${id}/details`);
+        if (detailsResponse.ok) {
+          const detailsResult = await detailsResponse.json();
+          if (detailsResult.success) {
+            setDetails(detailsResult.data);
+          }
+        }
+
+        setError(null);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHospitalData();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <FaSpinner className="animate-spin text-4xl text-teal-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading hospital details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !hospital) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-500 text-6xl mb-4">🏥</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Hospital not found!</h2>
+          <p className="text-gray-600 mb-6">{error || "The hospital you're looking for doesn't exist."}</p>
           <button
             onClick={() => navigate('/hospitals')}
             className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
@@ -170,6 +92,8 @@ const HospitalDetails = () => {
       </div>
     );
   }
+
+  console.log(details);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -213,20 +137,22 @@ const HospitalDetails = () => {
               <div className="flex items-center space-x-4 flex-wrap">
                 <div className="flex items-center">
                   <FaMapMarkerAlt className="mr-2" />
-                  <span>{hospital.city.name}, {hospital.country.name}</span>
+                  <span>{hospital.city}, {hospital.country}</span>
                 </div>
                 <div className="flex items-center">
                   <FaStar className="mr-2 text-yellow-400" />
-                  <span>{hospital.rating} ({hospital.totalRatings} Ratings)</span>
+                  <span>{hospital.rating}</span>
                 </div>
                 <div className="flex items-center">
                   <FaBed className="mr-2" />
                   <span>{hospital.beds} Beds</span>
                 </div>
-                <div className="flex items-center">
-                  <FaAward className="mr-2" />
-                  <span>Est. {hospital.established}</span>
-                </div>
+                {details?.established && (
+                  <div className="flex items-center">
+                    <FaAward className="mr-2" />
+                    <span>Est. {details.established}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -235,7 +161,7 @@ const HospitalDetails = () => {
         {/* Navigation Tabs */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
           <div className="flex space-x-8 border-b">
-            {['overview', 'doctors', 'facilities', 'reviews'].map((tab) => (
+            {['overview', 'facilities', 'contact'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -258,35 +184,39 @@ const HospitalDetails = () => {
               {/* About Section */}
               <div className="bg-white rounded-2xl p-6 shadow-sm">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">About Hospital</h2>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-                  {hospital.description}
+                <p className="text-gray-600 leading-relaxed">
+                  {details?.description || hospital.blurb || `${hospital.name} is a leading healthcare facility providing quality medical services.`}
                 </p>
               </div>
 
               {/* Specialties Section */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Specialties</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {hospital.specialties.map((specialty) => (
-                    <div key={specialty._id} className="flex items-center p-4 bg-gray-50 rounded-lg">
-                      <IconRenderer iconName={specialty.icon} className="text-teal-600 mr-3 text-lg" />
-                      <span className="text-gray-700 font-medium">{specialty.name}</span>
-                    </div>
-                  ))}
+              {hospital.specialties && hospital.specialties.length > 0 && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Specialties</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {hospital.specialties.map((specialty, index) => (
+                      <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg">
+                        <FaStethoscope className="text-teal-600 mr-3 text-lg" />
+                        <span className="text-gray-700 font-medium">{specialty}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Languages Section */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Languages Spoken</h2>
-                <div className="flex flex-wrap gap-2">
-                  {hospital.languages.map((language, index) => (
-                    <span key={index} className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm">
-                      {language}
-                    </span>
-                  ))}
+              {/* Accreditation Section */}
+              {hospital.accreditation && hospital.accreditation.length > 0 && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Accreditations</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {hospital.accreditation.map((acc, index) => (
+                      <span key={index} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                        {acc}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Sidebar */}
@@ -299,14 +229,18 @@ const HospitalDetails = () => {
                     <FaBed className="text-teal-600 mr-3 w-5" />
                     <span className="text-gray-700">{hospital.beds} Beds</span>
                   </div>
-                  <div className="flex items-center">
-                    <FaAward className="text-teal-600 mr-3 w-5" />
-                    <span className="text-gray-700">Est. {hospital.established}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <FaAward className="text-teal-600 mr-3 w-5" />
-                    <span className="text-gray-700">{hospital.accreditation.join(', ')}</span>
-                  </div>
+                  {details?.established && (
+                    <div className="flex items-center">
+                      <FaAward className="text-teal-600 mr-3 w-5" />
+                      <span className="text-gray-700">Est. {details.established}</span>
+                    </div>
+                  )}
+                  {hospital.accreditation && hospital.accreditation.length > 0 && (
+                    <div className="flex items-center">
+                      <FaAward className="text-teal-600 mr-3 w-5" />
+                      <span className="text-gray-700">{hospital.accreditation.join(', ')}</span>
+                    </div>
+                  )}
                   <div className="flex items-center">
                     <FaStethoscope className="text-teal-600 mr-3 w-5" />
                     <span className="text-gray-700">Multi Specialty</span>
@@ -326,19 +260,19 @@ const HospitalDetails = () => {
                       </a>
                     </div>
                   )}
-                  {hospital.email && (
+                  {details?.email && (
                     <div className="flex items-center">
                       <FaEnvelope className="text-teal-600 mr-3 w-5" />
-                      <a href={`mailto:${hospital.email}`} className="text-gray-700 hover:text-teal-600">
-                        {hospital.email}
+                      <a href={`mailto:${details.email}`} className="text-gray-700 hover:text-teal-600">
+                        {details.email}
                       </a>
                     </div>
                   )}
-                  {hospital.website && (
+                  {details?.website && (
                     <div className="flex items-center">
                       <FaGlobe className="text-teal-600 mr-3 w-5" />
                       <a
-                        href={hospital.website}
+                        href={details.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-700 hover:text-teal-600"
@@ -351,25 +285,33 @@ const HospitalDetails = () => {
               </div>
 
               {/* Address Card */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Location</h3>
-                <div className="flex items-start">
-                  <FaMapMarkerAlt className="text-teal-600 mr-3 mt-1 w-5 flex-shrink-0" />
-                  <p className="text-gray-600">{hospital.address}</p>
-                </div>
+              {details?.address && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Location</h3>
+                  <div className="flex items-start">
+                    <FaMapMarkerAlt className="text-teal-600 mr-3 mt-1 w-5 flex-shrink-0" />
+                    <p className="text-gray-600">{details.address}</p>
+                  </div>
 
-                {/* Transportation */}
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <FaPlane className="mr-2" />
-                    <span>Airport: {hospital.transportation.airport.distance} ({hospital.transportation.airport.time})</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <FaTrain className="mr-2" />
-                    <span>Railway: {hospital.transportation.railway.distance} ({hospital.transportation.railway.time})</span>
-                  </div>
+                  {/* Transportation */}
+                  {details.transportation && (
+                    <div className="mt-4 space-y-2">
+                      {details.transportation.airport && (
+                        <div className="flex items-center text-sm text-gray-500">
+                          <FaPlane className="mr-2" />
+                          <span>Airport: {details.transportation.airport.distance} ({details.transportation.airport.time})</span>
+                        </div>
+                      )}
+                      {details.transportation.railway && (
+                        <div className="flex items-center text-sm text-gray-500">
+                          <FaTrain className="mr-2" />
+                          <span>Railway: {details.transportation.railway.distance} ({details.transportation.railway.time})</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
               {/* CTA Card */}
               <div className="bg-gradient-to-br from-teal-600 to-teal-700 rounded-2xl p-6 text-white">
@@ -387,72 +329,62 @@ const HospitalDetails = () => {
           </div>
         )}
 
-        {activeTab === 'doctors' && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Top Doctors</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {hospital.doctors.map((doctor) => (
-                <div key={doctor.id} className="flex items-center p-6 bg-gray-50 rounded-lg">
-                  <img
-                    src={doctor.image}
-                    alt={doctor.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">{doctor.name}</h3>
-                    <p className="text-gray-600 text-sm">{doctor.specialty}</p>
-                    <p className="text-gray-500 text-sm">{doctor.experience} years experience</p>
-                    {doctor.rating && (
-                      <div className="flex items-center mt-1">
-                        <div className="flex text-yellow-400">
-                          {[...Array(5)].map((_, i) => (
-                            <FaStar key={i} className={i < Math.floor(doctor.rating) ? "text-yellow-400" : "text-gray-300"} size={12} />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-500 ml-2">{doctor.rating} ({doctor.ratingsCount} reviews)</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {activeTab === 'facilities' && (
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Facilities & Amenities</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {hospital.facilities.map((facility, index) => (
-                <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg">
-                  <span className="text-gray-700">{facility}</span>
-                </div>
-              ))}
-            </div>
+            {details?.facilities && details.facilities.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {details.facilities.map((facility, index) => (
+                  <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700">{facility}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8">No facilities information available.</p>
+            )}
           </div>
         )}
 
-        {activeTab === 'reviews' && (
+        {activeTab === 'contact' && (
           <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Patient Reviews</h2>
-            <div className="space-y-6">
-              {hospital.patientReviews.map((review) => (
-                <div key={review.id} className="border-b pb-6 last:border-b-0">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="font-semibold text-gray-800">{review.patientName}</h4>
-                      <p className="text-gray-500 text-sm">{review.country}</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Contact & Location</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Contact Information */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Contact Details</h3>
+                <div className="space-y-3">
+                  {hospital.phone && (
+                    <div className="flex items-center">
+                      <FaPhone className="text-teal-600 mr-3 w-5" />
+                      <span className="text-gray-700">{hospital.phone}</span>
                     </div>
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-300"} />
-                      ))}
+                  )}
+                  {details?.email && (
+                    <div className="flex items-center">
+                      <FaEnvelope className="text-teal-600 mr-3 w-5" />
+                      <span className="text-gray-700">{details.email}</span>
                     </div>
-                  </div>
-                  <p className="text-gray-600">{review.comment}</p>
-                  <p className="text-gray-400 text-sm mt-2">{review.date}</p>
+                  )}
+                  {details?.website && (
+                    <div className="flex items-center">
+                      <FaGlobe className="text-teal-600 mr-3 w-5" />
+                      <span className="text-gray-700">{details.website}</span>
+                    </div>
+                  )}
                 </div>
-              ))}
+              </div>
+
+              {/* Address */}
+              {details?.address && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Address</h3>
+                  <div className="flex items-start">
+                    <FaMapMarkerAlt className="text-teal-600 mr-3 mt-1 w-5 flex-shrink-0" />
+                    <p className="text-gray-600">{details.address}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
