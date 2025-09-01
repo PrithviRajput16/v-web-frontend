@@ -217,7 +217,70 @@ const HospitalDetails = () => {
                   </div>
                 </div>
               )}
+
+              {/* Idhr se maine add kra hai */}
+
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Facilities & Amenities</h2>
+                {details?.facilities && details.facilities.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {details.facilities.map((facility, index) => (
+                      <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-gray-700">{facility}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-8">No facilities information available.</p>
+                )}
+              </div>
+
+
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Contact & Location</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Contact Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Contact Details</h3>
+                    <div className="space-y-3">
+                      {hospital.phone && (
+                        <div className="flex items-center">
+                          <FaPhone className="text-teal-600 mr-3 w-5" />
+                          <span className="text-gray-700">{hospital.phone}</span>
+                        </div>
+                      )}
+                      {details?.email && (
+                        <div className="flex items-center">
+                          <FaEnvelope className="text-teal-600 mr-3 w-5" />
+                          <span className="text-gray-700">{details.email}</span>
+                        </div>
+                      )}
+                      {details?.website && (
+                        <div className="flex items-center">
+                          <FaGlobe className="text-teal-600 mr-3 w-5" />
+                          <span className="text-gray-700">{details.website}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Address */}
+                  {details?.address && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">Address</h3>
+                      <div className="flex items-start">
+                        <FaMapMarkerAlt className="text-teal-600 mr-3 mt-1 w-5 flex-shrink-0" />
+                        <p className="text-gray-600">{details.address}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
+
+
+
+
 
             {/* Sidebar */}
             <div className="space-y-6">
