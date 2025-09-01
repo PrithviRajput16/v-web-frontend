@@ -181,6 +181,23 @@ const DoctorDetails = () => {
                                 </div>
                             )}
 
+                            <div className="bg-white rounded-2xl p-6 shadow-sm">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-6">Qualifications</h2>
+                                {doctor.qualifications && doctor.qualifications.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {doctor.qualifications.map((qual, index) => (
+                                            <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg">
+                                                <span className="text-gray-700">
+                                                    {qual.degree} - {qual.institute} ({qual.year})
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 text-center py-8">No qualifications information available.</p>
+                                )}
+                            </div>
+
                             {/* Availability Section */}
                             {doctor.availability && (
                                 <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -252,7 +269,11 @@ const DoctorDetails = () => {
                                     </div>
                                 </div>
                             )}
+
+
                         </div>
+
+
 
                         {/* Sidebar */}
                         <div className="space-y-6">
@@ -343,6 +364,9 @@ const DoctorDetails = () => {
                                     Book Appointment
                                 </Link>
                             </div>
+
+
+
                         </div>
                     </div>
                 )}
