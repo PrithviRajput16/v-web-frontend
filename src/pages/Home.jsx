@@ -8,7 +8,6 @@ import ProcedureCost from "../components/ProcedureCost";
 import Services from "../components/Services";
 import Stats from "../components/Stats";
 import WhatsAppButton from "../components/WhatsAppButton";
-import HospitalDetails from "./HospitalDetails";
 
 export default function Home() {
   return (

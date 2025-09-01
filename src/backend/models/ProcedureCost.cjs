@@ -7,24 +7,53 @@ const procedureCostSchema = new mongoose.Schema({
         trim: true,
         maxlength: [100, 'Title cannot exceed 100 characters']
     },
-    price: {
+    description: {
         type: String,
-        required: [true, 'Price is required'],
-        trim: true
+        maxlength: [500, 'Description cannot exceed 500 characters']
     },
     icon: {
         type: String,
-        default: '⚕️'
+        default: '🦴'
     },
-    description: {
+    basePrice: {
+        type: Number,
+        required: [true, 'Base price is required'],
+        min: [0, 'Price cannot be negative']
+    },
+    category: {
         type: String,
-        trim: true,
-        maxlength: [500, 'Description cannot exceed 500 characters']
+        required: [true, 'Category is required'],
+        enum: [
+            'Cardiology', 'Orthopedics', 'Neurology', 'Dentistry',
+            'Ophthalmology', 'Dermatology', 'Gastroenterology',
+            'Urology', 'Oncology', 'ENT', 'General Surgery',
+            'Plastic Surgery', 'Other'
+        ]
+    },
+    duration: {
+        type: Number, // in minutes
+        required: [true, 'Duration is required'],
+        min: [1, 'Duration must be at least 1 minute']
+    },
+    complexity: {
+        type: String,
+        enum: ['Low', 'Medium', 'High', 'Very High'],
+        default: 'Medium'
+    },
+    recoveryTime: {
+        type: String, // e.g., "1-2 weeks", "3-6 months"
+        default: 'Varies'
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    timestamps: true
 });
+
+// Index for better query performance
+procedureCostSchema.index({ category: 1, isActive: 1 });
+procedureCostSchema.index({ title: 1 });
 
 module.exports = mongoose.model('ProcedureCost', procedureCostSchema);

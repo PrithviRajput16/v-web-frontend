@@ -36,6 +36,10 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         trim: true
     }],
+    treatments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DoctorTreatment'
+    }],
     hospital: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Hospital',

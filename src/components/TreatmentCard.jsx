@@ -60,6 +60,7 @@ import React from "react";
 import { motion } from "framer-motion";
 
 export default function TreatmentCard({ t }) {
+  console.log(t.icon);
   return (
     <motion.div
       whileHover={{ scale: 1.03, y: -4 }}
@@ -69,7 +70,7 @@ export default function TreatmentCard({ t }) {
       {/* Image Section */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={t.image}
+          src={t.icon}
           alt={t.title}
           className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
         />
