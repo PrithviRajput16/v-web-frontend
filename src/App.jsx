@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import HospitalDetails from "./pages/HospitalDetails";
 import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
 import Treatments from "./pages/Treatments";
+import DoctorDetails from "./pages/DoctorDetails";
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/appointment" element={<Appointment />} />
           <Route path="/hospitals/:id" element={<HospitalDetails />} />
+          <Route path="/doctors/:id" element={<DoctorDetails />} />
           <Route path="/hospitals/:id/book" element={<BookingFlow />} />
         </Routes>
       </main>
