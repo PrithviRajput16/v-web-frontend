@@ -101,6 +101,103 @@ const sampleDoctors = [
                 link: "https://example.com/publication2"
             }
         ]
+    },
+    {
+        firstName: "Rajesh",
+        lastName: "Kumar",
+        image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+        specialty: "Cardiologist",
+        specialties: ["Cardiology", "Interventional Cardiology"],
+        qualifications: [
+            {
+                degree: "MBBS",
+                institute: "All India Institute of Medical Sciences",
+                year: 2005
+            },
+            {
+                degree: "MD - Cardiology",
+                institute: "Christian Medical College, Vellore",
+                year: 2010
+            }
+        ],
+        experience: 15,
+        languages: ["English", "Hindi", "Tamil"],
+        rating: 4.8,
+        totalRatings: 124,
+        consultationFee: 1500,
+        availability: {
+            Monday: [{ start: "09:00", end: "17:00" }],
+            Tuesday: [{ start: "09:00", end: "17:00" }],
+            Wednesday: [{ start: "09:00", end: "13:00" }],
+            Thursday: [{ start: "09:00", end: "17:00" }],
+            Friday: [{ start: "09:00", end: "17:00" }],
+            Saturday: [{ start: "10:00", end: "14:00" }]
+        },
+        bio: "Senior Cardiologist with over 15 years of experience in treating complex heart conditions. Specializes in interventional cardiology and has performed over 1000 successful angioplasties.",
+        awards: [
+            {
+                name: "Best Cardiologist Award",
+                year: 2019,
+                presentedBy: "Indian Medical Association"
+            }
+        ],
+        memberships: ["Cardiological Society of India", "American College of Cardiology"],
+        publications: [
+            {
+                title: "Advanced Techniques in Coronary Angioplasty",
+                journal: "Journal of Interventional Cardiology",
+                year: 2018,
+                link: "https://example.com/publication1"
+            }
+        ]
+    }, {
+        firstName: "Rajesh",
+        lastName: "Kumar",
+        image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+        specialty: "Cardiologist",
+        specialties: ["Cardiology", "Interventional Cardiology"],
+        qualifications: [
+            {
+                degree: "MBBS",
+                institute: "All India Institute of Medical Sciences",
+                year: 2005
+            },
+            {
+                degree: "MD - Cardiology",
+                institute: "Christian Medical College, Vellore",
+                year: 2010
+            }
+        ],
+        experience: 15,
+        languages: ["English", "Hindi", "Tamil"],
+        rating: 4.8,
+        totalRatings: 124,
+        consultationFee: 1500,
+        availability: {
+            Monday: [{ start: "09:00", end: "17:00" }],
+            Tuesday: [{ start: "09:00", end: "17:00" }],
+            Wednesday: [{ start: "09:00", end: "13:00" }],
+            Thursday: [{ start: "09:00", end: "17:00" }],
+            Friday: [{ start: "09:00", end: "17:00" }],
+            Saturday: [{ start: "10:00", end: "14:00" }]
+        },
+        bio: "Senior Cardiologist with over 15 years of experience in treating complex heart conditions. Specializes in interventional cardiology and has performed over 1000 successful angioplasties.",
+        awards: [
+            {
+                name: "Best Cardiologist Award",
+                year: 2019,
+                presentedBy: "Indian Medical Association"
+            }
+        ],
+        memberships: ["Cardiological Society of India", "American College of Cardiology"],
+        publications: [
+            {
+                title: "Advanced Techniques in Coronary Angioplasty",
+                journal: "Journal of Interventional Cardiology",
+                year: 2018,
+                link: "https://example.com/publication1"
+            }
+        ]
     }
 ];
 
@@ -128,6 +225,9 @@ const migrateDoctors = async () => {
         // Assign hospitals to sample doctors
         sampleDoctors[0].hospital = hospitals[0]._id; // Apollo Hospitals
         sampleDoctors[1].hospital = hospitals[1]._id; // Fortis Memorial
+        sampleDoctors[2].hospital = hospitals[0]._id; // Apollo Hospitals
+        sampleDoctors[3].hospital = hospitals[0]._id; // Apollo Hospitals
+
 
         // Insert sample data
         await Doctor.insertMany(sampleDoctors);

@@ -15,12 +15,14 @@ import {
   FaTrain
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import DoctorSection from "../components/hospital/DoctorSection";
 
 const HospitalDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [hospital, setHospital] = useState(null);
   const [details, setDetails] = useState(null);
+  const [doctors, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -52,6 +54,17 @@ const HospitalDetails = () => {
           }
         }
 
+        // Fetch Doctor details
+        const doctorRespone = await fetch(`http://localhost:6003/api/doctors/hospital/${id}`);
+        if (doctorRespone.ok) {
+          const doctorResult = await doctorRespone.json();
+          if (doctorResult.success) {
+            setDoctor(doctorResult.data);
+          }
+        } else {
+          console.log("tmkc");
+        }
+
         setError(null);
       } catch (err) {
         console.error('Fetch error:', err);
@@ -63,7 +76,7 @@ const HospitalDetails = () => {
 
     fetchHospitalData();
   }, [id]);
-
+  // console.log(doctors);
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -93,7 +106,7 @@ const HospitalDetails = () => {
     );
   }
 
-  console.log(details);
+  // console.log(details);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -165,6 +178,7 @@ const HospitalDetails = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
+                // onClick={() => navigate('#tab')}
                 className={`pb-4 px-2 font-medium transition-colors ${activeTab === tab
                   ? 'text-teal-600 border-b-2 border-teal-600'
                   : 'text-gray-500 hover:text-gray-700'
@@ -204,6 +218,24 @@ const HospitalDetails = () => {
                 </div>
               )}
 
+              {/* Doctor's Section */}
+
+              {/* <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Meet our Doctors</h2>
+                {doctors.length > 0 ? (
+                  <div className="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide">
+                    {doctors.map((doctor, index) => (
+                      <div className="flex-none w-64 md:w-80 lg:w-96" key={index}>
+                        <DoctorCard doc={doctor} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-8">No facilities information available.</p>
+                )}
+              </div> */}
+
+
               {/* Accreditation Section */}
               {hospital.accreditation && hospital.accreditation.length > 0 && (
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -234,6 +266,9 @@ const HospitalDetails = () => {
                   <p className="text-gray-500 text-center py-8">No facilities information available.</p>
                 )}
               </div>
+
+              <DoctorSection doctors={doctors} />
+
 
 
               <div className="bg-white rounded-2xl p-6 shadow-sm">
