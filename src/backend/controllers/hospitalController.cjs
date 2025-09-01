@@ -30,12 +30,13 @@ exports.getHospitalStatus = async (req, res) => {
 // @route   GET /api/hospitals
 exports.getHospitals = async (req, res) => {
     try {
-        const { includeDetails, page = 1, limit = 10, country, city, specialty } = req.query;
+        const { country, city, specialty, minRating, page = 1, limit = 10 } = req.query;
 
         // Build filter object
-        const filter = { isActive: true };
+        const filter = {};
         if (country) filter.country = new RegExp(country, 'i');
         if (city) filter.city = new RegExp(city, 'i');
+        if (minRating) filter.rating = { $gte: parseFloat(minRating) };
         if (specialty) filter.specialties = new RegExp(specialty, 'i');
 
         const options = {
@@ -44,23 +45,10 @@ exports.getHospitals = async (req, res) => {
             sort: { rating: -1, name: 1 }
         };
 
-        let hospitals = await Hospital.find(filter)
+        const hospitals = await Hospital.find(filter)
             .sort(options.sort)
             .limit(options.limit * 1)
             .skip((options.page - 1) * options.limit);
-
-        // If details are requested, populate them
-        if (includeDetails === 'true') {
-            hospitals = await Promise.all(
-                hospitals.map(async (hospital) => {
-                    const details = await HospitalDetail.findOne({ hospital: hospital._id });
-                    return {
-                        ...hospital.toObject(),
-                        details: details || null
-                    };
-                })
-            );
-        }
 
         const total = await Hospital.countDocuments(filter);
 
