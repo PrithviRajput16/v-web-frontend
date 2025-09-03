@@ -29,6 +29,14 @@ const TreatmentDetails = () => {
         maxPrice: "",
         availability: ""
     });
+    const [doctorTreatments, setDoctorTreatments] = useState([]);
+    const [filteredDoctorTreatments, setFilteredDoctorTreatments] = useState([]);
+    const [doctorFilters, setDoctorFilters] = useState({
+        name: "",
+        specialty: "",
+        availability: ""
+    });
+
 
     useEffect(() => {
         const fetchTreatmentData = async () => {
@@ -58,6 +66,14 @@ const TreatmentDetails = () => {
                     }
                 }
 
+                // Fetch doctor details
+                const doctorTreatmentResponse = await fetch(`http://localhost:6003/api/doctor-treatment/by-treatment/${id}`)
+                if (doctorTreatmentResponse.ok) {
+                    const doctorTreatmentResult = await doctorTreatmentResponse.json()
+                    setDoctorTreatments(doctorTreatmentResult.data);
+                    setFilteredDoctorTreatments(doctorTreatmentResult.data);
+                }
+
                 setError(null);
             } catch (err) {
                 console.error('Fetch error:', err);
@@ -69,6 +85,9 @@ const TreatmentDetails = () => {
 
         fetchTreatmentData();
     }, [id]);
+
+    console.log(doctorTreatments)
+
 
     // console.log(hospitalTreatments.name);
 
@@ -260,7 +279,7 @@ const TreatmentDetails = () => {
                             {/* Quick Stats */}
                             <div className="bg-white rounded-2xl p-6 shadow-sm">
                                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Availability</h2>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                                         <div className="text-2xl font-bold text-blue-600">{hospitalTreatments.length}</div>
                                         <div className="text-sm text-blue-600">Hospitals</div>
@@ -273,16 +292,16 @@ const TreatmentDetails = () => {
                                     </div>
                                     <div className="text-center p-4 bg-orange-50 rounded-lg">
                                         <div className="text-2xl font-bold text-orange-600">
-                                            {Math.min(...hospitalTreatments.map(ht => ht.finalPrice).filter(Boolean)) || 0}
+                                            {Math.min(...hospitalTreatments.map(ht => ht.price).filter(Boolean)) || 0}
                                         </div>
                                         <div className="text-sm text-orange-600">Starting Price (₹)</div>
                                     </div>
-                                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                                    {/* <div className="text-center p-4 bg-purple-50 rounded-lg">
                                         <div className="text-2xl font-bold text-purple-600">
                                             {Math.max(...hospitalTreatments.map(ht => ht.finalPrice).filter(Boolean)) || 0}
                                         </div>
                                         <div className="text-sm text-purple-600">Max Price (₹)</div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -309,19 +328,19 @@ const TreatmentDetails = () => {
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Starting from</span>
                                             <span className="font-semibold">
-                                                ₹{Math.min(...hospitalTreatments.map(ht => ht.finalPrice).filter(Boolean))}
+                                                ₹{Math.min(...hospitalTreatments.map(ht => ht.price).filter(Boolean))}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Up to</span>
                                             <span className="font-semibold">
-                                                ₹{Math.max(...hospitalTreatments.map(ht => ht.finalPrice).filter(Boolean))}
+                                                ₹{Math.max(...hospitalTreatments.map(ht => ht.price).filter(Boolean))}
                                             </span>
                                         </div>
                                         <div className="flex justify-between pt-2 border-t">
                                             <span className="text-gray-600">Average</span>
                                             <span className="font-semibold">
-                                                ₹{Math.round(hospitalTreatments.reduce((sum, ht) => sum + ht.finalPrice, 0) / hospitalTreatments.length)}
+                                                ₹{Math.round(hospitalTreatments.reduce((sum, ht) => sum + ht.price, 0) / hospitalTreatments.length)}
                                             </span>
                                         </div>
                                     </div>
@@ -472,7 +491,7 @@ const TreatmentDetails = () => {
                                                         <div>
                                                             <span className="text-sm text-gray-500">Price</span>
                                                             <div className="text-xl font-bold text-teal-600">
-                                                                ₹{hospitalTreatment.hospital.finalPrice}
+                                                                ₹{hospitalTreatment.price}
                                                             </div>
                                                             {hospitalTreatment.discount > 0 && (
                                                                 <span className="text-sm text-green-600">
@@ -537,14 +556,174 @@ const TreatmentDetails = () => {
                 )}
 
                 {activeTab === 'doctors' && (
-                    <div className="bg-white rounded-2xl p-6 shadow-sm">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Doctors Performing This Treatment</h2>
-                        <p className="text-gray-600 text-center py-8">
-                            Doctor information will be displayed here. This section would show doctors who specialize in this procedure.
-                        </p>
-                        {/* You can implement doctor listing similar to hospitals */}
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Filter Sidebar */}
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                            <div className="flex items-center gap-2 mb-6">
+                                <FaFilter className="text-teal-600 text-lg" />
+                                <h2 className="text-xl font-semibold text-gray-800">Filter Doctors</h2>
+                            </div>
+
+                            {/* Doctor Name Filter */}
+                            <div className="mb-5">
+                                <label className="flex items-center gap-2 text-gray-700 font-medium mb-2">
+                                    <FaSearch className="text-teal-500" />
+                                    Doctor Name
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Search doctors..."
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={doctorFilters.name}
+                                    onChange={(e) => setDoctorFilters({ ...doctorFilters, name: e.target.value })}
+                                />
+                            </div>
+
+                            {/* Specialty Filter */}
+                            <div className="mb-5">
+                                <label className="flex items-center gap-2 text-gray-700 font-medium mb-2">
+                                    <FaProcedures className="text-teal-500" />
+                                    Specialty
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Cardiology"
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={doctorFilters.specialty}
+                                    onChange={(e) => setDoctorFilters({ ...doctorFilters, specialty: e.target.value })}
+                                />
+                            </div>
+
+                            {/* Availability Filter */}
+                            <div className="mb-5">
+                                <label className="flex items-center gap-2 text-gray-700 font-medium mb-2">
+                                    <FaHospital className="text-teal-500" />
+                                    Availability
+                                </label>
+                                <select
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={doctorFilters.availability}
+                                    onChange={(e) => setDoctorFilters({ ...doctorFilters, availability: e.target.value })}
+                                >
+                                    <option value="">All</option>
+                                    <option value="Available">Available</option>
+                                    <option value="Limited">Limited</option>
+                                    <option value="Waitlist">Waitlist</option>
+                                    <option value="Not Available">Not Available</option>
+                                </select>
+                            </div>
+
+                            {/* Reset Filters Button */}
+                            <button
+                                onClick={() => setDoctorFilters({
+                                    name: "",
+                                    specialty: "",
+                                    availability: ""
+                                })}
+                                className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-300 transition"
+                            >
+                                Reset Filters
+                            </button>
+                        </div>
+
+                        {/* Doctors List */}
+                        <div className="lg:col-span-3">
+                            <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
+                                <h2 className="text-3xl font-bold text-gray-800 mb-2">Doctors Performing {treatment.title}</h2>
+                                <p className="text-gray-600">
+                                    {doctorTreatments.length} doctors are available for this procedure.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-6">
+                                {filteredDoctorTreatments.length > 0 ? (
+                                    filteredDoctorTreatments.map((doctorTreatment) => (
+                                        <div key={doctorTreatment._id} className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+                                            <div className="flex flex-col md:flex-row gap-6">
+                                                {/* Doctor Image */}
+                                                <div className="flex-shrink-0">
+                                                    <img
+                                                        src={doctorTreatment.doctor.image || "/default-doctor.png"}
+                                                        alt={doctorTreatment.doctor?.name}
+                                                        className="w-32 h-32 object-cover rounded-full"
+                                                    />
+                                                </div>
+
+                                                {/* Doctor Info */}
+                                                <div className="flex-grow">
+                                                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                                        {doctorTreatment.doctor.name}
+                                                    </h3>
+
+                                                    <div className="flex items-center text-gray-600 mb-2">
+                                                        <FaStar className="text-yellow-400 mr-1" />
+                                                        <span className="text-gray-700 font-semibold">
+                                                            {doctorTreatment.doctor.rating || "N/A"}
+                                                        </span>
+                                                        <span className="text-gray-500 ml-2">({doctorTreatment.doctor.experience} yrs exp.)</span>
+                                                    </div>
+
+                                                    <div className="text-teal-600 font-semibold mb-3">
+                                                        {doctorTreatment.doctor.specialty}
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <span className="text-sm text-gray-500">Consultation Fee</span>
+                                                            <div className="text-xl font-bold text-teal-600">
+                                                                ₹{doctorTreatment.fee || "—"}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm text-gray-500">Availability</span>
+                                                            <div className={`font-semibold ${doctorTreatment.availability === 'Available' ? 'text-green-600' :
+                                                                doctorTreatment.availability === 'Limited' ? 'text-yellow-600' :
+                                                                    doctorTreatment.availability === 'Waitlist' ? 'text-orange-600' :
+                                                                        'text-red-600'
+                                                                }`}>
+                                                                {doctorTreatment.availability}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {doctorTreatment.specialNotes && (
+                                                        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                                                            <p className="text-sm text-gray-600">{doctorTreatment.specialNotes}</p>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex space-x-4">
+                                                        <Link
+                                                            to={`/doctors/${doctorTreatment.doctor?._id}`}
+                                                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                                                        >
+                                                            View Profile
+                                                        </Link>
+                                                        <Link
+                                                            to={`/doctors/${doctorTreatment.doctor?._id}/book`}
+                                                            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+                                                        >
+                                                            Book Appointment
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-12">
+                                        <div className="text-6xl mb-4">👨‍⚕️</div>
+                                        <h3 className="text-xl font-semibold text-gray-800 mb-2">No doctors found</h3>
+                                        <p className="text-gray-600 mb-4">
+                                            Try adjusting your filters to find doctors for this treatment.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
+
             </div>
         </div>
     );

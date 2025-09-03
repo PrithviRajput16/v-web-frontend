@@ -74,3 +74,61 @@ exports.getDoctorTreatments = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+
+// Get doctors by treatment
+exports.getDoctorsByTreatment = async (req, res) => {
+    try {
+        const treatmentId = req.params.treatmentId;
+
+        if (!treatmentId) {
+            return res.status(400).json({ success: false, error: 'Treatment ID is required' });
+        }
+
+        const doctorTreatments = await DoctorTreatment.find({
+            treatment: treatmentId,
+            isActive: true
+        })
+            .populate('doctor', 'firstName lastName specialty image rating experience')
+            .populate('treatment', 'title category') // optional: include treatment details
+            .sort({ successRate: -1 }); // highest success rate first
+
+        res.json({
+            success: true,
+            count: doctorTreatments.length,
+            data: doctorTreatments
+        });
+    } catch (err) {
+        console.error('Get doctors by treatment error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+
+// Get treatments by doctor
+exports.getTreatmentsByDoctor = async (req, res) => {
+    try {
+        const doctorId = req.params.doctorId;
+
+        if (!doctorId) {
+            return res.status(400).json({ success: false, error: 'Doctor ID is required' });
+        }
+
+        const doctorTreatments = await DoctorTreatment.find({
+            doctor: doctorId,
+            isActive: true
+        })
+            .populate('treatment', 'title description category icon typicalDuration typicalComplexity')
+            .sort({ successRate: -1 });
+
+        const treatments = doctorTreatments.map(dt => dt.treatment);
+
+        res.json({
+            success: true,
+            count: treatments.length,
+            data: treatments
+        });
+    } catch (err) {
+        console.error('Get treatments by doctor error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
