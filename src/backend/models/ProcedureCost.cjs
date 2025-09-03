@@ -7,6 +7,11 @@ const procedureCostSchema = new mongoose.Schema({
         trim: true,
         maxlength: [100, 'Title cannot exceed 100 characters']
     },
+    treatment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Treatment',
+        required: [true, 'Treatment reference is required']
+    },
     description: {
         type: String,
         maxlength: [500, 'Description cannot exceed 500 characters']

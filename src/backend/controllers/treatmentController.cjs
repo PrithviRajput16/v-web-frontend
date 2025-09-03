@@ -90,12 +90,12 @@ exports.getTreatmentsWithDoctorCapabilities = async (req, res) => {
 // @access  Public
 exports.getTreatment = async (req, res) => {
     try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid treatment ID format'
-            });
-        }
+        // if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         error: 'Invalid treatment ID format'
+        //     });
+        // }
 
         const treatment = await Treatment.findById(req.params.id);
 

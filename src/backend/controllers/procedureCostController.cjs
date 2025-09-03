@@ -177,3 +177,43 @@ exports.getProceduresByCategory = async (req, res) => {
     res.status(500).json({ success: false, error: 'Server Error' });
   }
 };
+
+// Get procedures by treatment
+exports.getProceduresByTreatment = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const treatmentId = req.params.treatmentId;
+
+    if (!treatmentId) {
+      return res.status(400).json({ success: false, error: 'Treatment ID is required' });
+    }
+
+    const filter = { treatment: treatmentId, isActive: true };
+
+    const options = {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      sort: { basePrice: 1 }
+    };
+
+    const procedures = await ProcedureCost.find(filter)
+      .populate("treatment", "title description category") // optional: populate treatment details
+      .sort(options.sort)
+      .limit(options.limit * 1)
+      .skip((options.page - 1) * options.limit);
+
+    const total = await ProcedureCost.countDocuments(filter);
+
+    res.json({
+      success: true,
+      count: procedures.length,
+      total,
+      page: options.page,
+      pages: Math.ceil(total / options.limit),
+      data: procedures
+    });
+  } catch (err) {
+    console.error('Get procedures by treatment error:', err);
+    res.status(500).json({ success: false, error: 'Server Error' });
+  }
+};

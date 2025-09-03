@@ -5,12 +5,13 @@ import About from "./pages/About";
 import Appointment from "./pages/Appointment";
 import BookingFlow from "./pages/BookingFlow";
 import Contact from "./pages/Contact";
+import DoctorDetails from "./pages/DoctorDetails";
 import Doctors from "./pages/Doctors";
 import Home from "./pages/Home";
 import HospitalDetails from "./pages/HospitalDetails";
 import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
+import TreatmentDetails from "./pages/TreatmentDetails";
 import Treatments from "./pages/Treatments";
-import DoctorDetails from "./pages/DoctorDetails";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/hospitals/:id" element={<HospitalDetails />} />
           <Route path="/doctors/:id" element={<DoctorDetails />} />
           <Route path="/hospitals/:id/book" element={<BookingFlow />} />
+          <Route path="/treatments/:id" element={<TreatmentDetails />} />
         </Routes>
       </main>
       <Footer />

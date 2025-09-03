@@ -75,3 +75,61 @@ exports.getHospitalTreatments = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+
+// Get hospitals by treatment
+exports.getHospitalsByTreatment = async (req, res) => {
+    try {
+        const treatmentId = req.params.treatmentId;
+
+        if (!treatmentId) {
+            return res.status(400).json({ success: false, error: 'Treatment ID is required' });
+        }
+
+        const hospitalTreatments = await HospitalTreatment.find({
+            treatment: treatmentId,
+            isActive: true
+        })
+            .populate('hospital', 'name city country image rating')
+            .populate('treatment', 'title category') // optional: include treatment details
+            .sort({ finalPrice: 1 });
+
+        res.json({
+            success: true,
+            count: hospitalTreatments.length,
+            data: hospitalTreatments
+        });
+    } catch (err) {
+        console.error('Get hospitals by treatment error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+
+// Get treatments by hospital
+exports.getTreatmentsByHospital = async (req, res) => {
+    try {
+        const hospitalId = req.params.hospitalId;
+
+        if (!hospitalId) {
+            return res.status(400).json({ success: false, error: 'Hospital ID is required' });
+        }
+
+        const hospitalTreatments = await HospitalTreatment.find({
+            hospital: hospitalId,
+            isActive: true
+        })
+            .populate('treatment', 'title description category icon typicalDuration typicalComplexity')
+            .sort({ finalPrice: 1 });
+
+        const treatments = hospitalTreatments.map(ht => ht.treatment);
+
+        res.json({
+            success: true,
+            count: treatments.length,
+            data: treatments
+        });
+    } catch (err) {
+        console.error('Get treatments by hospital error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};

@@ -25,7 +25,6 @@ async function migrate() {
         const hospitals = await Hospital.find();
         const doctors = await Doctor.find();
 
-        console.log(Hospital);
 
         if (hospitals.length === 0 || doctors.length === 0) {
             throw new Error('Please migrate hospitals and doctors first');
@@ -61,6 +60,7 @@ async function migrate() {
                 typicalRecoveryTime: '2-3 days'
             }
         ];
+
 
         const createdTreatments = await Treatment.insertMany(baseTreatments);
         console.log(`📥 Created ${createdTreatments.length} base treatments`);
