@@ -32,7 +32,8 @@ export default function Home() {
       <PatientOpinions />
 
       <FAQ />
-      
+
+
 
     </div>
   );

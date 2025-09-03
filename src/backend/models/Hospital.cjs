@@ -21,7 +21,7 @@ const hospitalSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Image URL is required'],
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /^https?:\/\/.+\..+/.test(v);
       },
       message: 'Invalid image URL format'
@@ -30,6 +30,10 @@ const hospitalSchema = new mongoose.Schema({
   specialties: [{
     type: String,
     trim: true
+  }],
+  treatments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'HospitalTreatment'
   }],
   rating: {
     type: Number,

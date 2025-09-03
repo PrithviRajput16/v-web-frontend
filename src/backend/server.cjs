@@ -10,6 +10,10 @@ const procedureCostsRouter = require('./routes/procedureCosts.cjs');
 const patientOpinionsRouter = require('./routes/patientOpinion.cjs');
 const faqsRouter = require('./routes/faqs.cjs');
 const assistanceRouter = require('./routes/assistance.cjs');
+const doctorRouter = require('./routes/doctor.cjs');
+const treatmentRoutes = require('./routes/treatments.cjs');
+const doctorTreatmentRouter = require('./routes/doctorTreatments.cjs');
+const hospitalTreatmentRouter = require('./routes/hospitalTreatments.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 6002;
@@ -44,6 +48,10 @@ app.use('/api/procedure-costs', procedureCostsRouter);
 app.use('/api/patient-opinions', patientOpinionsRouter);
 app.use('/api/faqs', faqsRouter);
 app.use('/api/assistance', assistanceRouter);
+app.use('/api/doctors', doctorRouter);
+app.use('/api/treatments', treatmentRoutes);
+app.use('/api/doctor-treatment', doctorTreatmentRouter);
+app.use('/api/hospital-treatment', hospitalTreatmentRouter);
 
 // Health check with DB status
 app.get('/', (req, res) => {

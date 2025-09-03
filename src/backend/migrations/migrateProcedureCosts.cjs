@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../config.env') });
 const ProcedureCost = require('../models/ProcedureCost.cjs');
+const { default: Treatments } = require('../models/Treatments.cjs');
 
 const procedureCostsData = [
   { title: 'Cardiology', price: '500', icon: '❤️' },
@@ -22,8 +23,12 @@ async function migrate() {
     });
     console.log('✅ MongoDB connected for procedure costs migration');
 
+
+
     await ProcedureCost.deleteMany();
     console.log('🗑️  Cleared existing procedure costs');
+
+    
 
     const result = await ProcedureCost.insertMany(procedureCostsData);
     console.log(`📥 Inserted ${result.length} procedure costs`);

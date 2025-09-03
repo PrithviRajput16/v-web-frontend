@@ -6,10 +6,10 @@ export default function ProcedureCostCard({ service, index }) {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          delay: index * 0.15, 
-          type: "spring", 
-          stiffness: 80 
+        transition={{
+          delay: index * 0.15,
+          type: "spring",
+          stiffness: 80
         }}
         whileHover={{
           y: -8,
@@ -22,13 +22,13 @@ export default function ProcedureCostCard({ service, index }) {
         <div className="bg-white/90 flex items-center gap-4 backdrop-blur-md rounded-2xl p-5 transition-all duration-300 h-full">
           {/* Icon Container */}
           <motion.div
-            whileHover={{ 
-              rotate: 10, 
-              scale: 1.2 
+            whileHover={{
+              rotate: 10,
+              scale: 1.2
             }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 200 
+            transition={{
+              type: "spring",
+              stiffness: 200
             }}
             className="flex-shrink-0 w-14 h-14 bg-teal-100 rounded-xl flex items-center justify-center"
           >
@@ -42,16 +42,16 @@ export default function ProcedureCostCard({ service, index }) {
             <h3 className="text-lg font-semibold text-gray-800 mb-1">
               {service.title}
             </h3>
-            
+
             <div className="flex items-center justify-between mt-3">
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Starting from</p>
                 <p className="text-xl font-bold text-teal-700">
-                  ${service.price}
+                  ${service.basePrice}
                 </p>
               </div>
-              
-              <motion.button 
+
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-md"
