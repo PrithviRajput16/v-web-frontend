@@ -36,7 +36,7 @@ const Hospitals = () => {
 
     fetchHospitals();
   }, []);
-  // console.log(hospitals);
+  // console.log(hospitals.pages);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     country: "",

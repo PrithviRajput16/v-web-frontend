@@ -1,4 +1,7 @@
 import { Route, Routes } from "react-router-dom";
+import AdminDashboard from './components/admin/AdminDashboard';
+import AdminHospitals from './components/admin/AdminHospitals';
+import AdminLogin from './components/admin/AdminLogin';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import About from "./pages/About";
@@ -12,7 +15,6 @@ import HospitalDetails from "./pages/HospitalDetails";
 import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
 import TreatmentDetails from "./pages/TreatmentDetails";
 import Treatments from "./pages/Treatments";
-
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col text-gray-800">
@@ -32,6 +34,17 @@ export default function App() {
           <Route path="/doctors/:id" element={<DoctorDetails />} />
           <Route path="/hospitals/:id/book" element={<BookingFlow />} />
           <Route path="/treatments/:id" element={<TreatmentDetails />} />
+
+
+          {/* Public routes */}
+          <Route path="/admin" element={<AdminLogin />} />
+
+          {/* Protected admin routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/hospitals" element={<AdminHospitals />} />
+          {/* <Route path="/admin/doctors" element={<AdminDoctors />} /> */}
+          {/* <Route path="/admin/treatments" element={<AdminTreatments />} /> */}
+          {/* <Route path="/admin/hospital-treatments" element={<AdminHospitalTreatments />} /> */}
         </Routes>
       </main>
       <Footer />

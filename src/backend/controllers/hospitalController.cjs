@@ -30,7 +30,7 @@ exports.getHospitalStatus = async (req, res) => {
 // @route   GET /api/hospitals
 exports.getHospitals = async (req, res) => {
     try {
-        const { country, city, specialty, minRating, page = 1, limit = 10 } = req.query;
+        const { country, city, specialty, minRating, page = 1, limit = 100 } = req.query;
 
         // Build filter object
         const filter = {};
