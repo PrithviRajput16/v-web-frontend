@@ -33,6 +33,7 @@ const TreatmentManagement = () => {
                 navigate('/admin/login');
                 return;
             }
+            console.log(token);
             const response = await fetch(
                 `http://localhost:6003/api/admin/treatments?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {

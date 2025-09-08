@@ -3,6 +3,8 @@ const Hospital = require('../models/Hospital.cjs');
 const Doctor = require('../models/Doctor.cjs');
 const Treatment = require('../models/Treatments.cjs'); // ✅ FIXED - Remove the 's'
 const HospitalTreatment = require('../models/HospitalTreatment.cjs');
+const DoctorTreatment = require('../models/DoctorTreatment.cjs'); // make sure the path is correct
+
 const jwt = require('jsonwebtoken');
 const { default: HospitalDetail } = require('../models/HospitalDetail.cjs');
 
