@@ -4,6 +4,7 @@ const Doctor = require('../models/Doctor.cjs');
 const Treatment = require('../models/Treatments.cjs'); // ✅ FIXED - Remove the 's'
 const HospitalTreatment = require('../models/HospitalTreatment.cjs');
 const jwt = require('jsonwebtoken');
+const { default: HospitalDetail } = require('../models/HospitalDetail.cjs');
 
 const signToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -136,6 +137,42 @@ exports.getHospitals = async (req, res) => {
     }
 };
 
+exports.getHospitalDetails = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, search } = req.query;
+        const filter = {};
+
+        if (search) {
+            filter.$or = [
+                { description: new RegExp(search, 'i') },
+                { address: new RegExp(search, 'i') },
+                { website: new RegExp(search, 'i') },
+                { email: new RegExp(search, 'i') }
+            ];
+        }
+
+        const hospitalDetails = await HospitalDetail.find(filter)
+            .populate('hospital')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await HospitalDetail.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: hospitalDetails.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: hospitalDetails
+        });
+    } catch (err) {
+        console.error('Get hospital details error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
 // Similar methods for doctors, treatments, etc...
 exports.getDoctors = async (req, res) => {
     try {
@@ -173,39 +210,39 @@ exports.getDoctors = async (req, res) => {
     }
 };
 
-exports.getTreatments = async (req, res) => {
-    try {
-        const { page = 1, limit = 10, search, category } = req.query;
-        const filter = {};
+// exports.getTreatments = async (req, res) => {
+//     try {
+//         const { page = 1, limit = 10, search, category } = req.query;
+//         const filter = {};
 
-        if (search) {
-            filter.$or = [
-                { title: new RegExp(search, 'i') },
-                { description: new RegExp(search, 'i') }
-            ];
-        }
-        if (category) filter.category = category;
+//         if (search) {
+//             filter.$or = [
+//                 { title: new RegExp(search, 'i') },
+//                 { description: new RegExp(search, 'i') }
+//             ];
+//         }
+//         if (category) filter.category = category;
 
-        const treatments = await Treatment.find(filter)
-            .sort({ title: 1 })
-            .limit(limit * 1)
-            .skip((page - 1) * limit);
+//         const treatments = await Treatment.find(filter)
+//             .sort({ title: 1 })
+//             .limit(limit * 1)
+//             .skip((page - 1) * limit);
 
-        const total = await Treatment.countDocuments(filter);
+//         const total = await Treatment.countDocuments(filter);
 
-        res.json({
-            success: true,
-            count: treatments.length,
-            total,
-            page: parseInt(page),
-            pages: Math.ceil(total / limit),
-            data: treatments
-        });
-    } catch (err) {
-        console.error('Get treatments error:', err);
-        res.status(500).json({ success: false, error: 'Server Error' });
-    }
-};
+//         res.json({
+//             success: true,
+//             count: treatments.length,
+//             total,
+//             page: parseInt(page),
+//             pages: Math.ceil(total / limit),
+//             data: treatments
+//         });
+//     } catch (err) {
+//         console.error('Get treatments error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
 
 exports.getHospitalTreatments = async (req, res) => {
     try {
@@ -249,6 +286,18 @@ exports.createHospital = async (req, res) => {
     }
 };
 
+exports.createHospitalDetails = async (req, res) => {
+    try {
+        const hospitalDetail = await HospitalDetail.create(req.body);
+        res.status(201).json({ success: true, data: hospitalDetail });
+    } catch (err) {
+        console.error('Create Hospital Detail error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+}
+
+
+
 exports.updateHospital = async (req, res) => {
     try {
         const hospital = await Hospital.findByIdAndUpdate(req.params.id, req.body, {
@@ -262,4 +311,344 @@ exports.updateHospital = async (req, res) => {
     }
 };
 
-// Add similar methods for other entities...
+// // ================= DOCTOR CRUD =================
+
+// // Create Doctor
+// exports.createDoctor = async (req, res) => {
+//     try {
+//         const doctor = await Doctor.create(req.body);
+//         res.status(201).json({ success: true, data: doctor });
+//     } catch (err) {
+//         console.error('Create doctor error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Update Doctor
+// exports.updateDoctor = async (req, res) => {
+//     try {
+//         const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body, {
+//             new: true,
+//             runValidators: true
+//         });
+//         if (!doctor) {
+//             return res.status(404).json({ success: false, error: 'Doctor not found' });
+//         }
+//         res.json({ success: true, data: doctor });
+//     } catch (err) {
+//         console.error('Update doctor error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Delete Doctor
+// exports.deleteDoctor = async (req, res) => {
+//     try {
+//         const doctor = await Doctor.findByIdAndDelete(req.params.id);
+//         if (!doctor) {
+//             return res.status(404).json({ success: false, error: 'Doctor not found' });
+//         }
+//         res.json({ success: true, message: 'Doctor deleted successfully' });
+//     } catch (err) {
+//         console.error('Delete doctor error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Get Single Doctor by ID
+// exports.getDoctorById = async (req, res) => {
+//     try {
+//         const doctor = await Doctor.findById(req.params.id)
+//             .populate('hospital', 'name city')
+//             .populate('treatments');
+
+//         if (!doctor) {
+//             return res.status(404).json({ success: false, error: 'Doctor not found' });
+//         }
+
+//         res.json({ success: true, data: doctor });
+//     } catch (err) {
+//         console.error('Get doctor by id error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+
+// // ================= HOSPITAL TREATMENT CRUD =================
+
+// // Create HospitalTreatment
+// exports.createHospitalTreatment = async (req, res) => {
+//     try {
+//         const hospitalTreatment = await HospitalTreatment.create(req.body);
+//         res.status(201).json({ success: true, data: hospitalTreatment });
+//     } catch (err) {
+//         console.error('Create hospital treatment error:', err);
+
+//         // Handle unique constraint (hospital + treatment already exists)
+//         if (err.code === 11000) {
+//             return res.status(400).json({
+//                 success: false,
+//                 error: 'This hospital already offers this treatment'
+//             });
+//         }
+
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Update HospitalTreatment
+// exports.updateHospitalTreatment = async (req, res) => {
+//     try {
+//         const hospitalTreatment = await HospitalTreatment.findByIdAndUpdate(
+//             req.params.id,
+//             req.body,
+//             { new: true, runValidators: true }
+//         );
+
+//         if (!hospitalTreatment) {
+//             return res.status(404).json({ success: false, error: 'Hospital Treatment not found' });
+//         }
+
+//         res.json({ success: true, data: hospitalTreatment });
+//     } catch (err) {
+//         console.error('Update hospital treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Delete HospitalTreatment
+// exports.deleteHospitalTreatment = async (req, res) => {
+//     try {
+//         const hospitalTreatment = await HospitalTreatment.findByIdAndDelete(req.params.id);
+//         if (!hospitalTreatment) {
+//             return res.status(404).json({ success: false, error: 'Hospital Treatment not found' });
+//         }
+
+//         res.json({ success: true, message: 'Hospital Treatment deleted successfully' });
+//     } catch (err) {
+//         console.error('Delete hospital treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Get Single HospitalTreatment by ID
+// exports.getHospitalTreatmentById = async (req, res) => {
+//     try {
+//         const hospitalTreatment = await HospitalTreatment.findById(req.params.id)
+//             .populate('hospital', 'name city country')
+//             .populate('treatment', 'title category');
+
+//         if (!hospitalTreatment) {
+//             return res.status(404).json({ success: false, error: 'Hospital Treatment not found' });
+//         }
+
+//         res.json({ success: true, data: hospitalTreatment });
+//     } catch (err) {
+//         console.error('Get hospital treatment by id error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // ================= DOCTOR TREATMENT CRUD =================
+
+// // Create DoctorTreatment
+// exports.createDoctorTreatment = async (req, res) => {
+//     try {
+//         const doctorTreatment = await DoctorTreatment.create(req.body);
+//         res.status(201).json({ success: true, data: doctorTreatment });
+//     } catch (err) {
+//         console.error('Create doctor treatment error:', err);
+
+//         // Handle unique constraint (doctor + treatment already exists)
+//         if (err.code === 11000) {
+//             return res.status(400).json({
+//                 success: false,
+//                 error: 'This doctor already has this treatment assigned'
+//             });
+//         }
+
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Update DoctorTreatment
+// exports.updateDoctorTreatment = async (req, res) => {
+//     try {
+//         const doctorTreatment = await DoctorTreatment.findByIdAndUpdate(
+//             req.params.id,
+//             req.body,
+//             { new: true, runValidators: true }
+//         );
+
+//         if (!doctorTreatment) {
+//             return res.status(404).json({ success: false, error: 'Doctor Treatment not found' });
+//         }
+
+//         res.json({ success: true, data: doctorTreatment });
+//     } catch (err) {
+//         console.error('Update doctor treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Delete DoctorTreatment
+// exports.deleteDoctorTreatment = async (req, res) => {
+//     try {
+//         const doctorTreatment = await DoctorTreatment.findByIdAndDelete(req.params.id);
+//         if (!doctorTreatment) {
+//             return res.status(404).json({ success: false, error: 'Doctor Treatment not found' });
+//         }
+
+//         res.json({ success: true, message: 'Doctor Treatment deleted successfully' });
+//     } catch (err) {
+//         console.error('Delete doctor treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Get Single DoctorTreatment by ID
+// exports.getDoctorTreatmentById = async (req, res) => {
+//     try {
+//         const doctorTreatment = await DoctorTreatment.findById(req.params.id)
+//             .populate('doctor', 'firstName lastName fullName specialty hospital')
+//             .populate('treatment', 'title category');
+
+//         if (!doctorTreatment) {
+//             return res.status(404).json({ success: false, error: 'Doctor Treatment not found' });
+//         }
+
+//         res.json({ success: true, data: doctorTreatment });
+//     } catch (err) {
+//         console.error('Get doctor treatment by id error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Get All DoctorTreatments (with filters)
+// exports.getDoctorTreatments = async (req, res) => {
+//     try {
+//         const { page = 1, limit = 10, doctor, treatment } = req.query;
+//         const filter = {};
+
+//         if (doctor) filter.doctor = doctor;
+//         if (treatment) filter.treatment = treatment;
+
+//         const doctorTreatments = await DoctorTreatment.find(filter)
+//             .populate('doctor', 'firstName lastName fullName specialty hospital')
+//             .populate('treatment', 'title category')
+//             .sort({ createdAt: -1 })
+//             .limit(limit * 1)
+//             .skip((page - 1) * limit);
+
+//         const total = await DoctorTreatment.countDocuments(filter);
+
+//         res.json({
+//             success: true,
+//             count: doctorTreatments.length,
+//             total,
+//             page: parseInt(page),
+//             pages: Math.ceil(total / limit),
+//             data: doctorTreatments
+//         });
+//     } catch (err) {
+//         console.error('Get doctor treatments error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // ================= TREATMENT CRUD =================
+
+// // Create Treatment
+// exports.createTreatment = async (req, res) => {
+//     try {
+//         const treatment = await Treatment.create(req.body);
+//         res.status(201).json({ success: true, data: treatment });
+//     } catch (err) {
+//         console.error('Create treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Update Treatment
+// exports.updateTreatment = async (req, res) => {
+//     try {
+//         const treatment = await Treatment.findByIdAndUpdate(
+//             req.params.id,
+//             req.body,
+//             { new: true, runValidators: true }
+//         );
+
+//         if (!treatment) {
+//             return res.status(404).json({ success: false, error: 'Treatment not found' });
+//         }
+
+//         res.json({ success: true, data: treatment });
+//     } catch (err) {
+//         console.error('Update treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Delete Treatment
+// exports.deleteTreatment = async (req, res) => {
+//     try {
+//         const treatment = await Treatment.findByIdAndDelete(req.params.id);
+
+//         if (!treatment) {
+//             return res.status(404).json({ success: false, error: 'Treatment not found' });
+//         }
+
+//         res.json({ success: true, message: 'Treatment deleted successfully' });
+//     } catch (err) {
+//         console.error('Delete treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Get Single Treatment
+// exports.getTreatmentById = async (req, res) => {
+//     try {
+//         const treatment = await Treatment.findById(req.params.id)
+//             .populate('hospitalOfferings', 'hospital cost isAvailable')
+//             .populate('doctorCapabilities', 'doctor successRate experienceWithProcedure casesPerformed');
+
+//         if (!treatment) {
+//             return res.status(404).json({ success: false, error: 'Treatment not found' });
+//         }
+
+//         res.json({ success: true, data: treatment });
+//     } catch (err) {
+//         console.error('Get treatment error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
+
+// // Get All Treatments (with search & filters)
+// exports.getTreatments = async (req, res) => {
+//     try {
+//         const { page = 1, limit = 10, category, search } = req.query;
+//         const filter = {};
+
+//         if (category) filter.category = category;
+//         if (search) filter.$text = { $search: search };
+
+//         const treatments = await Treatment.find(filter)
+//             .sort({ createdAt: -1 })
+//             .limit(limit * 1)
+//             .skip((page - 1) * limit);
+
+//         const total = await Treatment.countDocuments(filter);
+
+//         res.json({
+//             success: true,
+//             count: treatments.length,
+//             total,
+//             page: parseInt(page),
+//             pages: Math.ceil(total / limit),
+//             data: treatments
+//         });
+//     } catch (err) {
+//         console.error('Get treatments error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };

@@ -32,7 +32,7 @@ const HospitalManagement = () => {
         try {
             const token = localStorage.getItem('adminToken');
             if (!token) {
-                navigate('/admin/login');
+                navigate('/admin');
                 return;
             }
             const response = await fetch(
@@ -62,6 +62,8 @@ const HospitalManagement = () => {
             setLoading(false);
         }
     };
+
+ 
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -112,7 +114,7 @@ const HospitalManagement = () => {
                 alert('Failed to add hospital: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
