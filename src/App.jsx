@@ -1,7 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import AdminDashboard from './components/admin/AdminDashboard';
+import AdminDoctors from './components/admin/AdminDoctors';
 import AdminHospitals from './components/admin/AdminHospitals';
 import AdminLogin from './components/admin/AdminLogin';
+import AdminTreatment from './components/admin/AdminTreatment';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import About from "./pages/About";
@@ -42,7 +44,8 @@ export default function App() {
           {/* Protected admin routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/hospitals" element={<AdminHospitals />} />
-          {/* <Route path="/admin/doctors" element={<AdminDoctors />} /> */}
+          <Route path="/admin/treatments" element={<AdminTreatment />} />
+          <Route path="/admin/doctors" element={<AdminDoctors />} />
           {/* <Route path="/admin/treatments" element={<AdminTreatments />} /> */}
           {/* <Route path="/admin/hospital-treatments" element={<AdminHospitalTreatments />} /> */}
         </Routes>
