@@ -4,6 +4,9 @@ const Doctor = require('../models/Doctor.cjs');
 const Treatment = require('../models/Treatments.cjs'); // ✅ FIXED - Remove the 's'
 const HospitalTreatment = require('../models/HospitalTreatment.cjs');
 const DoctorTreatment = require('../models/DoctorTreatment.cjs'); // make sure the path is correct
+const ProcedureCost = require('../models/ProcedureCost.cjs');
+const FAQ = require('../models/FAQ.cjs');
+const PatientOpinion = require('../models/PatientOpinions.cjs');
 
 const jwt = require('jsonwebtoken');
 const { default: HospitalDetail } = require('../models/HospitalDetail.cjs');
@@ -651,6 +654,212 @@ exports.getTreatments = async (req, res) => {
         });
     } catch (err) {
         console.error('Get treatments error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+
+// ================= PROCEDURE COST CRUD =================
+exports.createProcedureCost = async (req, res) => {
+    try {
+        const procedure = await ProcedureCost.create(req.body);
+        res.status(201).json({ success: true, data: procedure });
+    } catch (err) {
+        console.error('Create procedure cost error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.updateProcedureCost = async (req, res) => {
+    try {
+        const procedure = await ProcedureCost.findByIdAndUpdate(req.params.id, req.body, {
+            new: true, runValidators: true
+        });
+        if (!procedure) {
+            return res.status(404).json({ success: false, error: 'Procedure not found' });
+        }
+        res.json({ success: true, data: procedure });
+    } catch (err) {
+        console.error('Update procedure cost error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.deleteProcedureCost = async (req, res) => {
+    try {
+        const procedure = await ProcedureCost.findByIdAndDelete(req.params.id);
+        if (!procedure) {
+            return res.status(404).json({ success: false, error: 'Procedure not found' });
+        }
+        res.json({ success: true, message: 'Procedure deleted successfully' });
+    } catch (err) {
+        console.error('Delete procedure cost error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.getProcedureCosts = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, category, search } = req.query;
+        const filter = {};
+        if (category) filter.category = category;
+        if (search) filter.$or = [{ title: new RegExp(search, 'i') }, { description: new RegExp(search, 'i') }];
+
+        const procedures = await ProcedureCost.find(filter)
+            .populate('treatment', 'title category')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await ProcedureCost.countDocuments(filter);
+        res.json({
+            success: true,
+            count: procedures.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: procedures
+        });
+    } catch (err) {
+        console.error('Get procedure costs error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.getProcedureCostById = async (req, res) => {
+    try {
+        const procedure = await ProcedureCost.findById(req.params.id).populate('treatment', 'title category');
+        if (!procedure) {
+            return res.status(404).json({ success: false, error: 'Procedure not found' });
+        }
+        res.json({ success: true, data: procedure });
+    } catch (err) {
+        console.error('Get procedure cost by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+
+// ================= FAQ CRUD =================
+exports.createFAQ = async (req, res) => {
+    try {
+        const faq = await FAQ.create(req.body);
+        res.status(201).json({ success: true, data: faq });
+    } catch (err) {
+        console.error('Create FAQ error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.updateFAQ = async (req, res) => {
+    try {
+        const faq = await FAQ.findByIdAndUpdate(req.params.id, req.body, {
+            new: true, runValidators: true
+        });
+        if (!faq) return res.status(404).json({ success: false, error: 'FAQ not found' });
+        res.json({ success: true, data: faq });
+    } catch (err) {
+        console.error('Update FAQ error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.deleteFAQ = async (req, res) => {
+    try {
+        const faq = await FAQ.findByIdAndDelete(req.params.id);
+        if (!faq) return res.status(404).json({ success: false, error: 'FAQ not found' });
+        res.json({ success: true, message: 'FAQ deleted successfully' });
+    } catch (err) {
+        console.error('Delete FAQ error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.getFAQs = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, category, search } = req.query;
+        const filter = {};
+        if (category) filter.category = category;
+        if (search) filter.$or = [{ question: new RegExp(search, 'i') }, { answer: new RegExp(search, 'i') }];
+
+        const faqs = await FAQ.find(filter)
+            .sort({ order: 1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await FAQ.countDocuments(filter);
+        res.json({
+            success: true,
+            count: faqs.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: faqs
+        });
+    } catch (err) {
+        console.error('Get FAQs error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+
+// ================= PATIENT OPINION CRUD =================
+exports.createPatientOpinion = async (req, res) => {
+    try {
+        const opinion = await PatientOpinion.create(req.body);
+        res.status(201).json({ success: true, data: opinion });
+    } catch (err) {
+        console.error('Create patient opinion error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.updatePatientOpinion = async (req, res) => {
+    try {
+        const opinion = await PatientOpinion.findByIdAndUpdate(req.params.id, req.body, {
+            new: true, runValidators: true
+        });
+        if (!opinion) return res.status(404).json({ success: false, error: 'Patient opinion not found' });
+        res.json({ success: true, data: opinion });
+    } catch (err) {
+        console.error('Update patient opinion error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.deletePatientOpinion = async (req, res) => {
+    try {
+        const opinion = await PatientOpinion.findByIdAndDelete(req.params.id);
+        if (!opinion) return res.status(404).json({ success: false, error: 'Patient opinion not found' });
+        res.json({ success: true, message: 'Patient opinion deleted successfully' });
+    } catch (err) {
+        console.error('Delete patient opinion error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.getPatientOpinions = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, search } = req.query;
+        const filter = {};
+        if (search) filter.$or = [{ name: new RegExp(search, 'i') }, { text: new RegExp(search, 'i') }];
+
+        const opinions = await PatientOpinion.find(filter)
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await PatientOpinion.countDocuments(filter);
+        res.json({
+            success: true,
+            count: opinions.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: opinions
+        });
+    } catch (err) {
+        console.error('Get patient opinions error:', err);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };

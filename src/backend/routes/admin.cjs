@@ -27,7 +27,26 @@ const {
     getTreatmentById,
     createTreatment,
     updateTreatment,
-    deleteTreatment
+    deleteTreatment,
+    // ✅ Procedure Costs
+    createProcedureCost,
+    updateProcedureCost,
+    deleteProcedureCost,
+    getProcedureCosts,
+    getProcedureCostById,
+
+    // ✅ FAQs
+    createFAQ,
+    updateFAQ,
+    deleteFAQ,
+    getFAQs,
+
+    // ✅ Patient Opinions
+    createPatientOpinion,
+    updatePatientOpinion,
+    deletePatientOpinion,
+    getPatientOpinions
+
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
 
@@ -96,6 +115,24 @@ router.post('/treatments', protectAdmin, restrictTo('superadmin', 'admin'), crea
 router.put('/treatments/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateTreatment);
 router.delete('/treatments/:id', protectAdmin, restrictTo('superadmin'), deleteTreatment);
 
+// Procedure Costs
+router.get('/procedure-costs', protectAdmin, getProcedureCosts);
+router.get('/procedure-costs/:id', protectAdmin, getProcedureCostById);
+router.post('/procedure-costs', protectAdmin, restrictTo('superadmin', 'admin'), createProcedureCost);
+router.put('/procedure-costs/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateProcedureCost);
+router.delete('/procedure-costs/:id', protectAdmin, restrictTo('superadmin'), deleteProcedureCost);
+
+// FAQs
+router.get('/faqs', protectAdmin, getFAQs);
+router.post('/faqs', protectAdmin, restrictTo('superadmin', 'admin'), createFAQ);
+router.put('/faqs/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateFAQ);
+router.delete('/faqs/:id', protectAdmin, restrictTo('superadmin'), deleteFAQ);
+
+// Patient Opinions
+router.get('/patient-opinions', protectAdmin, getPatientOpinions);
+router.post('/patient-opinions', protectAdmin, restrictTo('superadmin', 'admin'), createPatientOpinion);
+router.put('/patient-opinions/:id', protectAdmin, restrictTo('superadmin', 'admin'), updatePatientOpinion);
+router.delete('/patient-opinions/:id', protectAdmin, restrictTo('superadmin'), deletePatientOpinion);
 
 
 

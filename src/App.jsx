@@ -2,9 +2,12 @@ import { Route, Routes } from "react-router-dom";
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminDoctors from './components/admin/AdminDoctors';
 import AdminDoctorTreatment from './components/admin/AdminDoctorTreatment';
+import AdminFaqs from './components/admin/AdminFAQ';
 import AdminHospitals from './components/admin/AdminHospitals';
 import AdminHospitalTreatment from './components/admin/AdminHospitalTreatment';
 import AdminLogin from './components/admin/AdminLogin';
+import AdminPatientOpinions from './components/admin/AdminPatientOpinions';
+import AdminProcedures from './components/admin/AdminProcedures';
 import AdminTreatment from './components/admin/AdminTreatment';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -51,6 +54,9 @@ export default function App() {
           <Route path="/admin/doctor-treatment" element={<AdminDoctorTreatment />} />
           {/* <Route path="/admin/treatments" element={<AdminTreatments />} /> */}
           <Route path="/admin/hospital-treatment" element={<AdminHospitalTreatment />} />
+          <Route path="/admin/faqs" element={<AdminFaqs />} />
+          <Route path="/admin/patient-opinions" element={<AdminPatientOpinions />} />
+          <Route path="/admin/procedures" element={<AdminProcedures />} />
         </Routes>
       </main>
       <Footer />
