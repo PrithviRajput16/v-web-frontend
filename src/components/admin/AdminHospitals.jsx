@@ -52,7 +52,7 @@ const HospitalManagement = () => {
                 alert('Failed to fetch hospitals: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -77,7 +77,7 @@ const HospitalManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         const data = {
@@ -154,7 +154,7 @@ const HospitalManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         const data = {
@@ -188,7 +188,7 @@ const HospitalManagement = () => {
                 alert('Failed to update hospital: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -205,7 +205,7 @@ const HospitalManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         try {
@@ -222,7 +222,7 @@ const HospitalManagement = () => {
                 alert('Failed to delete hospital: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -260,7 +260,7 @@ const HospitalManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         try {
@@ -271,7 +271,7 @@ const HospitalManagement = () => {
             const result = await response.json();
             if (result.success) {
                 localStorage.removeItem('adminToken');
-                navigate('/admin/login');
+                navigate('/admin');
             } else {
                 console.error('Failed to logout:', result.error);
                 alert('Failed to logout');
@@ -288,7 +288,7 @@ const HospitalManagement = () => {
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
         } else {
             fetchHospitals();
         }

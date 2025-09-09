@@ -37,7 +37,7 @@ const DoctorTreatmentManagement = () => {
         try {
             const token = localStorage.getItem('adminToken');
             if (!token) {
-                navigate('/admin/login');
+                navigate('/admin');
                 return;
             }
             const response = await fetch(
@@ -57,7 +57,7 @@ const DoctorTreatmentManagement = () => {
                 console.error('Failed to fetch doctor treatments:', result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -179,7 +179,7 @@ const DoctorTreatmentManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
 
@@ -221,7 +221,7 @@ const DoctorTreatmentManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
 

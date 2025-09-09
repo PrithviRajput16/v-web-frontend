@@ -55,7 +55,7 @@ const HospitalTreatmentManagement = () => {
                 console.error('Failed to fetch hospital treatments:', result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -172,7 +172,7 @@ const HospitalTreatmentManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
 
@@ -255,7 +255,7 @@ const HospitalTreatmentManagement = () => {
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
         } else {
             fetchHospitalTreatments();
             fetchHospitals();

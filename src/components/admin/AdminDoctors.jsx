@@ -51,7 +51,7 @@ const DoctorManagement = () => {
         try {
             const token = localStorage.getItem('adminToken');
             if (!token) {
-                navigate('/admin/login');
+                navigate('/admin');
                 return;
             }
             const response = await fetch(
@@ -70,7 +70,7 @@ const DoctorManagement = () => {
                 console.error('Failed to fetch doctors:', result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -158,7 +158,7 @@ const DoctorManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
 
@@ -256,7 +256,7 @@ const DoctorManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
 
@@ -310,7 +310,7 @@ const DoctorManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
 
@@ -351,7 +351,7 @@ const DoctorManagement = () => {
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
         } else {
             fetchDoctors();
             fetchHospitals();
@@ -367,7 +367,7 @@ const DoctorManagement = () => {
                 <button
                     onClick={() => {
                         localStorage.removeItem('adminToken');
-                        navigate('/admin/login');
+                        navigate('/admin');
                     }}
                     className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                 >

@@ -30,7 +30,7 @@ const TreatmentManagement = () => {
         try {
             const token = localStorage.getItem('adminToken');
             if (!token) {
-                navigate('/admin/login');
+                navigate('/admin');
                 return;
             }
             console.log(token);
@@ -51,7 +51,7 @@ const TreatmentManagement = () => {
                 alert('Failed to fetch treatments: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -74,7 +74,7 @@ const TreatmentManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         const data = {
@@ -116,7 +116,7 @@ const TreatmentManagement = () => {
                 alert('Failed to add treatment: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -164,7 +164,7 @@ const TreatmentManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         const data = {
@@ -196,7 +196,7 @@ const TreatmentManagement = () => {
                 alert('Failed to update treatment: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -213,7 +213,7 @@ const TreatmentManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         try {
@@ -230,7 +230,7 @@ const TreatmentManagement = () => {
                 alert('Failed to delete treatment: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             }
         } catch (err) {
@@ -268,7 +268,7 @@ const TreatmentManagement = () => {
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
             return;
         }
         try {
@@ -279,7 +279,7 @@ const TreatmentManagement = () => {
             const result = await response.json();
             if (result.success) {
                 localStorage.removeItem('adminToken');
-                navigate('/admin/login');
+                navigate('/admin');
             } else {
                 console.error('Failed to logout:', result.error);
                 alert('Failed to logout');
@@ -296,7 +296,7 @@ const TreatmentManagement = () => {
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
         if (!token) {
-            navigate('/admin/login');
+            navigate('/admin');
         } else {
             fetchTreatments();
         }
