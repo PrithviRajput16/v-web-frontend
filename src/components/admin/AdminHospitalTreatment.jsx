@@ -71,7 +71,7 @@ const HospitalTreatmentManagement = () => {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
 
-            const response = await fetch('http://localhost:6003/api/admin/hospitals', {
+            const response = await fetch('http://localhost:6003/api/admin/hospitals?page=1&limit=1000', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
