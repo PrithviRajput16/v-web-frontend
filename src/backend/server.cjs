@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config({ path: './config.env' });
+const path = require('path')
 
 const collectionsRouter = require('./routes/collections.cjs');
 const serviceRouter = require('./routes/services.cjs');
@@ -55,6 +56,15 @@ app.use('/api/treatments', treatmentRoutes);
 app.use('/api/doctor-treatment', doctorTreatmentRouter);
 app.use('/api/hospital-treatment', hospitalTreatmentRouter);
 app.use('/api/admin', adminRoutes);
+// Your existing routes
+const uploadRoutes = require('./routes/upload.cjs');
+app.use('/api/upload', uploadRoutes);
+
+// Serve static files from public directory
+app.use(express.static('public'));
+
+// Serve uploaded files from src/backend/uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check with DB status
 app.get('/', (req, res) => {

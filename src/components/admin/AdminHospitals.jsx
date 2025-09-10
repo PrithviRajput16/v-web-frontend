@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ImageUpload from './ImageUpload';
 
 const HospitalManagement = () => {
     const [hospitals, setHospitals] = useState([]);
@@ -63,7 +64,7 @@ const HospitalManagement = () => {
         }
     };
 
- 
+
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -350,17 +351,21 @@ const HospitalManagement = () => {
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                                    <input
-                                        type="te"
-                                        name="image"
-                                        value={formData.image}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
+                                {/* Image Upload Component */}
+                                <ImageUpload
+                                    onImageUpload={(imageUrl) => {
+                                        handleInputChange({
+                                            target: {
+                                                name: 'image',
+                                                value: imageUrl
+                                            }
+                                        });
+                                    }}
+                                    currentImage={formData.image}
+                                    folder="hospitals"
+                                    maxSize={5}
+                                />
+
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Specialties (comma-separated)</label>
                                     <input
@@ -559,17 +564,20 @@ const HospitalManagement = () => {
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                                    <input
-                                        type="text"
-                                        name="image"
-                                        value={formData.image}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
+                                {/* Image Upload Component */}
+                                <ImageUpload
+                                    onImageUpload={(imageUrl) => {
+                                        handleInputChange({
+                                            target: {
+                                                name: 'image',
+                                                value: imageUrl
+                                            }
+                                        });
+                                    }}
+                                    currentImage={formData.image}
+                                    folder="hospital"
+                                    maxSize={5}
+                                />
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Specialties (comma-separated)</label>
                                     <input
