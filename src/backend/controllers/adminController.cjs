@@ -7,9 +7,12 @@ const DoctorTreatment = require('../models/DoctorTreatment.cjs'); // make sure t
 const ProcedureCost = require('../models/ProcedureCost.cjs');
 const FAQ = require('../models/FAQ.cjs');
 const PatientOpinion = require('../models/PatientOpinions.cjs');
+const HospitalDetail = require('../models/HospitalDetail.cjs');
+
+
 
 const jwt = require('jsonwebtoken');
-const { default: HospitalDetail } = require('../models/HospitalDetail.cjs');
+// const { default: HospitalDetail } = require('../models/HospitalDetail.cjs');
 
 const signToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -142,41 +145,41 @@ exports.getHospitals = async (req, res) => {
     }
 };
 
-exports.getHospitalDetails = async (req, res) => {
-    try {
-        const { page = 1, limit = 10, search } = req.query;
-        const filter = {};
+// exports.getHospitalDetails = async (req, res) => {
+//     try {
+//         const { page = 1, limit = 10, search } = req.query;
+//         const filter = {};
 
-        if (search) {
-            filter.$or = [
-                { description: new RegExp(search, 'i') },
-                { address: new RegExp(search, 'i') },
-                { website: new RegExp(search, 'i') },
-                { email: new RegExp(search, 'i') }
-            ];
-        }
+//         if (search) {
+//             filter.$or = [
+//                 { description: new RegExp(search, 'i') },
+//                 { address: new RegExp(search, 'i') },
+//                 { website: new RegExp(search, 'i') },
+//                 { email: new RegExp(search, 'i') }
+//             ];
+//         }
 
-        const hospitalDetails = await HospitalDetail.find(filter)
-            .populate('hospital')
-            .sort({ createdAt: -1 })
-            .limit(limit * 1)
-            .skip((page - 1) * limit);
+//         const hospitalDetails = await HospitalDetail.find(filter)
+//             .populate('hospital')
+//             .sort({ createdAt: -1 })
+//             .limit(limit * 1)
+//             .skip((page - 1) * limit);
 
-        const total = await HospitalDetail.countDocuments(filter);
+//         const total = await HospitalDetail.countDocuments(filter);
 
-        res.json({
-            success: true,
-            count: hospitalDetails.length,
-            total,
-            page: parseInt(page),
-            pages: Math.ceil(total / limit),
-            data: hospitalDetails
-        });
-    } catch (err) {
-        console.error('Get hospital details error:', err);
-        res.status(500).json({ success: false, error: 'Server Error' });
-    }
-};
+//         res.json({
+//             success: true,
+//             count: hospitalDetails.length,
+//             total,
+//             page: parseInt(page),
+//             pages: Math.ceil(total / limit),
+//             data: hospitalDetails
+//         });
+//     } catch (err) {
+//         console.error('Get hospital details error:', err);
+//         res.status(500).json({ success: false, error: 'Server Error' });
+//     }
+// };
 
 // Similar methods for doctors, treatments, etc...
 exports.getDoctors = async (req, res) => {
@@ -861,5 +864,85 @@ exports.getPatientOpinions = async (req, res) => {
     } catch (err) {
         console.error('Get patient opinions error:', err);
         res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// ==============================
+// HOSPITAL DETAIL CONTROLLERS
+// ==============================
+
+// @desc    Get all hospital details
+// @route   GET /api/admin/hospital-details
+// @access  Protected
+exports.getHospitalDetails = async (req, res) => {
+    try {
+        const details = await HospitalDetail.find().populate('hospital', 'name');
+        res.status(200).json({
+            status: 'success',
+            results: details.length,
+            data: details
+        });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+// @desc    Get single hospital detail by ID
+// @route   GET /api/admin/hospital-details/:id
+// @access  Protected
+exports.getHospitalDetailById = async (req, res) => {
+    try {
+        const detail = await HospitalDetail.findById(req.params.id).populate('hospital', 'name');
+        if (!detail) {
+            return res.status(404).json({ status: 'fail', message: 'Hospital detail not found' });
+        }
+        res.status(200).json({ status: 'success', data: detail });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+// @desc    Create hospital detail
+// @route   POST /api/admin/hospital-details
+// @access  Protected (superadmin, admin)
+exports.createHospitalDetail = async (req, res) => {
+    try {
+        const detail = await HospitalDetail.create(req.body);
+        res.status(201).json({ status: 'success', data: detail });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
+
+// @desc    Update hospital detail
+// @route   PUT /api/admin/hospital-details/:id
+// @access  Protected (superadmin, admin)
+exports.updateHospitalDetail = async (req, res) => {
+    try {
+        const detail = await HospitalDetail.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+        if (!detail) {
+            return res.status(404).json({ status: 'fail', message: 'Hospital detail not found' });
+        }
+        res.status(200).json({ status: 'success', data: detail });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
+
+// @desc    Delete hospital detail
+// @route   DELETE /api/admin/hospital-details/:id
+// @access  Protected (superadmin only)
+exports.deleteHospitalDetail = async (req, res) => {
+    try {
+        const detail = await HospitalDetail.findByIdAndDelete(req.params.id);
+        if (!detail) {
+            return res.status(404).json({ status: 'fail', message: 'Hospital detail not found' });
+        }
+        res.status(204).json({ status: 'success', data: null });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
     }
 };

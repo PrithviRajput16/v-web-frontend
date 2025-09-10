@@ -3,6 +3,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import AdminDoctors from './components/admin/AdminDoctors';
 import AdminDoctorTreatment from './components/admin/AdminDoctorTreatment';
 import AdminFaqs from './components/admin/AdminFAQ';
+import AdminHospitalDetails from './components/admin/AdminHospitalDetails';
 import AdminHospitals from './components/admin/AdminHospitals';
 import AdminHospitalTreatment from './components/admin/AdminHospitalTreatment';
 import AdminLogin from './components/admin/AdminLogin';
@@ -57,6 +58,8 @@ export default function App() {
           <Route path="/admin/faqs" element={<AdminFaqs />} />
           <Route path="/admin/patient-opinions" element={<AdminPatientOpinions />} />
           <Route path="/admin/procedures" element={<AdminProcedures />} />
+          <Route path="/admin/hospital-details" element={<AdminHospitalDetails />} />
+
         </Routes>
       </main>
       <Footer />

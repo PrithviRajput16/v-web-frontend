@@ -10,7 +10,7 @@ const {
     createHospital,
     updateHospital,
     getHospitalTreatments,
-    getHospitalDetails,
+    // getHospitalDetails,
     createDoctor,      // ✅ NEW
     updateDoctor,      // ✅ NEW
     deleteDoctor,     // ✅ NEW
@@ -45,7 +45,13 @@ const {
     createPatientOpinion,
     updatePatientOpinion,
     deletePatientOpinion,
-    getPatientOpinions
+    getPatientOpinions,
+
+    getHospitalDetails,
+    getHospitalDetailById,
+    createHospitalDetail,
+    updateHospitalDetail,
+    deleteHospitalDetail
 
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
@@ -133,6 +139,16 @@ router.get('/patient-opinions', protectAdmin, getPatientOpinions);
 router.post('/patient-opinions', protectAdmin, restrictTo('superadmin', 'admin'), createPatientOpinion);
 router.put('/patient-opinions/:id', protectAdmin, restrictTo('superadmin', 'admin'), updatePatientOpinion);
 router.delete('/patient-opinions/:id', protectAdmin, restrictTo('superadmin'), deletePatientOpinion);
+
+// ==============================
+// Hospital-Detail management
+// ==============================
+router.get('/hospital-details', protectAdmin, getHospitalDetails);
+router.get('/hospital-details/:id', protectAdmin, getHospitalDetailById);
+router.post('/hospital-details', protectAdmin, restrictTo('superadmin', 'admin'), createHospitalDetail);
+router.put('/hospital-details/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateHospitalDetail);
+router.delete('/hospital-details/:id', protectAdmin, restrictTo('superadmin'), deleteHospitalDetail);
+
 
 
 
