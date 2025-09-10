@@ -313,7 +313,6 @@ const HospitalManagement = () => {
 
             {isAddModalOpen && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    {/* <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl"></div> */}
                     <div className="bg-white p-6 rounded-lg shadow mb-6">
                         <h2 className="text-xl font-semibold mb-4">Add New Hospital</h2>
                         <form onSubmit={handleAddHospital} className="space-y-4">
