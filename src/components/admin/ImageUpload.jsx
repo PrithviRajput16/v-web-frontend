@@ -6,7 +6,8 @@ const ImageUpload = ({
     currentImage,
     folder = 'general',
     maxSize = 5, // in MB
-    allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+    fieldName = 'image' // New prop to specify the field name
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState('');
@@ -39,7 +40,6 @@ const ImageUpload = ({
         await uploadImage(file);
     };
 
-    // In your ImageUpload component, make sure you're using the URL from backend response
     const uploadImage = async (file) => {
         setIsUploading(true);
         setUploadError('');
@@ -61,17 +61,30 @@ const ImageUpload = ({
                 body: formData,
             });
 
-            const result = await response.json();
+            // Check if response is OK before trying to parse JSON
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server error response:', errorText);
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+
+            // Try to parse response as JSON
+            let result;
+            try {
+                result = await response.json();
+            } catch (jsonError) {
+                console.error('JSON parse error:', jsonError);
+                throw new Error('Invalid response from server');
+            }
 
             if (result.success) {
-                // Use the imageUrl returned by the backend
                 onImageUpload(result.imageUrl);
             } else {
                 setUploadError(result.error || 'Failed to upload image');
             }
         } catch (error) {
-            setUploadError('Network error. Please try again.');
             console.error('Upload error:', error);
+            setUploadError(error.message || 'Network error. Please try again.');
         } finally {
             setIsUploading(false);
         }
@@ -84,7 +97,9 @@ const ImageUpload = ({
 
     return (
         <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+                {fieldName === 'icon' ? 'Icon' : 'Image'}
+            </label>
 
             {/* Image preview */}
             {previewUrl && (
@@ -113,7 +128,7 @@ const ImageUpload = ({
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
-                    <span className="mt-1 text-sm">{isUploading ? 'Uploading...' : 'Choose Image'}</span>
+                    <span className="mt-1 text-sm">{isUploading ? 'Uploading...' : 'Choose File'}</span>
                     <input
                         type="file"
                         className="hidden"
@@ -143,6 +158,7 @@ const ImageUpload = ({
             {/* Hidden input to store the image URL */}
             <input
                 type="hidden"
+                name={fieldName}
                 value={previewUrl}
             />
         </div>

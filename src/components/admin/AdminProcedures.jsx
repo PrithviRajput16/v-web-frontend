@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ImageUpload from './ImageUpload';
 
 // Procedure Cost Management Component
 const ProcedureCostManagement = () => {
@@ -326,7 +327,6 @@ const ProcedureCostManagement = () => {
                     <table className="w-full table-auto">
                         <thead>
                             <tr className="bg-gray-200">
-                                <th className="px-4 py-2">Icon</th>
                                 <th className="px-4 py-2">Title</th>
                                 <th className="px-4 py-2">Treatment</th>
                                 <th className="px-4 py-2">Category</th>
@@ -340,7 +340,6 @@ const ProcedureCostManagement = () => {
                         <tbody>
                             {procedures.map((proc) => (
                                 <tr key={proc._id} className="border-b">
-                                    <td className="px-4 py-2 text-2xl">{proc.icon}</td>
                                     <td className="px-4 py-2">{proc.title}</td>
                                     <td className="px-4 py-2">{proc.treatment?.title || 'N/A'}</td>
                                     <td className="px-4 py-2">{proc.category}</td>
@@ -435,16 +434,21 @@ const ProcedureCostForm = ({
                                 ))}
                             </select>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Icon</label>
-                            <input
-                                type="text"
-                                name="icon"
-                                value={formData.icon}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            />
-                        </div>
+                        <ImageUpload
+                            onImageUpload={(imageUrl) => {
+                                handleInputChange({
+                                    target: {
+                                        name: 'icon', // Treatment schema uses 'icon' field
+                                        value: imageUrl
+                                    }
+                                });
+                            }}
+                            currentImage={formData.icon}
+                            folder="procedure"
+                            fieldName="icon" // This will change the label to "Icon"
+                            allowedTypes={['image/svg+xml']} // Specific types for icons
+                            maxSize={2} // Smaller size for icons
+                        />
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Base Price (₹)</label>
                             <input

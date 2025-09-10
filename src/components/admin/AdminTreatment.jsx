@@ -563,14 +563,16 @@ const TreatmentManagement = () => {
                                     onImageUpload={(imageUrl) => {
                                         handleInputChange({
                                             target: {
-                                                name: 'image',
+                                                name: 'icon', // Treatment schema uses 'icon' field
                                                 value: imageUrl
                                             }
                                         });
                                     }}
                                     currentImage={formData.icon}
-                                    folder="treatment"
-                                    maxSize={5}
+                                    folder="treatments"
+                                    fieldName="icon" // This will change the label to "Icon"
+                                    allowedTypes={['image/svg+xml']} // Specific types for icons
+                                    maxSize={2} // Smaller size for icons
                                 />
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Typical Duration (minutes)</label>
