@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ImageUpload from './ImageUpload';
 
 const TreatmentManagement = () => {
     const [treatments, setTreatments] = useState([]);
@@ -354,16 +355,19 @@ const TreatmentManagement = () => {
                                         ))}
                                     </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Icon</label>
-                                    <input
-                                        type="text"
-                                        name="icon"
-                                        value={formData.icon}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
+                                <ImageUpload
+                                    onImageUpload={(imageUrl) => {
+                                        handleInputChange({
+                                            target: {
+                                                name: 'image',
+                                                value: imageUrl
+                                            }
+                                        });
+                                    }}
+                                    currentImage={formData.image}
+                                    folder="treatment"
+                                    maxSize={5}
+                                />
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Typical Duration (minutes)</label>
                                     <input
@@ -555,16 +559,19 @@ const TreatmentManagement = () => {
                                         ))}
                                     </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Icon</label>
-                                    <input
-                                        type="text"
-                                        name="icon"
-                                        value={formData.icon}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
+                                <ImageUpload
+                                    onImageUpload={(imageUrl) => {
+                                        handleInputChange({
+                                            target: {
+                                                name: 'image',
+                                                value: imageUrl
+                                            }
+                                        });
+                                    }}
+                                    currentImage={formData.icon}
+                                    folder="treatment"
+                                    maxSize={5}
+                                />
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Typical Duration (minutes)</label>
                                     <input

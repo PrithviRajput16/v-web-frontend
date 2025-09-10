@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ImageUpload from './ImageUpload';
 
 // Patient Opinion Management Component
 const PatientOpinionManagement = () => {
@@ -419,17 +420,19 @@ const PatientOpinionForm = ({
                                 <option value="5">5 Stars</option>
                             </select>
                         </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                            <input
-                                type="text"
-                                name="image"
-                                value={formData.image}
-                                onChange={handleInputChange}
-                                required
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            />
-                        </div>
+                        <ImageUpload
+                            onImageUpload={(imageUrl) => {
+                                handleInputChange({
+                                    target: {
+                                        name: 'image',
+                                        value: imageUrl
+                                    }
+                                });
+                            }}
+                            currentImage={formData.image}
+                            folder="patient_opinion"
+                            maxSize={5}
+                        />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Testimonial Text</label>

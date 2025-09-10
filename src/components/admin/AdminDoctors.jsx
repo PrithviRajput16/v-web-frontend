@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ImageUpload from './ImageUpload';
 
 const DoctorManagement = () => {
     const [doctors, setDoctors] = useState([]);
@@ -13,7 +14,7 @@ const DoctorManagement = () => {
     const [loading, setLoading] = useState(false);
     const [hospitals, setHospitals] = useState([]);
     const navigate = useNavigate();
-    const limit = 10;
+    const limit = 100;
 
     const initialFormData = {
         firstName: '',
@@ -86,12 +87,13 @@ const DoctorManagement = () => {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
 
-            const response = await fetch('http://localhost:6003/api/admin/hospitals', {
+            const response = await fetch('http://localhost:6003/api/admin/hospitals?page=1&limit=1000', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
             if (result.success) {
                 setHospitals(result.data);
+                console.log(hospitals[0]);
             }
         } catch (err) {
             console.error('Error fetching hospitals:', err);
@@ -551,17 +553,19 @@ const DoctorForm = ({
                                     className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                                <input
-                                    type="text"
-                                    name="image"
-                                    value={formData.image}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                                />
-                            </div>
+                            <ImageUpload
+                                onImageUpload={(imageUrl) => {
+                                    handleInputChange({
+                                        target: {
+                                            name: 'image',
+                                            value: imageUrl
+                                        }
+                                    });
+                                }}
+                                currentImage={formData.image}
+                                folder="doctor"
+                                maxSize={5}
+                            />
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Primary Specialty</label>
                                 <input
