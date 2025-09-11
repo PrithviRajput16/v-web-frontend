@@ -26,12 +26,12 @@ const patientOpinionSchema = new mongoose.Schema({
   image: {
     type: String,
     required: [true, 'Image URL is required'],
-    validate: {
-      validator: function(v) {
-        return /^https?:\/\/.+\..+/.test(v);
-      },
-      message: 'Invalid image URL format'
-    }
+    // validate: {
+    //   validator: function(v) {
+    //     return /^https?:\/\/.+\..+/.test(v);
+    //   },
+    //   message: 'Invalid image URL format'
+    // }
   },
   text: {
     type: String,

@@ -32,9 +32,11 @@ export default function ProcedureCostCard({ service, index }) {
             }}
             className="flex-shrink-0 w-14 h-14 bg-teal-100 rounded-xl flex items-center justify-center"
           >
-            <span className="text-2xl text-teal-600">
-              {service.icon}
-            </span>
+            <img
+              src={service.icon}
+              alt={service.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
           </motion.div>
 
           {/* Content */}

@@ -62,6 +62,24 @@ const AdminDashboard = () => {
                 <Link to="/admin/hospital-treatments" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Pricing</h3>
                 </Link>
+                <Link to="/admin/doctor-treatment" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Doctor Treatments</h3>
+                </Link>
+                <Link to="/admin/hospital-treatment" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Hospital Treatments</h3>
+                </Link>
+                <Link to="/admin/faqs" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage FAQs</h3>
+                </Link>
+                <Link to="/admin/patient-opinions" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Patient Opinions</h3>
+                </Link>
+                <Link to="/admin/procedures" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Procedures</h3>
+                </Link>
+                <Link to="/admin/hospital-details" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Hospital Details</h3>
+                </Link>
             </div>
         </div>
     );

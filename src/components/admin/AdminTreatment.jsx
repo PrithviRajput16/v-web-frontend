@@ -2,33 +2,31 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageUpload from './ImageUpload';
 
-const HospitalManagement = () => {
-    const [hospitals, setHospitals] = useState([]);
+const TreatmentManagement = () => {
+    const [treatments, setTreatments] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [currentHospital, setCurrentHospital] = useState(null);
+    const [currentTreatment, setCurrentTreatment] = useState(null);
     const [formData, setFormData] = useState({
-        name: '',
-        country: '',
-        city: '',
-        image: '',
-        specialties: '',
-        rating: '',
-        beds: '',
-        accreditation: '',
-        phone: '',
-        blurb: ''
+        title: '',
+        description: '',
+        icon: '⚕️',
+        category: '',
+        typicalDuration: '',
+        typicalComplexity: 'Medium',
+        typicalRecoveryTime: 'Varies',
+        isActive: true,
     });
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const limit = 10;
 
-    // Fetch hospitals
-    const fetchHospitals = async (pageNum = 1, searchQuery = '') => {
+    // Fetch treatments
+    const fetchTreatments = async (pageNum = 1, searchQuery = '') => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
@@ -36,35 +34,34 @@ const HospitalManagement = () => {
                 navigate('/admin');
                 return;
             }
+            console.log(token);
             const response = await fetch(
-                `http://localhost:6003/api/admin/hospitals?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `http://localhost:6003/api/admin/treatments?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
                 }
             );
             const result = await response.json();
             if (result.success) {
-                setHospitals(result.data);
+                setTreatments(result.data);
                 setTotal(result.total);
                 setPage(result.page);
                 setPages(result.pages);
             } else {
-                console.error('Failed to fetch hospitals:', result.error);
-                alert('Failed to fetch hospitals: ' + result.error);
+                console.error('Failed to fetch treatments:', result.error);
+                alert('Failed to fetch treatments: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
                     navigate('/admin');
                 }
             }
         } catch (err) {
-            console.error('Failed to fetch hospitals:', err);
-            alert('Failed to fetch hospitals');
+            console.error('Error fetching treatments:', err);
+            alert('Failed to fetch treatments');
         } finally {
             setLoading(false);
         }
     };
-
-
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -72,8 +69,8 @@ const HospitalManagement = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Add hospital
-    const handleAddHospital = async (e) => {
+    // Add treatment
+    const handleAddTreatment = async (e) => {
         e.preventDefault();
         setLoading(true);
         const token = localStorage.getItem('adminToken');
@@ -82,75 +79,88 @@ const HospitalManagement = () => {
             return;
         }
         const data = {
-            name: formData.name,
-            country: formData.country,
-            city: formData.city,
-            image: formData.image,
-            specialties: formData.specialties ? formData.specialties.split(',').map(s => s.trim()) : [],
-            rating: formData.rating ? parseFloat(formData.rating) : undefined,
-            beds: formData.beds ? parseInt(formData.beds) : undefined,
-            accreditation: formData.accreditation ? formData.accreditation.split(',').map(a => a.trim()) : [],
-            phone: formData.phone,
-            blurb: formData.blurb
+            title: formData.title,
+            description: formData.description,
+            icon: formData.icon || '⚕️',
+            category: formData.category,
+            typicalDuration: Number(formData.typicalDuration),
+            typicalComplexity: formData.typicalComplexity,
+            typicalRecoveryTime: formData.typicalRecoveryTime || 'Varies',
+            isActive: formData.isActive === 'true' || formData.isActive === true,
         };
         try {
-            const response = await fetch('http://localhost:6003/api/admin/hospitals', {
+            const response = await fetch('http://localhost:6003/api/admin/treatments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
             });
             const result = await response.json();
             if (result.success) {
-                alert('Hospital added successfully');
+                alert('Treatment added successfully');
                 setFormData({
-                    name: '', country: '', city: '', image: '', specialties: '',
-                    rating: '', beds: '', accreditation: '', phone: '', blurb: ''
+                    title: '',
+                    description: '',
+                    icon: '⚕️',
+                    category: '',
+                    typicalDuration: '',
+                    typicalComplexity: 'Medium',
+                    typicalRecoveryTime: 'Varies',
+                    isActive: true,
                 });
-                fetchHospitals(page, search);
+                setIsAddModalOpen(false);
+                fetchTreatments(page, search);
             } else {
-                console.error('Failed to add hospital:', result.error);
-                alert('Failed to add hospital: ' + result.error);
+                console.error('Failed to add treatment:', result.error);
+                alert('Failed to add treatment: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
                     navigate('/admin');
                 }
             }
         } catch (err) {
-            console.error('Error adding hospital:', err);
-            alert('Failed to add hospital');
+            console.error('Error adding treatment:', err);
+            alert('Failed to add treatment');
         } finally {
             setLoading(false);
         }
     };
 
     // Open update modal
-    const openUpdateModal = (hospital) => {
-        setCurrentHospital(hospital);
+    const openUpdateModal = (treatment) => {
+        setCurrentTreatment(treatment);
         setFormData({
-            name: hospital.name,
-            country: hospital.country,
-            city: hospital.city,
-            image: hospital.image,
-            specialties: hospital.specialties.join(', '),
-            rating: hospital.rating || '',
-            beds: hospital.beds || '',
-            accreditation: hospital.accreditation.join(', '),
-            phone: hospital.phone,
-            blurb: hospital.blurb
+            title: treatment.title,
+            description: treatment.description,
+            icon: treatment.icon,
+            category: treatment.category,
+            typicalDuration: treatment.typicalDuration.toString(),
+            typicalComplexity: treatment.typicalComplexity,
+            typicalRecoveryTime: treatment.typicalRecoveryTime,
+            isActive: treatment.isActive,
         });
         setIsModalOpen(true);
     };
 
-    //add hospital modal
+    // Open add modal
     const openAddModal = () => {
+        setFormData({
+            title: '',
+            description: '',
+            icon: '⚕️',
+            category: '',
+            typicalDuration: '',
+            typicalComplexity: 'Medium',
+            typicalRecoveryTime: 'Varies',
+            isActive: true,
+        });
         setIsAddModalOpen(true);
     };
 
-    // Update hospital
-    const handleUpdateHospital = async (e) => {
+    // Update treatment
+    const handleUpdateTreatment = async (e) => {
         e.preventDefault();
         setLoading(true);
         const token = localStorage.getItem('adminToken');
@@ -159,50 +169,48 @@ const HospitalManagement = () => {
             return;
         }
         const data = {
-            name: formData.name,
-            country: formData.country,
-            city: formData.city,
-            image: formData.image,
-            specialties: formData.specialties ? formData.specialties.split(',').map(s => s.trim()) : [],
-            rating: formData.rating ? parseFloat(formData.rating) : undefined,
-            beds: formData.beds ? parseInt(formData.beds) : undefined,
-            accreditation: formData.accreditation ? formData.accreditation.split(',').map(a => a.trim()) : [],
-            phone: formData.phone,
-            blurb: formData.blurb
+            title: formData.title,
+            description: formData.description,
+            icon: formData.icon || '⚕️',
+            category: formData.category,
+            typicalDuration: Number(formData.typicalDuration),
+            typicalComplexity: formData.typicalComplexity,
+            typicalRecoveryTime: formData.typicalRecoveryTime || 'Varies',
+            isActive: formData.isActive === 'true' || formData.isActive === true,
         };
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospitals/${currentHospital._id}`, {
+            const response = await fetch(`http://localhost:6003/api/admin/treatments/${currentTreatment._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
             });
             const result = await response.json();
             if (result.success) {
-                alert('Hospital updated successfully');
+                alert('Treatment updated successfully');
                 setIsModalOpen(false);
-                fetchHospitals(page, search);
+                fetchTreatments(page, search);
             } else {
-                console.error('Failed to update hospital:', result.error);
-                alert('Failed to update hospital: ' + result.error);
+                console.error('Failed to update treatment:', result.error);
+                alert('Failed to update treatment: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
                     navigate('/admin');
                 }
             }
         } catch (err) {
-            console.error('Error updating hospital:', err);
-            alert('Failed to update hospital');
+            console.error('Error updating treatment:', err);
+            alert('Failed to update treatment');
         } finally {
             setLoading(false);
         }
     };
 
-    // Delete hospital
-    const handleDeleteHospital = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this hospital?')) return;
+    // Delete treatment
+    const handleDeleteTreatment = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this treatment?')) return;
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
@@ -210,25 +218,25 @@ const HospitalManagement = () => {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospitals/${id}`, {
+            const response = await fetch(`http://localhost:6003/api/admin/treatments/${id}`, {
                 method: 'DELETE',
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
             if (result.success) {
-                alert('Hospital deleted successfully');
-                fetchHospitals(page, search);
+                alert('Treatment deleted successfully');
+                fetchTreatments(page, search);
             } else {
-                console.error('Failed to delete hospital:', result.error);
-                alert('Failed to delete hospital: ' + result.error);
+                console.error('Failed to delete treatment:', result.error);
+                alert('Failed to delete treatment: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
                     navigate('/admin');
                 }
             }
         } catch (err) {
-            console.error('Error deleting hospital:', err);
-            alert('Failed to delete hospital');
+            console.error('Error deleting treatment:', err);
+            alert('Failed to delete treatment');
         } finally {
             setLoading(false);
         }
@@ -238,21 +246,21 @@ const HospitalManagement = () => {
     const handleSearch = (e) => {
         setSearch(e.target.value);
         setPage(1);
-        fetchHospitals(1, e.target.value);
+        fetchTreatments(1, e.target.value);
     };
 
     // Pagination
     const handlePrevPage = () => {
         if (page > 1) {
             setPage(page - 1);
-            fetchHospitals(page - 1, search);
+            fetchTreatments(page - 1, search);
         }
     };
 
     const handleNextPage = () => {
         if (page < pages) {
             setPage(page + 1);
-            fetchHospitals(page + 1, search);
+            fetchTreatments(page + 1, search);
         }
     };
 
@@ -267,7 +275,7 @@ const HospitalManagement = () => {
         try {
             const response = await fetch('http://localhost:6003/api/admin/logout', {
                 method: 'POST',
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
             if (result.success) {
@@ -291,7 +299,7 @@ const HospitalManagement = () => {
         if (!token) {
             navigate('/admin');
         } else {
-            fetchHospitals();
+            fetchTreatments();
         }
     }, [navigate]);
 
@@ -300,58 +308,53 @@ const HospitalManagement = () => {
     return (
         <div className="container mx-auto p-6 bg-gray-100">
             <header className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Hospital Management</h1>
-
+                <h1 className="text-3xl font-bold">Treatment Management</h1>
                 <button
                     onClick={handleLogout}
                     className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                 >
                     Logout
                 </button>
-
-
             </header>
 
             {isAddModalOpen && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg shadow mb-6">
-                        <h2 className="text-xl font-semibold mb-4">Add New Hospital</h2>
-                        <form onSubmit={handleAddHospital} className="space-y-4">
+                    <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
+                        <h2 className="text-xl font-semibold mb-4">Add New Treatment</h2>
+                        <form onSubmit={handleAddTreatment} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                                    <label className="block text-sm font-medium text-gray-700">Title</label>
                                     <input
                                         type="text"
-                                        name="name"
-                                        value={formData.name}
+                                        name="title"
+                                        value={formData.title}
                                         onChange={handleInputChange}
                                         required
+                                        maxLength="100"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Country</label>
-                                    <input
-                                        type="text"
-                                        name="country"
-                                        value={formData.country}
+                                    <label className="block text-sm font-medium text-gray-700">Category</label>
+                                    <select
+                                        name="category"
+                                        value={formData.category}
                                         onChange={handleInputChange}
                                         required
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
+                                    >
+                                        <option value="">Select Category</option>
+                                        {[
+                                            'Cardiology', 'Orthopedics', 'Neurology', 'Dentistry',
+                                            'Ophthalmology', 'Dermatology', 'Gastroenterology',
+                                            'Urology', 'Oncology', 'ENT', 'General Surgery',
+                                            'Plastic Surgery', 'Other'
+                                        ].map((cat) => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">City</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                {/* Image Upload Component */}
                                 <ImageUpload
                                     onImageUpload={(imageUrl) => {
                                         handleInputChange({
@@ -362,83 +365,75 @@ const HospitalManagement = () => {
                                         });
                                     }}
                                     currentImage={formData.image}
-                                    folder="hospitals"
+                                    folder="treatment"
                                     maxSize={5}
                                 />
-
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Specialties (comma-separated)</label>
-                                    <input
-                                        type="text"
-                                        name="specialties"
-                                        value={formData.specialties}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Rating (0-5)</label>
+                                    <label className="block text-sm font-medium text-gray-700">Typical Duration (minutes)</label>
                                     <input
                                         type="number"
-                                        name="rating"
-                                        value={formData.rating}
-                                        onChange={handleInputChange}
-                                        min="0"
-                                        max="5"
-                                        step="0.1"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Number of Beds</label>
-                                    <input
-                                        type="number"
-                                        name="beds"
-                                        value={formData.beds}
-                                        onChange={handleInputChange}
-                                        min="0"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Accreditations (comma-separated)</label>
-                                    <input
-                                        type="text"
-                                        name="accreditation"
-                                        value={formData.accreditation}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Phone</label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
+                                        name="typicalDuration"
+                                        value={formData.typicalDuration}
                                         onChange={handleInputChange}
                                         required
+                                        min="1"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Typical Complexity</label>
+                                    <select
+                                        name="typicalComplexity"
+                                        value={formData.typicalComplexity}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    >
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Very High">Very High</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Typical Recovery Time</label>
+                                    <input
+                                        type="text"
+                                        name="typicalRecoveryTime"
+                                        value={formData.typicalRecoveryTime}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Active</label>
+                                    <select
+                                        name="isActive"
+                                        value={formData.isActive}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    >
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Blurb</label>
+                                <label className="block text-sm font-medium text-gray-700">Description</label>
                                 <textarea
-                                    name="blurb"
-                                    value={formData.blurb}
+                                    name="description"
+                                    value={formData.description}
                                     onChange={handleInputChange}
                                     required
                                     maxLength="500"
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 />
                             </div>
-                            <div className='flex gap-4'>
+                            <div className="flex gap-4">
                                 <button
                                     type="submit"
                                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                 >
-                                    Add Hospital
+                                    Add Treatment
                                 </button>
                                 <button
                                     type="button"
@@ -453,50 +448,51 @@ const HospitalManagement = () => {
                 </div>
             )}
 
-
             <div className="bg-white p-6 rounded-lg shadow">
-                <div className='flex justify-between items-center mb-6'>
-                    <h2 className="text-xl font-semibold mb-4">Hospital List</h2>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-semibold">Treatment List</h2>
                     <button
-                        onClick={() => openAddModal()}
-                        className='bg-[#008080] text-white px-4 py-2 rounded hover:bg-red-600'
+                        onClick={openAddModal}
+                        className="bg-[#008080] text-white px-4 py-2 rounded hover:bg-teal-600"
                     >
-                        + Add Hospital
+                        + Add Treatment
                     </button>
                 </div>
                 <input
                     type="text"
                     value={search}
                     onChange={handleSearch}
-                    placeholder="Search by name, city, or country"
+                    placeholder="Search by title or description"
                     className="mb-4 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
                 <table className="w-full table-auto">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="px-4 py-2">Name</th>
-                            <th className="px-4 py-2">Country</th>
-                            <th className="px-4 py-2">City</th>
-                            <th className="px-4 py-2">Rating</th>
+                            <th className="px-4 py-2">Title</th>
+                            <th className="px-4 py-2">Category</th>
+                            <th className="px-4 py-2">Duration (min)</th>
+                            <th className="px-4 py-2">Complexity</th>
+                            <th className="px-4 py-2">Active</th>
                             <th className="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {hospitals.map((hospital) => (
-                            <tr key={hospital._id}>
-                                <td className="border px-4 py-2">{hospital.name}</td>
-                                <td className="border px-4 py-2">{hospital.country}</td>
-                                <td className="border px-4 py-2">{hospital.city}</td>
-                                <td className="border px-4 py-2">{hospital.rating || 'N/A'}</td>
+                        {treatments.map((treatment) => (
+                            <tr key={treatment._id}>
+                                <td className="border px-4 py-2">{treatment.title}</td>
+                                <td className="border px-4 py-2">{treatment.category}</td>
+                                <td className="border px-4 py-2">{treatment.typicalDuration}</td>
+                                <td className="border px-4 py-2">{treatment.typicalComplexity}</td>
+                                <td className="border px-4 py-2">{treatment.isActive ? 'Yes' : 'No'}</td>
                                 <td className="border px-4 py-2">
                                     <button
-                                        onClick={() => openUpdateModal(hospital)}
+                                        onClick={() => openUpdateModal(treatment)}
                                         className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                                     >
                                         Edit
                                     </button>
                                     <button
-                                        onClick={() => handleDeleteHospital(hospital._id)}
+                                        onClick={() => handleDeleteTreatment(treatment._id)}
                                         className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                     >
                                         Delete
@@ -528,117 +524,110 @@ const HospitalManagement = () => {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
-                        <h2 className="text-xl font-semibold mb-4">Update Hospital</h2>
-                        <form onSubmit={handleUpdateHospital} className="space-y-4">
+                        <h2 className="text-xl font-semibold mb-4">Update Treatment</h2>
+                        <form onSubmit={handleUpdateTreatment} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                                    <label className="block text-sm font-medium text-gray-700">Title</label>
                                     <input
                                         type="text"
-                                        name="name"
-                                        value={formData.name}
+                                        name="title"
+                                        value={formData.title}
                                         onChange={handleInputChange}
                                         required
+                                        maxLength="100"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Country</label>
-                                    <input
-                                        type="text"
-                                        name="country"
-                                        value={formData.country}
+                                    <label className="block text-sm font-medium text-gray-700">Category</label>
+                                    <select
+                                        name="category"
+                                        value={formData.category}
                                         onChange={handleInputChange}
                                         required
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
+                                    >
+                                        <option value="">Select Category</option>
+                                        {[
+                                            'Cardiology', 'Orthopedics', 'Neurology', 'Dentistry',
+                                            'Ophthalmology', 'Dermatology', 'Gastroenterology',
+                                            'Urology', 'Oncology', 'ENT', 'General Surgery',
+                                            'Plastic Surgery', 'Other'
+                                        ].map((cat) => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">City</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                {/* Image Upload Component */}
                                 <ImageUpload
                                     onImageUpload={(imageUrl) => {
                                         handleInputChange({
                                             target: {
-                                                name: 'image',
+                                                name: 'icon', // Treatment schema uses 'icon' field
                                                 value: imageUrl
                                             }
                                         });
                                     }}
-                                    currentImage={formData.image}
-                                    folder="hospital"
-                                    maxSize={5}
+                                    currentImage={formData.icon}
+                                    folder="treatments"
+                                    fieldName="icon" // This will change the label to "Icon"
+                                    allowedTypes={['image/svg+xml']} // Specific types for icons
+                                    maxSize={2} // Smaller size for icons
                                 />
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Specialties (comma-separated)</label>
-                                    <input
-                                        type="text"
-                                        name="specialties"
-                                        value={formData.specialties}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Rating (0-5)</label>
+                                    <label className="block text-sm font-medium text-gray-700">Typical Duration (minutes)</label>
                                     <input
                                         type="number"
-                                        name="rating"
-                                        value={formData.rating}
-                                        onChange={handleInputChange}
-                                        min="0"
-                                        max="5"
-                                        step="0.1"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Number of Beds</label>
-                                    <input
-                                        type="number"
-                                        name="beds"
-                                        value={formData.beds}
-                                        onChange={handleInputChange}
-                                        min="0"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Accreditations (comma-separated)</label>
-                                    <input
-                                        type="text"
-                                        name="accreditation"
-                                        value={formData.accreditation}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Phone</label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
+                                        name="typicalDuration"
+                                        value={formData.typicalDuration}
                                         onChange={handleInputChange}
                                         required
+                                        min="1"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Typical Complexity</label>
+                                    <select
+                                        name="typicalComplexity"
+                                        value={formData.typicalComplexity}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    >
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Very High">Very High</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Typical Recovery Time</label>
+                                    <input
+                                        type="text"
+                                        name="typicalRecoveryTime"
+                                        value={formData.typicalRecoveryTime}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Active</label>
+                                    <select
+                                        name="isActive"
+                                        value={formData.isActive}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    >
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Blurb</label>
+                                <label className="block text-sm font-medium text-gray-700">Description</label>
                                 <textarea
-                                    name="blurb"
-                                    value={formData.blurb}
+                                    name="description"
+                                    value={formData.description}
                                     onChange={handleInputChange}
                                     required
                                     maxLength="500"
@@ -668,4 +657,4 @@ const HospitalManagement = () => {
     );
 };
 
-export default HospitalManagement;
+export default TreatmentManagement;

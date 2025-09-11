@@ -1,7 +1,15 @@
 import { Route, Routes } from "react-router-dom";
 import AdminDashboard from './components/admin/AdminDashboard';
+import AdminDoctors from './components/admin/AdminDoctors';
+import AdminDoctorTreatment from './components/admin/AdminDoctorTreatment';
+import AdminFaqs from './components/admin/AdminFAQ';
+import AdminHospitalDetails from './components/admin/AdminHospitalDetails';
 import AdminHospitals from './components/admin/AdminHospitals';
+import AdminHospitalTreatment from './components/admin/AdminHospitalTreatment';
 import AdminLogin from './components/admin/AdminLogin';
+import AdminPatientOpinions from './components/admin/AdminPatientOpinions';
+import AdminProcedures from './components/admin/AdminProcedures';
+import AdminTreatment from './components/admin/AdminTreatment';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import About from "./pages/About";
@@ -42,9 +50,16 @@ export default function App() {
           {/* Protected admin routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/hospitals" element={<AdminHospitals />} />
-          {/* <Route path="/admin/doctors" element={<AdminDoctors />} /> */}
+          <Route path="/admin/treatments" element={<AdminTreatment />} />
+          <Route path="/admin/doctors" element={<AdminDoctors />} />
+          <Route path="/admin/doctor-treatment" element={<AdminDoctorTreatment />} />
           {/* <Route path="/admin/treatments" element={<AdminTreatments />} /> */}
-          {/* <Route path="/admin/hospital-treatments" element={<AdminHospitalTreatments />} /> */}
+          <Route path="/admin/hospital-treatment" element={<AdminHospitalTreatment />} />
+          <Route path="/admin/faqs" element={<AdminFaqs />} />
+          <Route path="/admin/patient-opinions" element={<AdminPatientOpinions />} />
+          <Route path="/admin/procedures" element={<AdminProcedures />} />
+          <Route path="/admin/hospital-details" element={<AdminHospitalDetails />} />
+
         </Routes>
       </main>
       <Footer />
