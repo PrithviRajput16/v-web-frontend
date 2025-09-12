@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
+// import {
+//     FaArrowLeft,
+//     FaAward,
+//     FaCalendarCheck,
+//     FaEnvelope,
+//     FaGlobe,
+//     FaPhone,
+//     FaSpinner,
+//     FaStar,
+//     FaStethoscope
+// } from "react-icons/fa";
 import {
     FaArrowLeft,
     FaAward,
     FaCalendarCheck,
     FaEnvelope,
+    FaFilter,
     FaGlobe,
     FaPhone,
     FaSpinner,
@@ -16,9 +28,17 @@ const DoctorDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [doctor, setDoctor] = useState(null);
+    const [doctorTreatments, setDoctorTreatments] = useState([]);
+    const [filteredDoctorTreatments, setFilteredDoctorTreatments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("overview");
+    const [treatmentFilters, setTreatmentFilters] = useState({
+        name: "",
+        category: "",
+        minPrice: "",
+        maxPrice: ""
+    });
 
     useEffect(() => {
         const fetchDoctorData = async () => {
@@ -37,6 +57,18 @@ const DoctorDetails = () => {
                 }
 
                 setDoctor(doctorResult.data);
+
+                // Fetch doctor treatments
+                const treatmentsResponse = await fetch(`http://localhost:6003/api/doctor-treatment/by-doctor/${id}`);
+                if (treatmentsResponse.ok) {
+                    const treatmentsResult = await treatmentsResponse.json();
+                    if (treatmentsResult.success) {
+                        setDoctorTreatments(treatmentsResult.data);
+                        setFilteredDoctorTreatments(treatmentsResult.data);
+                        console.log(treatmentsResult.data[0]);
+                    }
+                }
+
                 setError(null);
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -48,6 +80,39 @@ const DoctorDetails = () => {
 
         fetchDoctorData();
     }, [id]);
+
+    // Filter doctor treatments based on filters
+    useEffect(() => {
+        let filtered = doctorTreatments;
+
+        if (treatmentFilters.name) {
+            filtered = filtered.filter(dt =>
+                dt.treatment && dt.treatment.title.toLowerCase().includes(treatmentFilters.name.toLowerCase())
+            );
+        }
+
+        if (treatmentFilters.category) {
+            filtered = filtered.filter(dt =>
+                dt.treatment && dt.treatment.category.toLowerCase().includes(treatmentFilters.category.toLowerCase())
+            );
+        }
+
+        if (treatmentFilters.minPrice) {
+            filtered = filtered.filter(dt => dt.fee >= parseInt(treatmentFilters.minPrice));
+        }
+
+        if (treatmentFilters.maxPrice) {
+            filtered = filtered.filter(dt => dt.fee <= parseInt(treatmentFilters.maxPrice));
+        }
+
+        setFilteredDoctorTreatments(filtered);
+    }, [treatmentFilters, doctorTreatments]);
+
+    // Extract unique values for filters
+    const treatmentCategories = [...new Set(doctorTreatments
+        .map(dt => dt.treatment?.category)
+        .filter(Boolean)
+    )];
 
     if (loading) {
         return (
@@ -138,7 +203,7 @@ const DoctorDetails = () => {
                 {/* Navigation Tabs */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
                     <div className="flex space-x-8 border-b">
-                        {["overview", "qualifications", "contact"].map((tab) => (
+                        {["overview", "treatments", "qualifications", "contact"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
@@ -154,6 +219,200 @@ const DoctorDetails = () => {
                 </div>
 
                 {/* Tab Content */}
+
+                {activeTab === "treatments" && (
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Filter Sidebar */}
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                            <div className="flex items-center gap-2 mb-6">
+                                <FaFilter className="text-teal-600 text-lg" />
+                                <h2 className="text-xl font-semibold text-gray-800">Filter Treatments</h2>
+                            </div>
+
+                            {/* Treatment Name Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Treatment Name
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Search treatments..."
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={treatmentFilters.name}
+                                    onChange={(e) => setTreatmentFilters({ ...treatmentFilters, name: e.target.value })}
+                                />
+                            </div>
+
+                            {/* Category Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Category
+                                </label>
+                                <select
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={treatmentFilters.category}
+                                    onChange={(e) => setTreatmentFilters({ ...treatmentFilters, category: e.target.value })}
+                                >
+                                    <option value="">All Categories</option>
+                                    {treatmentCategories.map((category, i) => (
+                                        <option key={i} value={category}>
+                                            {category}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Price Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Consultation Fee (₹)
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                        type="number"
+                                        placeholder="Min"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={treatmentFilters.minPrice}
+                                        onChange={(e) => setTreatmentFilters({ ...treatmentFilters, minPrice: e.target.value })}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Max"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={treatmentFilters.maxPrice}
+                                        onChange={(e) => setTreatmentFilters({ ...treatmentFilters, maxPrice: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Results Count */}
+                            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                                <p className="text-sm text-gray-600">
+                                    Showing {filteredDoctorTreatments.length} of {doctorTreatments.length} treatments
+                                </p>
+                            </div>
+
+                            {/* Reset Filters Button */}
+                            <button
+                                onClick={() => setTreatmentFilters({
+                                    name: "",
+                                    category: "",
+                                    minPrice: "",
+                                    maxPrice: ""
+                                })}
+                                className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-300 transition"
+                            >
+                                Reset Filters
+                            </button>
+                        </div>
+
+                        {/* Treatments List */}
+                        <div className="lg:col-span-3">
+                            <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
+                                <h2 className="text-3xl font-bold text-gray-800 mb-2">Treatments Offered by Dr. {doctor.firstName} {doctor.lastName}</h2>
+                                <p className="text-gray-600">
+                                    Specializing in {doctorTreatments.length} treatments with expertise in {doctor.specialty}.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-6">
+                                {filteredDoctorTreatments.length > 0 ? (
+                                    filteredDoctorTreatments.map((doctorTreatment) => (
+                                        <div key={doctorTreatment._id} className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+                                            <div className="flex flex-col md:flex-row gap-6">
+                                                {/* Treatment Icon/Image */}
+                                                <div className="flex-shrink-0">
+                                                    <div className="w-20 h-20 bg-teal-100 rounded-lg flex items-center justify-center">
+                                                        {/* <span className="text-3xl">
+                                                            {doctorTreatment?.icon || "⚕️"}
+                                                        </span> */}
+                                                        {console.log(doctorTreatment.treatment?.icon)}
+                                                        <img src={doctorTreatment.treatment?.icon} alt="⚕️" />
+                                                    </div>
+                                                </div>
+
+                                                {/* Treatment Info */}
+                                                <div className="flex-grow">
+                                                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                                        {doctorTreatment.treatment?.title || "Treatment"}
+                                                    </h3>
+
+                                                    <div className="flex items-center text-teal-600 font-semibold mb-2">
+                                                        <FaStethoscope className="mr-2" />
+                                                        <span>{doctorTreatment.treatment?.category || "Medical"}</span>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <span className="text-sm text-gray-500">Consultation Fee</span>
+                                                            <div className="text-xl font-bold text-teal-600">
+                                                                {doctorTreatment.fee || "On Call"}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm text-gray-500">Experience</span>
+                                                            <div className="font-semibold text-gray-700">
+                                                                {doctorTreatment.experienceWithProcedure || doctor.experience} years
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm text-gray-500">Success Rate</span>
+                                                            <div className="font-semibold text-green-600">
+                                                                {doctorTreatment.successRate || "N/A"}%
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm text-gray-500">Cases Performed</span>
+                                                            <div className="font-semibold text-gray-700">
+                                                                {doctorTreatment.casesPerformed || "N/A"}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {doctorTreatment.specialTechniques && doctorTreatment.specialTechniques.length > 0 && (
+                                                        <div className="mb-4">
+                                                            <span className="text-sm text-gray-500">Special Techniques:</span>
+                                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                                {doctorTreatment.specialTechniques.map((technique, index) => (
+                                                                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                                                                        {technique}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex space-x-4">
+                                                        <Link
+                                                            to={`/treatments/${doctorTreatment.treatment?._id}`}
+                                                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                                                        >
+                                                            View Treatment Details
+                                                        </Link>
+                                                        <Link
+                                                            to={`/doctors/${doctor._id}/book?treatment=${doctorTreatment.treatment?._id}`}
+                                                            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+                                                        >
+                                                            Book This Treatment
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-12">
+                                        <div className="text-6xl mb-4">⚕️</div>
+                                        <h3 className="text-xl font-semibold text-gray-800 mb-2">No treatments found</h3>
+                                        <p className="text-gray-600 mb-4">
+                                            Try adjusting your filters to find treatments offered by this doctor.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {activeTab === "overview" && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Main Information */}
