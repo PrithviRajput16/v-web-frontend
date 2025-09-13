@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import ProcedureCostCard from './ProcedureCostCard';
 import SectionHeading from './home/SectionHeading';
+import url_prefix from "../data/variable";
+
 
 export default function ProcedureCost() {
   const [procedureCosts, setProcedureCosts] = useState([]);
@@ -10,7 +12,7 @@ export default function ProcedureCost() {
   useEffect(() => {
     const fetchProcedureCosts = async () => {
       try {
-        const response = await fetch('http://localhost:6003/api/procedure-costs/all');
+        const response = await fetch(url_prefix + "/api/procedure-costs/all");
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

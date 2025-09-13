@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { FaFilter, FaHospital, FaMapMarkerAlt, FaSearch, FaStar } from "react-icons/fa";
 import HospitalCard from "../components/HospitalCard";
+import url_prefix from "../data/variable";
+
 
 const Hospitals = () => {
   const [hospitals, setHospitals] = useState([]);
@@ -11,7 +13,7 @@ const Hospitals = () => {
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
-        const response = await fetch('http://localhost:6003/api/hospitals/all');
+        const response = await fetch(url_prefix + '/api/hospitals/all');
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

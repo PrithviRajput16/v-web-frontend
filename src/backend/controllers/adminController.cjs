@@ -114,7 +114,7 @@ exports.getDashboardStats = async (req, res) => {
 // Hospital Management
 exports.getHospitals = async (req, res) => {
     try {
-        const { page = 1, limit = 10, search } = req.query;
+        const { page = 1, limit = 10000, search } = req.query;
         const filter = {};
 
         if (search) {
@@ -185,7 +185,7 @@ exports.getHospitals = async (req, res) => {
 // Similar methods for doctors, treatments, etc...
 exports.getDoctors = async (req, res) => {
     try {
-        const { page = 1, limit = 10, search, hospital } = req.query;
+        const { page = 1, limit = 10000, search, hospital } = req.query;
         const filter = {};
 
         if (search) {
@@ -255,7 +255,7 @@ exports.getDoctors = async (req, res) => {
 
 exports.getHospitalTreatments = async (req, res) => {
     try {
-        const { page = 1, limit = 10, hospital, treatment } = req.query;
+        const { page = 1, limit = 10000, hospital, treatment } = req.query;
         const filter = {};
 
         if (hospital) filter.hospital = hospital;
@@ -536,7 +536,7 @@ exports.getDoctorTreatmentById = async (req, res) => {
 // Get All DoctorTreatments (with filters)
 exports.getDoctorTreatments = async (req, res) => {
     try {
-        const { page = 1, limit = 10, doctor, treatment } = req.query;
+        const { page = 1, limit = 10000, doctor, treatment } = req.query;
         const filter = {};
 
         if (doctor) filter.doctor = doctor;
@@ -635,7 +635,7 @@ exports.getTreatmentById = async (req, res) => {
 // Get All Treatments (with search & filters)
 exports.getTreatments = async (req, res) => {
     try {
-        const { page = 1, limit = 10, category, search } = req.query;
+        const { page = 1, limit = 10000, category, search } = req.query;
         const filter = {};
 
         if (category) filter.category = category;
@@ -704,7 +704,7 @@ exports.deleteProcedureCost = async (req, res) => {
 
 exports.getProcedureCosts = async (req, res) => {
     try {
-        const { page = 1, limit = 10, category, search } = req.query;
+        const { page = 1, limit = 10000, category, search } = req.query;
         const filter = {};
         if (category) filter.category = category;
         if (search) filter.$or = [{ title: new RegExp(search, 'i') }, { description: new RegExp(search, 'i') }];
@@ -781,7 +781,7 @@ exports.deleteFAQ = async (req, res) => {
 
 exports.getFAQs = async (req, res) => {
     try {
-        const { page = 1, limit = 10, category, search } = req.query;
+        const { page = 1, limit = 10000, category, search } = req.query;
         const filter = {};
         if (category) filter.category = category;
         if (search) filter.$or = [{ question: new RegExp(search, 'i') }, { answer: new RegExp(search, 'i') }];
@@ -844,7 +844,7 @@ exports.deletePatientOpinion = async (req, res) => {
 
 exports.getPatientOpinions = async (req, res) => {
     try {
-        const { page = 1, limit = 10, search } = req.query;
+        const { page = 1, limit = 10000, search } = req.query;
         const filter = {};
         if (search) filter.$or = [{ name: new RegExp(search, 'i') }, { text: new RegExp(search, 'i') }];
 

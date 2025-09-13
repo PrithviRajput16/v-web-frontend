@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import url_prefix from "../../data/variable";
+import ImageUpload from './ImageUpload'; // Import the ImageUpload component
 
 const AboutManagement = () => {
     const [aboutData, setAboutData] = useState(null);
@@ -33,18 +35,20 @@ const AboutManagement = () => {
                 return;
             }
 
-            const response = await fetch('http://localhost:6003/api/admin/about', {
+            const response = await fetch(url_prefix + '/api/admin/about', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
 
             if (result.success) {
-                setAboutData(result.data);
+                setAboutData(result.data || initialData);
             } else {
                 console.error('Failed to fetch about data:', result.error);
+                setAboutData(initialData); // Fallback to initial data on error
             }
         } catch (err) {
             console.error('Error fetching about data:', err);
+            setAboutData(initialData); // Fallback to initial data on error
         } finally {
             setLoading(false);
         }
@@ -54,6 +58,11 @@ const AboutManagement = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setAboutData(prev => ({ ...prev, [name]: value }));
+    };
+
+    // Handle image upload
+    const handleImageUpload = (imageUrl) => {
+        setAboutData(prev => ({ ...prev, image: imageUrl }));
     };
 
     // Handle highlight changes
@@ -95,7 +104,7 @@ const AboutManagement = () => {
                 return;
             }
 
-            const response = await fetch('http://localhost:6003/api/admin/about', {
+            const response = await fetch(url_prefix + '/api/admin/about', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,14 +191,12 @@ const AboutManagement = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                                <input
-                                    type="text"
-                                    name="image"
-                                    value={aboutData.image}
-                                    onChange={handleInputChange}
-                                    className="w-full border p-2 rounded mt-1"
-                                    required
+                                <label className="block text-sm font-medium text-gray-700">Image</label>
+                                <ImageUpload
+                                    onImageUpload={handleImageUpload}
+                                    currentImage={aboutData.image}
+                                    folder="about"
+                                    maxSize={5}
                                 />
                             </div>
                         </div>

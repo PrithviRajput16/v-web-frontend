@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProcedureCostCard from "../components/ProcedureCostCard";
+import url_prefix from "../data/variable";
 
 
 const TreatmentDetails = () => {
@@ -61,7 +62,7 @@ const TreatmentDetails = () => {
                 setLoading(true);
 
                 // Fetch treatment basic info
-                const treatmentResponse = await fetch(`http://localhost:6003/api/treatments/${id}`);
+                const treatmentResponse = await fetch(`${url_prefix}/api/treatments/${id}`);
                 if (!treatmentResponse.ok) {
                     throw new Error('Failed to fetch treatment data');
                 }
@@ -74,7 +75,7 @@ const TreatmentDetails = () => {
                 setTreatment(treatmentResult.data);
 
                 // Fetch hospital treatments for this procedure
-                const hospitalTreatmentsResponse = await fetch(`http://localhost:6003/api/hospital-treatment/by-treatment/${id}`);
+                const hospitalTreatmentsResponse = await fetch(`${url_prefix}/api/hospital-treatment/by-treatment/${id}`);
                 if (hospitalTreatmentsResponse.ok) {
                     const hospitalTreatmentsResult = await hospitalTreatmentsResponse.json();
                     if (hospitalTreatmentsResult.success) {
@@ -84,7 +85,7 @@ const TreatmentDetails = () => {
                 }
 
                 // Fetch doctor details
-                const doctorTreatmentResponse = await fetch(`http://localhost:6003/api/doctor-treatment/by-treatment/${id}`)
+                const doctorTreatmentResponse = await fetch(`${url_prefix}/api/doctor-treatment/by-treatment/${id}`)
                 if (doctorTreatmentResponse.ok) {
                     const doctorTreatmentResult = await doctorTreatmentResponse.json()
                     setDoctorTreatments(doctorTreatmentResult.data);
@@ -92,7 +93,7 @@ const TreatmentDetails = () => {
                 }
 
                 // Fetch Prodecures 
-                const procedureResponse = await fetch(`http://localhost:6003/api/procedure-costs/by-treatment/${id}`);
+                const procedureResponse = await fetch(`${url_prefix}/api/procedure-costs/by-treatment/${id}`);
                 if (procedureResponse.ok) {
                     const procedureResult = await procedureResponse.json();
                     setProcedures(procedureResult.data);

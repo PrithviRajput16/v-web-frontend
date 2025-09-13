@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import url_prefix from "../../data/variable";
 
 // FAQ Management Component
 const FAQManagement = () => {
@@ -34,7 +35,7 @@ const FAQManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/faqs?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/faqs?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -81,7 +82,7 @@ const FAQManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/faqs', {
+            const response = await fetch(`${url_prefix}/api/admin/faqs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ const FAQManagement = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/faqs/${currentFaq._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/faqs/${currentFaq._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -167,7 +168,7 @@ const FAQManagement = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/faqs/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/faqs/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

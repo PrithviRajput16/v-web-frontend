@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
-// import {
-//     FaArrowLeft,
-//     FaAward,
-//     FaCalendarCheck,
-//     FaEnvelope,
-//     FaGlobe,
-//     FaPhone,
-//     FaSpinner,
-//     FaStar,
-//     FaStethoscope
-// } from "react-icons/fa";
+import url_prefix from "../data/variable";
+
 import {
     FaArrowLeft,
     FaAward,
@@ -46,7 +37,7 @@ const DoctorDetails = () => {
                 setLoading(true);
 
                 // Fetch doctor data
-                const doctorResponse = await fetch(`http://localhost:6003/api/doctors/${id}`);
+                const doctorResponse = await fetch(`${url_prefix}/api/doctors/${id}`);
                 if (!doctorResponse.ok) {
                     throw new Error("Failed to fetch doctor data");
                 }
@@ -59,7 +50,7 @@ const DoctorDetails = () => {
                 setDoctor(doctorResult.data);
 
                 // Fetch doctor treatments
-                const treatmentsResponse = await fetch(`http://localhost:6003/api/doctor-treatment/by-doctor/${id}`);
+                const treatmentsResponse = await fetch(`${url_prefix}/api/doctor-treatment/by-doctor/${id}`);
                 if (treatmentsResponse.ok) {
                     const treatmentsResult = await treatmentsResponse.json();
                     if (treatmentsResult.success) {

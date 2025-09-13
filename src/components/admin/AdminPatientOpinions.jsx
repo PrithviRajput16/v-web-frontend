@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import url_prefix from "../../data/variable";
 import ImageUpload from './ImageUpload';
 
 // Patient Opinion Management Component
@@ -37,7 +38,7 @@ const PatientOpinionManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/patient-opinions?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/patient-opinions?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -84,7 +85,7 @@ const PatientOpinionManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/patient-opinions', {
+            const response = await fetch(`${url_prefix}/api/admin/patient-opinions`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ const PatientOpinionManagement = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/patient-opinions/${currentOpinion._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/patient-opinions/${currentOpinion._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,7 +173,7 @@ const PatientOpinionManagement = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/patient-opinions/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/patient-opinions/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

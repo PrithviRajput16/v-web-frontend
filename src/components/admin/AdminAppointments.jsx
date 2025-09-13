@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import url_prefix from "../../data/variable";
 const BookingManagement = () => {
     const [bookings, setBookings] = useState([]);
     const [total, setTotal] = useState(0);
@@ -23,7 +23,7 @@ const BookingManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/bookings?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/bookings?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -111,7 +111,7 @@ Medical Team
                 return;
             }
 
-            const response = await fetch(`http://localhost:6003/api/admin/bookings/${bookingId}?page=1&limit=10000`, {
+            const response = await fetch(`${url_prefix}/api/admin/bookings/${bookingId}?page=1&limit=10000`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ Medical Team
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/bookings/${id}?page=1&limit=100000`, {
+            const response = await fetch(`${url_prefix}/api/admin/bookings/${id}?page=1&limit=100000`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

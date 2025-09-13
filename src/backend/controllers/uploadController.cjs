@@ -81,7 +81,7 @@ const handleUpload = (req, res) => {
 
         // Generate the URL path
         const filePath = `/uploads/${req.params.folder || 'general'}/${req.file.filename}`;
-        const fullUrl = `http://localhost:6003${filePath}`;
+        const fullUrl = `${url_prefix}${filePath}`;
 
         console.log('=== UPLOAD SUCCESS ===');
         console.log('File saved to:', req.file.path);

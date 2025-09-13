@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageUpload from './ImageUpload';
+import url_prefix from "../../data/variable";
 
 const TreatmentManagement = () => {
     const [treatments, setTreatments] = useState([]);
@@ -36,7 +37,7 @@ const TreatmentManagement = () => {
             }
             console.log(token);
             const response = await fetch(
-                `http://localhost:6003/api/admin/treatments?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/treatments?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -89,7 +90,7 @@ const TreatmentManagement = () => {
             isActive: formData.isActive === 'true' || formData.isActive === true,
         };
         try {
-            const response = await fetch('http://localhost:6003/api/admin/treatments', {
+            const response = await fetch(`${url_prefix}/api/admin/treatments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -179,7 +180,7 @@ const TreatmentManagement = () => {
             isActive: formData.isActive === 'true' || formData.isActive === true,
         };
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/treatments/${currentTreatment._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/treatments/${currentTreatment._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -218,7 +219,7 @@ const TreatmentManagement = () => {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/treatments/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/treatments/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -273,7 +274,7 @@ const TreatmentManagement = () => {
             return;
         }
         try {
-            const response = await fetch('http://localhost:6003/api/admin/logout', {
+            const response = await fetch(`${url_prefix}/api/admin/logout`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
             });

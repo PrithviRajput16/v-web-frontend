@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+// const API_URL = process.env.REACT_APP_API_URL;
 
 export default function BookingFlow({ hospital }) {
   const [step, setStep] = useState(1);
@@ -28,6 +29,7 @@ export default function BookingFlow({ hospital }) {
         const hospitalsResult = await hospitalsResponse.json();
         if (hospitalsResult.success) {
           setHospitals(hospitalsResult.data);
+          console.log(API_URL);
         }
 
 

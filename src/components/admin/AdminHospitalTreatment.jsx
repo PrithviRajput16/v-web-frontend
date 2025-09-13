@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import url_prefix from "../../data/variable";
 
 // Hospital Treatment Management Component
 const HospitalTreatmentManagement = () => {
@@ -40,7 +41,7 @@ const HospitalTreatmentManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/hospital-treatments?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/hospital-treatments?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -71,7 +72,7 @@ const HospitalTreatmentManagement = () => {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
 
-            const response = await fetch('http://localhost:6003/api/admin/hospitals?page=1&limit=1000', {
+            const response = await fetch(`${url_prefix}/api/admin/hospitals?page=1&limit=1000`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
@@ -89,7 +90,7 @@ const HospitalTreatmentManagement = () => {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
 
-            const response = await fetch('http://localhost:6003/api/admin/treatments', {
+            const response = await fetch(`${url_prefix}/api/admin/treatments`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
@@ -126,7 +127,7 @@ const HospitalTreatmentManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/hospital-treatments', {
+            const response = await fetch(`${url_prefix}/api/admin/hospital-treatments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -185,7 +186,7 @@ const HospitalTreatmentManagement = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospital-treatments/${currentTreatment._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/hospital-treatments/${currentTreatment._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -219,7 +220,7 @@ const HospitalTreatmentManagement = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospital-treatments/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/hospital-treatments/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

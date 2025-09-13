@@ -31,7 +31,7 @@ exports.createBooking = async (req, res) => {
 // Get all bookings
 exports.getBookings = async (req, res) => {
     try {
-        const { page = 1, limit = 10, sort = '-createdAt', read, replied, doctor, hospital } = req.query;
+        const { page = 1, limit = 1000, sort = '-createdAt', read, replied, doctor, hospital } = req.query;
 
         let query = {};
 

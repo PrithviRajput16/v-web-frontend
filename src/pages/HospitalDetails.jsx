@@ -15,6 +15,8 @@ import {
   FaTrain
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import url_prefix from "../data/variable";
+
 
 const HospitalDetails = () => {
   const { id } = useParams();
@@ -131,7 +133,7 @@ const HospitalDetails = () => {
         setLoading(true);
 
         // Fetch hospital basic info
-        const hospitalResponse = await fetch(`http://localhost:6003/api/hospitals/${id}`);
+        const hospitalResponse = await fetch(`${url_prefix}/api/hospitals/${id}`);
         if (!hospitalResponse.ok) {
           throw new Error('Failed to fetch hospital data');
         }
@@ -144,7 +146,7 @@ const HospitalDetails = () => {
         setHospital(hospitalResult.data);
 
         // Fetch hospital details
-        const detailsResponse = await fetch(`http://localhost:6003/api/hospitals/${id}/details`);
+        const detailsResponse = await fetch(`${url_prefix}/api/hospitals/${id}/details`);
         if (detailsResponse.ok) {
           const detailsResult = await detailsResponse.json();
           if (detailsResult.success) {
@@ -153,7 +155,7 @@ const HospitalDetails = () => {
         }
 
         // Fetch Doctor details
-        const doctorResponse = await fetch(`http://localhost:6003/api/doctors/hospital/${id}`);
+        const doctorResponse = await fetch(`${url_prefix}/api/doctors/hospital/${id}`);
         if (doctorResponse.ok) {
           const doctorResult = await doctorResponse.json();
           if (doctorResult.success) {
@@ -162,7 +164,7 @@ const HospitalDetails = () => {
         }
 
         // Fetch Treatment details
-        const treatmentResponse = await fetch(`http://localhost:6003/api/hospital-treatment/by-hospital/${id}`);
+        const treatmentResponse = await fetch(`${url_prefix}/api/hospital-treatment/by-hospital/${id}`);
         if (treatmentResponse.ok) {
           const treatmentResult = await treatmentResponse.json();
           if (treatmentResult.success) {

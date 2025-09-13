@@ -19,7 +19,7 @@ export default function About() {
   useEffect(() => {
     const fetchAboutData = async () => {
       try {
-        const response = await fetch("http://localhost:6003/api/about"); // Adjust the endpoint as needed
+        const response = await fetch(url_prefix + "/api/about?page=1&limit=1000"); // Adjust the endpoint as needed
         const result = await response.json();
         if (result.success) {
           setAboutData(result.data);

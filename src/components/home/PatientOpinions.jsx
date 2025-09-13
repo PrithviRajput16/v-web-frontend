@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import url_prefix from "../../data/variable";
+
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -21,7 +23,7 @@ const PatientOpinions = () => {
     const fetchOpinions = async () => {
       try {
         const response = await fetch(
-          "http://localhost:6003/api/patient-opinions"
+          url_prefix + "/api/patient-opinions"
         );
 
         if (!response.ok) {
@@ -283,11 +285,10 @@ const PatientOpinions = () => {
               <motion.button
                 key={index}
                 onClick={() => goToOpinion(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex
                     ? "bg-teal-600"
                     : "bg-gray-300 hover:bg-blue-400"
-                }`}
+                  }`}
                 whileHover={{ scale: 1.3 }}
                 aria-label={`Go to testimonial ${index + 1}`}
               />

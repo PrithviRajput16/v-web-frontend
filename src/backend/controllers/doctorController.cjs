@@ -6,7 +6,7 @@ exports.getDoctors = async (req, res) => {
     try {
         const {
             page = 1,
-            limit = 10,
+            limit = 10000,
             hospital,
             specialty,
             minRating,
@@ -151,7 +151,7 @@ exports.deleteDoctor = async (req, res) => {
 // Get doctors by hospital
 exports.getDoctorsByHospital = async (req, res) => {
     try {
-        const { page = 1, limit = 20, specialty } = req.query;
+        const { page = 1, limit = 10000, specialty } = req.query;
         const filter = { hospital: req.params.hospitalId, isActive: true };
 
         if (specialty) filter.specialty = new RegExp(specialty, 'i');
@@ -187,7 +187,7 @@ exports.getDoctorsByHospital = async (req, res) => {
 // Get doctors by specialty
 exports.getDoctorsBySpecialty = async (req, res) => {
     try {
-        const { page = 1, limit = 20, hospital, minRating } = req.query;
+        const { page = 1, limit = 10000, hospital, minRating } = req.query;
         const filter = { specialty: new RegExp(req.params.specialty, 'i'), isActive: true };
 
         if (hospital) filter.hospital = hospital;

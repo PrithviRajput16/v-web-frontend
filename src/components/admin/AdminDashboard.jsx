@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import url_prefix from "../../data/variable";
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
@@ -12,7 +13,7 @@ const AdminDashboard = () => {
     const fetchDashboardStats = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('http://localhost:6003/api/admin/dashboard/stats', {
+            const response = await fetch(url_prefix + '/api/admin/dashboard/stats', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await response.json();

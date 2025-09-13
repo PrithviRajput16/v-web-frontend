@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import url_prefix from "../../data/variable";
 import ImageUpload from './ImageUpload';
 
 const DoctorManagement = () => {
@@ -56,7 +57,7 @@ const DoctorManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/doctors?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/doctors?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -87,7 +88,7 @@ const DoctorManagement = () => {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
 
-            const response = await fetch('http://localhost:6003/api/admin/hospitals?page=1&limit=1000', {
+            const response = await fetch(`${url_prefix}/api/admin/hospitals?page=1&limit=1000`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
@@ -185,7 +186,7 @@ const DoctorManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/doctors?pages=1&limit=10000', {
+            const response = await fetch(`${url_prefix}/api/admin/doctors?pages=1&limit=10000`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -283,7 +284,7 @@ const DoctorManagement = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/doctors/${currentDoctor._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/doctors/${currentDoctor._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -317,7 +318,7 @@ const DoctorManagement = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/doctors/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/doctors/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
