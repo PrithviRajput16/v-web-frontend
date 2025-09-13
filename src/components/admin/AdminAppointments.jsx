@@ -11,7 +11,7 @@ const BookingManagement = () => {
     const [currentBooking, setCurrentBooking] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const limit = 100;
+    const limit = 10000;
 
     // Fetch bookings
     const fetchBookings = async (pageNum = 1, searchQuery = '') => {
@@ -34,7 +34,9 @@ const BookingManagement = () => {
                 setTotal(result.total);
                 setPage(result.page);
                 setPages(result.pages);
-            } else {
+                console.log(result.data[0]);
+            }
+            else {
                 console.error('Failed to fetch bookings:', result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
@@ -48,6 +50,57 @@ const BookingManagement = () => {
         }
     };
 
+    // WhatsApp confirmation function
+    const sendWhatsAppConfirmation = (booking) => {
+        // Format the phone number (remove any non-digit characters and add country code)
+        const phoneNumber = booking.phone.replace(/\D/g, '');
+
+        // If phone number doesn't start with country code, add India code (91)
+        const formattedPhone = phoneNumber.startsWith('91') ? phoneNumber : `91${phoneNumber}`;
+
+        // Create the confirmation message
+        const message = `
+*APPOINTMENT CONFIRMATION* ✅
+
+Dear ${booking.name},
+
+Your appointment has been confirmed with the following details:
+
+*Doctor:* Dr. ${booking.doctor?.firstName} ${booking.doctor?.lastName}
+*Hospital:* ${booking.hospital?.name}
+*Date:* ${new Date(booking.date).toLocaleDateString()}
+*Time:* ${booking.time}
+
+*Patient Details:*
+Name: ${booking.name}
+Email: ${booking.email}
+Phone: ${booking.phone}
+
+Please arrive 15 minutes before your scheduled time.
+Bring any previous medical reports and your ID proof.
+
+
+*Note:* ${booking.message || 'No additional notes provided.'}
+
+We look forward to seeing you!
+
+Best regards,
+Medical Team
+    `.trim();
+
+        // Create WhatsApp link
+        const whatsappLink = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+
+        // Open WhatsApp in new tab
+        window.open(whatsappLink, '_blank');
+
+        // Optional: Mark as replied in the system
+        updateBookingStatus(booking._id, { replied: true, read: true });
+
+        // Show success message
+        alert('WhatsApp confirmation message opened!');
+    };
+
     // Update booking status
     const updateBookingStatus = async (bookingId, updates) => {
         setLoading(true);
@@ -58,7 +111,7 @@ const BookingManagement = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:6003/api/admin/bookings/${bookingId}`, {
+            const response = await fetch(`http://localhost:6003/api/admin/bookings/${bookingId}?page=1&limit=10000`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -93,7 +146,7 @@ const BookingManagement = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/bookings/${id}`, {
+            const response = await fetch(`http://localhost:6003/api/admin/bookings/${id}?page=1&limit=100000`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -172,7 +225,7 @@ const BookingManagement = () => {
                     <h2 className="text-xl font-semibold">Booking List</h2>
                     <span className="text-sm text-gray-600">Total: {total} bookings</span>
                 </div>
-                
+
                 <input
                     type="text"
                     value={search}
@@ -180,7 +233,7 @@ const BookingManagement = () => {
                     placeholder="Search by name, email, phone, doctor, or hospital"
                     className="mb-4 w-full p-2 rounded-md border border-gray-300 shadow-sm"
                 />
-                
+
                 <div className="overflow-x-auto">
                     <table className="w-full table-auto">
                         <thead>
@@ -210,8 +263,10 @@ const BookingManagement = () => {
                                         <div>{booking.email}</div>
                                         <div className="text-sm text-gray-600">{booking.phone}</div>
                                     </td>
-                                    <td className="px-4 py-2">{booking.doctor}</td>
-                                    <td className="px-4 py-2">{booking.hospital}</td>
+                                    <td className="px-4 py-2">
+                                        {booking.doctor?.firstName} {booking.doctor?.lastName}
+                                    </td>
+                                    <td className="px-4 py-2">{booking.hospital?.name}</td>
                                     <td className="px-4 py-2">
                                         <div>{new Date(booking.date).toLocaleDateString()}</div>
                                         <div className="text-sm text-gray-600">{booking.time}</div>
@@ -223,18 +278,35 @@ const BookingManagement = () => {
                                         {new Date(booking.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="px-4 py-2">
-                                        <button
-                                            onClick={() => openUpdateModal(booking)}
-                                            className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600 text-sm"
-                                        >
-                                            Update
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteBooking(booking._id)}
-                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm"
-                                        >
-                                            Delete
-                                        </button>
+                                        <div className="flex flex-col space-y-2">
+                                            {/* WhatsApp Confirmation Button */}
+                                            <button
+                                                onClick={() => sendWhatsAppConfirmation(booking)}
+                                                className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 text-sm flex items-center justify-center"
+                                                title="Send WhatsApp Confirmation"
+                                            >
+                                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.864 3.488" />
+                                                </svg>
+                                                WhatsApp
+                                            </button>
+
+                                            {/* Update Button */}
+                                            <button
+                                                onClick={() => openUpdateModal(booking)}
+                                                className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 text-sm"
+                                            >
+                                                Update
+                                            </button>
+
+                                            {/* Delete Button */}
+                                            <button
+                                                onClick={() => handleDeleteBooking(booking._id)}
+                                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -321,7 +393,7 @@ const BookingModal = ({ booking, onClose, onUpdate }) => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
                 <h2 className="text-xl font-semibold mb-4">Update Booking Status</h2>
-                
+
                 <div className="mb-4 p-4 bg-gray-50 rounded">
                     <h3 className="font-medium mb-2">Booking Details:</h3>
                     <p><strong>Patient:</strong> {booking.name}</p>
@@ -337,7 +409,7 @@ const BookingModal = ({ booking, onClose, onUpdate }) => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                        
+
                         <div className="space-y-2">
                             <label className="flex items-center">
                                 <input

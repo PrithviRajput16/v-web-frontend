@@ -954,13 +954,12 @@ exports.deleteHospitalDetail = async (req, res) => {
 // ==============================
 
 const Booking = require('../models/Bookings.cjs'); // Make sure to import Booking model
-
 // @desc    Get all bookings
 // @route   GET /api/admin/bookings
 // @access  Protected
 exports.getBookings = async (req, res) => {
     try {
-        const { page = 1, limit = 10, read, replied, confirmed, search } = req.query;
+        const { page = 1, limit = 10000, read, replied, confirmed, search } = req.query;
         const filter = {};
 
         // Filter by status
@@ -974,12 +973,15 @@ exports.getBookings = async (req, res) => {
                 { name: new RegExp(search, 'i') },
                 { email: new RegExp(search, 'i') },
                 { phone: new RegExp(search, 'i') },
-                { doctor: new RegExp(search, 'i') },
-                { hospital: new RegExp(search, 'i') }
+                { 'doctor.firstName': new RegExp(search, 'i') },
+                { 'doctor.lastName': new RegExp(search, 'i') },
+                { 'hospital.name': new RegExp(search, 'i') }
             ];
         }
 
         const bookings = await Booking.find(filter)
+            .populate('doctor', 'firstName lastName specialty') // Populate doctor details
+            .populate('hospital', 'name city country') // Populate hospital details
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
@@ -1045,7 +1047,10 @@ exports.getBookingStats = async (req, res) => {
 // @access  Protected
 exports.getBookingById = async (req, res) => {
     try {
-        const booking = await Booking.findById(req.params.id);
+        const booking = await Booking.findById(req.params.id)
+            .populate('doctor', 'firstName lastName specialty experience') // Populate doctor details
+            .populate('hospital', 'name city country phone'); // Populate hospital details
+
         if (!booking) {
             return res.status(404).json({
                 success: false,
@@ -1077,8 +1082,13 @@ exports.updateBookingStatus = async (req, res) => {
         const booking = await Booking.findByIdAndUpdate(
             req.params.id,
             updateData,
-            { new: true, runValidators: true }
-        );
+            {
+                new: true,
+                runValidators: true
+            }
+        )
+            .populate('doctor', 'firstName lastName specialty') // Populate after update
+            .populate('hospital', 'name city country'); // Populate after update
 
         if (!booking) {
             return res.status(404).json({

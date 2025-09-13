@@ -185,7 +185,7 @@ const DoctorManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/doctors', {
+            const response = await fetch('http://localhost:6003/api/admin/doctors?pages=1&limit=10000', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

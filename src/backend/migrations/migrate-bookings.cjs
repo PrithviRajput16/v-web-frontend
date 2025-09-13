@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../config.env') });
 const Booking = require('../models/Bookings.cjs');
+const Doctor = require('../models/Doctor.cjs');
+const Hospital = require('../models/Hospital.cjs');
 
 const migrateBookings = async () => {
     try {
@@ -24,16 +26,15 @@ const migrateBookings = async () => {
             await Booking.createCollection();
             console.log('Bookings collection created successfully');
         } else {
-            console.log('Bookings collection already exists');
+            await Booking.deleteMany({});
+            console.log('Cleared existing doctor data');
         }
 
         // Add sample data (optional)
-        const sampleBooking = new Booking({
+        const sampleBooking = [{
             name: 'John Doe',
             email: 'john@example.com',
             phone: '+1234567890',
-            doctor: 'Dr. Smith',
-            hospital: 'General Hospital',
             date: new Date('2024-12-15'),
             time: '10:00',
             message: 'Sample booking for testing',
@@ -41,10 +42,19 @@ const migrateBookings = async () => {
                 read: false,
                 replied: false
             }
-        });
+        }];
 
-        await sampleBooking.save();
-        console.log('Sample booking created');
+        const hospital = await Hospital.find({});
+        const doctor = await Doctor.find({});
+        console.log(hospital[0]);
+
+        sampleBooking[0].hospital = hospital[0]._id;
+        sampleBooking[0].doctor = doctor[0]._id;
+
+        // await sampleBooking.save();
+        // console.log('Sample booking created');
+
+        await Booking.insertMany(sampleBooking);
 
         console.log('Migration completed successfully');
         process.exit(0);

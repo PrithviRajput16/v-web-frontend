@@ -19,14 +19,14 @@ const bookingSchema = new mongoose.Schema({
         trim: true
     },
     doctor: {
-        type: String,
-        required: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Doctor',
+        required: true
     },
     hospital: {
-        type: String,
-        required: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Hospital',
+        required: [true, 'Hospital is required']
     },
     date: {
         type: Date,
