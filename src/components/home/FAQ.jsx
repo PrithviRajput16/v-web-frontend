@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FaChevronDown, FaQuestionCircle } from "react-icons/fa";
+import url_prefix from "../../data/variable";
 import "./FAQ.css";
 
 const FAQ = () => {
@@ -13,7 +14,7 @@ const FAQ = () => {
   useEffect(() => {
     const fetchFAQs = async () => {
       try {
-        const response = await fetch("http://localhost:6003/api/faqs");
+        const response = await fetch(url_prefix + "/api/faqs");
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

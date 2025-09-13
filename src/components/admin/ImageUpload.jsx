@@ -1,5 +1,6 @@
 // components/ImageUpload.jsx
 import { useState } from 'react';
+import url_prefix from "../../data/variable";
 
 const ImageUpload = ({
     onImageUpload,
@@ -51,7 +52,7 @@ const ImageUpload = ({
             const token = localStorage.getItem('adminToken');
             const url = folder
                 ? `http://localhost:6003/api/upload/${folder}`
-                : 'http://localhost:6003/api/upload';
+                : url_prefix + '/api/upload';
 
             const response = await fetch(url, {
                 method: 'POST',

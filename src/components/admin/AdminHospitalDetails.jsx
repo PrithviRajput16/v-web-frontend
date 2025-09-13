@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import url_prefix from "../../data/variable";
+
 
 // Hospital Detail Management Component
 const HospitalDetailManagement = () => {
@@ -14,7 +16,7 @@ const HospitalDetailManagement = () => {
     const [currentHospitalDetail, setCurrentHospitalDetail] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const limit = 100;
+    const limit = 10000;
 
     const initialFormData = {
         hospital: '',
@@ -67,7 +69,7 @@ const HospitalDetailManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/hospital-details?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/hospital-details?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -98,12 +100,12 @@ const HospitalDetailManagement = () => {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
 
-            const response = await fetch('http://localhost:6003/api/admin/hospitals?page=1&limit=1000', {
+            const response = await fetch(`${url_prefix}/api/admin/hospitals?page=1&limit=1000`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
             if (result.success) {
-                setHospitals(result.data);
+                setHospitals(result.data)
             }
         } catch (err) {
             console.error('Error fetching hospitals:', err);
@@ -185,7 +187,7 @@ const HospitalDetailManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/hospital-details', {
+            const response = await fetch(`${url_prefix}/api/admin/hospital-details`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -271,7 +273,7 @@ const HospitalDetailManagement = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospital-details/${currentHospitalDetail._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/hospital-details/${currentHospitalDetail._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -305,7 +307,7 @@ const HospitalDetailManagement = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospital-details/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/hospital-details/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

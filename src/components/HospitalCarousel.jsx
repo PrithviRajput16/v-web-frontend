@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react'; // Added useEffect
 import SectionHeading from "../components/home/SectionHeading";
 import HospitalCard from './HospitalCard';
+import url_prefix from "../data/variable";
 
 const HospitalCarousel = () => { // Removed hospitals prop
   const [hospitals, setHospitals] = useState([]);
@@ -12,7 +13,7 @@ const HospitalCarousel = () => { // Removed hospitals prop
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
-        const response = await fetch('http://localhost:6003/api/hospitals/all');
+        const response = await fetch(url_prefix + '/api/hospitals/all');
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

@@ -12,6 +12,9 @@ import {
   FaUserNurse,
 } from "react-icons/fa";
 
+import url_prefix from "../../data/variable";
+
+
 // Icon mapping
 const iconComponents = {
   FaUserMd,
@@ -34,7 +37,7 @@ const OurServices = () => {
   useEffect(() => {
     const fetchAssistance = async () => {
       try {
-        const response = await fetch("http://localhost:6003/api/assistance");
+        const response = await fetch(url_prefix + "/api/assistance");
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

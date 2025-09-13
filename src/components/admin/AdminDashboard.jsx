@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import url_prefix from "../../data/variable";
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
@@ -12,7 +13,7 @@ const AdminDashboard = () => {
     const fetchDashboardStats = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('http://localhost:6003/api/admin/dashboard/stats', {
+            const response = await fetch(url_prefix + '/api/admin/dashboard/stats', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await response.json();
@@ -79,6 +80,15 @@ const AdminDashboard = () => {
                 </Link>
                 <Link to="/admin/hospital-details" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Hospital Details</h3>
+                </Link>
+                <Link to="/admin/bookings" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Hospital Bookings</h3>
+                </Link>
+                <Link to="/admin/about" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Hospital About Us</h3>
+                </Link>
+                <Link to="/admin/user" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Admin User</h3>
                 </Link>
             </div>
         </div>

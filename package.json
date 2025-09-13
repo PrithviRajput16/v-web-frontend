@@ -19,7 +19,10 @@
     "migrate:treatment": "node src/backend/migrations/migrate-treatment-relationship.cjs",
     "migrate:procedures": "node src/backend/migrations/migrateProcedures.cjs",
     "migrate:create-admin": "node src/backend/migrations/create-admin.cjs",
-    "migrate:all": "npm run migrate && npm run migrate:hospitals"
+    "migrate:bookings": "node src/backend/migrations/migrate-bookings.cjs",
+    "migrate:about": "node src/backend/migrations/migrate-about.cjs",
+    "migrate:all": "npm run migrate:hospitals && npm run migrate:hospital-details && npm run migrate:doctors && npm run migrate:treatment && npm run migrate:procedures && npm run migrate:patient-opinions && npm run migrate:faqs && npm run migrate:assistance  && npm run migrate:create-admin && npm run migrate:bookings && npm run migrate:about"
+
   },
   "dependencies": {
     "axios": "^1.11.0",
@@ -35,6 +38,7 @@
     "mongoose": "^8.17.1",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "nodemailer": "^7.0.6",
     "react": "^19.1.1",
     "react-countup": "^6.5.3",
     "react-dom": "^19.1.1",

@@ -8,6 +8,7 @@ const ProcedureCost = require('../models/ProcedureCost.cjs');
 const FAQ = require('../models/FAQ.cjs');
 const PatientOpinion = require('../models/PatientOpinions.cjs');
 const HospitalDetail = require('../models/HospitalDetail.cjs');
+const About = require('../models/About.cjs');
 
 
 
@@ -113,7 +114,7 @@ exports.getDashboardStats = async (req, res) => {
 // Hospital Management
 exports.getHospitals = async (req, res) => {
     try {
-        const { page = 1, limit = 10, search } = req.query;
+        const { page = 1, limit = 10000, search } = req.query;
         const filter = {};
 
         if (search) {
@@ -184,7 +185,7 @@ exports.getHospitals = async (req, res) => {
 // Similar methods for doctors, treatments, etc...
 exports.getDoctors = async (req, res) => {
     try {
-        const { page = 1, limit = 10, search, hospital } = req.query;
+        const { page = 1, limit = 10000, search, hospital } = req.query;
         const filter = {};
 
         if (search) {
@@ -254,7 +255,7 @@ exports.getDoctors = async (req, res) => {
 
 exports.getHospitalTreatments = async (req, res) => {
     try {
-        const { page = 1, limit = 10, hospital, treatment } = req.query;
+        const { page = 1, limit = 10000, hospital, treatment } = req.query;
         const filter = {};
 
         if (hospital) filter.hospital = hospital;
@@ -535,7 +536,7 @@ exports.getDoctorTreatmentById = async (req, res) => {
 // Get All DoctorTreatments (with filters)
 exports.getDoctorTreatments = async (req, res) => {
     try {
-        const { page = 1, limit = 10, doctor, treatment } = req.query;
+        const { page = 1, limit = 10000, doctor, treatment } = req.query;
         const filter = {};
 
         if (doctor) filter.doctor = doctor;
@@ -634,7 +635,7 @@ exports.getTreatmentById = async (req, res) => {
 // Get All Treatments (with search & filters)
 exports.getTreatments = async (req, res) => {
     try {
-        const { page = 1, limit = 10, category, search } = req.query;
+        const { page = 1, limit = 10000, category, search } = req.query;
         const filter = {};
 
         if (category) filter.category = category;
@@ -703,7 +704,7 @@ exports.deleteProcedureCost = async (req, res) => {
 
 exports.getProcedureCosts = async (req, res) => {
     try {
-        const { page = 1, limit = 10, category, search } = req.query;
+        const { page = 1, limit = 10000, category, search } = req.query;
         const filter = {};
         if (category) filter.category = category;
         if (search) filter.$or = [{ title: new RegExp(search, 'i') }, { description: new RegExp(search, 'i') }];
@@ -780,7 +781,7 @@ exports.deleteFAQ = async (req, res) => {
 
 exports.getFAQs = async (req, res) => {
     try {
-        const { page = 1, limit = 10, category, search } = req.query;
+        const { page = 1, limit = 10000, category, search } = req.query;
         const filter = {};
         if (category) filter.category = category;
         if (search) filter.$or = [{ question: new RegExp(search, 'i') }, { answer: new RegExp(search, 'i') }];
@@ -843,7 +844,7 @@ exports.deletePatientOpinion = async (req, res) => {
 
 exports.getPatientOpinions = async (req, res) => {
     try {
-        const { page = 1, limit = 10, search } = req.query;
+        const { page = 1, limit = 10000, search } = req.query;
         const filter = {};
         if (search) filter.$or = [{ name: new RegExp(search, 'i') }, { text: new RegExp(search, 'i') }];
 
@@ -944,5 +945,339 @@ exports.deleteHospitalDetail = async (req, res) => {
         res.status(204).json({ status: 'success', data: null });
     } catch (err) {
         res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+
+
+// ==============================
+// BOOKING MANAGEMENT CONTROLLERS
+// ==============================
+
+const Booking = require('../models/Bookings.cjs'); // Make sure to import Booking model
+// @desc    Get all bookings
+// @route   GET /api/admin/bookings
+// @access  Protected
+exports.getBookings = async (req, res) => {
+    try {
+        const { page = 1, limit = 10000, read, replied, confirmed, search } = req.query;
+        const filter = {};
+
+        // Filter by status
+        if (read !== undefined) filter['status.read'] = read === 'true';
+        if (replied !== undefined) filter['status.replied'] = replied === 'true';
+        if (confirmed !== undefined) filter['status.confirmed'] = confirmed === 'true';
+
+        // Search filter
+        if (search) {
+            filter.$or = [
+                { name: new RegExp(search, 'i') },
+                { email: new RegExp(search, 'i') },
+                { phone: new RegExp(search, 'i') },
+                { 'doctor.firstName': new RegExp(search, 'i') },
+                { 'doctor.lastName': new RegExp(search, 'i') },
+                { 'hospital.name': new RegExp(search, 'i') }
+            ];
+        }
+
+        const bookings = await Booking.find(filter)
+            .populate('doctor', 'firstName lastName specialty') // Populate doctor details
+            .populate('hospital', 'name city country') // Populate hospital details
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Booking.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: bookings.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: bookings
+        });
+    } catch (err) {
+        console.error('Get bookings error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Get booking statistics
+// @route   GET /api/admin/bookings/stats
+// @access  Protected
+exports.getBookingStats = async (req, res) => {
+    try {
+        const [
+            totalBookings,
+            unreadBookings,
+            repliedBookings,
+            confirmedBookings,
+            todayBookings
+        ] = await Promise.all([
+            Booking.countDocuments(),
+            Booking.countDocuments({ 'status.read': false }),
+            Booking.countDocuments({ 'status.replied': true }),
+            Booking.countDocuments({ 'status.confirmed': true }),
+            Booking.countDocuments({
+                createdAt: {
+                    $gte: new Date().setHours(0, 0, 0, 0),
+                    $lt: new Date().setHours(23, 59, 59, 999)
+                }
+            })
+        ]);
+
+        res.json({
+            success: true,
+            data: {
+                total: totalBookings,
+                unread: unreadBookings,
+                replied: repliedBookings,
+                confirmed: confirmedBookings,
+                today: todayBookings
+            }
+        });
+    } catch (err) {
+        console.error('Get booking stats error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Get single booking by ID
+// @route   GET /api/admin/bookings/:id
+// @access  Protected
+exports.getBookingById = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id)
+            .populate('doctor', 'firstName lastName specialty experience') // Populate doctor details
+            .populate('hospital', 'name city country phone'); // Populate hospital details
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                error: 'Booking not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: booking
+        });
+    } catch (err) {
+        console.error('Get booking by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Update booking status
+// @route   PUT /api/admin/bookings/:id
+// @access  Protected
+exports.updateBookingStatus = async (req, res) => {
+    try {
+        const { read, replied, confirmed } = req.body;
+        const updateData = {};
+
+        if (read !== undefined) updateData['status.read'] = read;
+        if (replied !== undefined) updateData['status.replied'] = replied;
+        if (confirmed !== undefined) updateData['status.confirmed'] = confirmed;
+
+        const booking = await Booking.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            {
+                new: true,
+                runValidators: true
+            }
+        )
+            .populate('doctor', 'firstName lastName specialty') // Populate after update
+            .populate('hospital', 'name city country'); // Populate after update
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                error: 'Booking not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Booking status updated successfully',
+            data: booking
+        });
+    } catch (err) {
+        console.error('Update booking status error:', err);
+        res.status(400).json({
+            success: false,
+            error: 'Error updating booking status'
+        });
+    }
+};
+
+// @desc    Delete booking
+// @route   DELETE /api/admin/bookings/:id
+// @access  Protected (superadmin only)
+exports.deleteBooking = async (req, res) => {
+    try {
+        const booking = await Booking.findByIdAndDelete(req.params.id);
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                error: 'Booking not found'
+            });
+        }
+        res.json({
+            success: true,
+            message: 'Booking deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete booking error:', err);
+        res.status(500).json({
+            success: false,
+            error: 'Error deleting booking'
+        });
+    }
+};
+
+// controllers/aboutController.cjs - Add these functions
+
+// @desc    Get about page content for admin
+// @route   GET /api/admin/about
+// @access  Protected (Admin)
+exports.getAboutAdmin = async (req, res) => {
+    try {
+        let about = await About.findOne({ isActive: true });
+
+        if (!about) {
+            about = await About.create({
+                title: "About Us",
+                subtitle: "We're committed to making healthcare accessible, transparent, and easy to navigate",
+                missionTitle: "Our Mission",
+                missionDescription: "This platform was created as a learning project to replicate the experience of a modern healthcare directory and booking service.",
+                image: "/aboutpage.jpg",
+                highlights: [
+                    { icon: "HeartPulse", text: "Simplifying healthcare decisions with clarity" },
+                    { icon: "Stethoscope", text: "Intuitive tools for better patient experience" },
+                    { icon: "Users", text: "Building trust through transparency" }
+                ],
+                whatsappNumber: "+1234567890",
+                whatsappMessage: "Hello! I have a question about your healthcare services."
+            });
+        }
+
+        res.json({
+            success: true,
+            data: about
+        });
+    } catch (err) {
+        console.error('Get about admin error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Update about page content from admin
+// @route   PUT /api/admin/about
+// @access  Protected (Admin)
+exports.updateAboutAdmin = async (req, res) => {
+    try {
+        let about = await About.findOne({ isActive: true });
+
+        if (!about) {
+            about = new About(req.body);
+        } else {
+            about = await About.findByIdAndUpdate(
+                about._id,
+                req.body,
+                { new: true, runValidators: true }
+            );
+        }
+
+        const savedAbout = await about.save();
+
+        res.json({
+            success: true,
+            message: 'About page updated successfully',
+            data: savedAbout
+        });
+    } catch (err) {
+        console.error('Update about admin error:', err);
+        res.status(400).json({ success: false, error: 'Error updating about page' });
+    }
+};
+
+
+// Get all admins
+exports.getAdmins = async (req, res) => {
+    try {
+        const admins = await Admin.find({}).select('-password'); // Exclude password
+        res.json({
+            success: true,
+            count: admins.length,
+            data: admins,
+        });
+    } catch (err) {
+        console.error('Get admins error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get single admin by ID
+exports.getAdminById = async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.params.id).select('-password');
+        if (!admin) {
+            return res.status(404).json({ success: false, error: 'Admin not found' });
+        }
+        res.json({ success: true, data: admin });
+    } catch (err) {
+        console.error('Get admin by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Create new admin
+exports.createAdmin = async (req, res) => {
+    try {
+        const admin = await Admin.create(req.body);
+        res.status(201).json({ success: true, data: admin });
+    } catch (err) {
+        console.error('Create admin error:', err);
+        if (err.code === 11000) {
+            return res.status(400).json({ success: false, error: 'Username or email already exists' });
+        }
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Update admin
+exports.updateAdmin = async (req, res) => {
+    try {
+        const { password, ...updateData } = req.body; // Exclude password from update unless explicitly provided
+        if (password) {
+            updateData.password = password;
+        }
+        const admin = await Admin.findByIdAndUpdate(req.params.id, updateData, {
+            new: true,
+            runValidators: true,
+        }).select('-password');
+        if (!admin) {
+            return res.status(404).json({ success: false, error: 'Admin not found' });
+        }
+        res.json({ success: true, data: admin });
+    } catch (err) {
+        console.error('Update admin error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete admin
+exports.deleteAdmin = async (req, res) => {
+    try {
+        const admin = await Admin.findByIdAndDelete(req.params.id);
+        if (!admin) {
+            return res.status(404).json({ success: false, error: 'Admin not found' });
+        }
+        res.json({ success: true, message: 'Admin deleted successfully' });
+    } catch (err) {
+        console.error('Delete admin error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
     }
 };

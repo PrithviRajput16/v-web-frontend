@@ -12,6 +12,8 @@ import {
     FaStar
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import ProcedureCostCard from "../components/ProcedureCostCard";
+import url_prefix from "../data/variable";
 
 
 const TreatmentDetails = () => {
@@ -34,9 +36,25 @@ const TreatmentDetails = () => {
     const [doctorFilters, setDoctorFilters] = useState({
         name: "",
         specialty: "",
+        minExperience: "",
+        maxExperience: "",
+        minRating: "",
+        maxRating: "",
         availability: ""
     });
 
+
+    const [procedures, setProcedures] = useState([]);
+    const [filteredProcedures, setFilteredProcedures] = useState([]);
+    const [procedureFilters, setProcedureFilters] = useState({
+        title: "",
+        category: "",
+        minPrice: "",
+        maxPrice: "",
+        complexity: "",
+        minDuration: "",
+        maxDuration: ""
+    });
 
     useEffect(() => {
         const fetchTreatmentData = async () => {
@@ -44,7 +62,7 @@ const TreatmentDetails = () => {
                 setLoading(true);
 
                 // Fetch treatment basic info
-                const treatmentResponse = await fetch(`http://localhost:6003/api/treatments/${id}`);
+                const treatmentResponse = await fetch(`${url_prefix}/api/treatments/${id}`);
                 if (!treatmentResponse.ok) {
                     throw new Error('Failed to fetch treatment data');
                 }
@@ -57,7 +75,7 @@ const TreatmentDetails = () => {
                 setTreatment(treatmentResult.data);
 
                 // Fetch hospital treatments for this procedure
-                const hospitalTreatmentsResponse = await fetch(`http://localhost:6003/api/hospital-treatment/by-treatment/${id}`);
+                const hospitalTreatmentsResponse = await fetch(`${url_prefix}/api/hospital-treatment/by-treatment/${id}`);
                 if (hospitalTreatmentsResponse.ok) {
                     const hospitalTreatmentsResult = await hospitalTreatmentsResponse.json();
                     if (hospitalTreatmentsResult.success) {
@@ -67,12 +85,24 @@ const TreatmentDetails = () => {
                 }
 
                 // Fetch doctor details
-                const doctorTreatmentResponse = await fetch(`http://localhost:6003/api/doctor-treatment/by-treatment/${id}`)
+                const doctorTreatmentResponse = await fetch(`${url_prefix}/api/doctor-treatment/by-treatment/${id}`)
                 if (doctorTreatmentResponse.ok) {
                     const doctorTreatmentResult = await doctorTreatmentResponse.json()
                     setDoctorTreatments(doctorTreatmentResult.data);
                     setFilteredDoctorTreatments(doctorTreatmentResult.data);
                 }
+
+                // Fetch Prodecures 
+                const procedureResponse = await fetch(`${url_prefix}/api/procedure-costs/by-treatment/${id}`);
+                if (procedureResponse.ok) {
+                    const procedureResult = await procedureResponse.json();
+                    setProcedures(procedureResult.data);
+                    setFilteredProcedures(procedureResult.data);
+
+                    console.log(procedureResult.data);
+                }
+
+
 
                 setError(null);
             } catch (err) {
@@ -116,6 +146,92 @@ const TreatmentDetails = () => {
         setFilteredHospitalTreatments(filtered);
     }, [filters, hospitalTreatments]);
 
+    // Filter doctor treatments based on filters
+    useEffect(() => {
+        let filtered = doctorTreatments;
+
+        if (doctorFilters.firstName) {
+            filtered = filtered.filter(dt =>
+                dt.doctor && dt.doctor.firstName.toLowerCase().includes(doctorFilters.firstName.toLowerCase())
+            );
+        }
+
+        if (doctorFilters.specialty) {
+            filtered = filtered.filter(dt =>
+                dt.doctor && dt.doctor.specialty.toLowerCase().includes(doctorFilters.specialty.toLowerCase())
+            );
+        }
+
+        if (doctorFilters.minExperience) {
+            filtered = filtered.filter(dt =>
+                dt.doctor && dt.doctor.experience >= parseInt(doctorFilters.minExperience)
+            );
+        }
+
+        if (doctorFilters.maxExperience) {
+            filtered = filtered.filter(dt =>
+                dt.doctor && dt.doctor.experience <= parseInt(doctorFilters.maxExperience)
+            );
+        }
+
+        if (doctorFilters.minRating) {
+            filtered = filtered.filter(dt =>
+                dt.doctor && dt.doctor.rating >= parseFloat(doctorFilters.minRating)
+            );
+        }
+
+        if (doctorFilters.maxRating) {
+            filtered = filtered.filter(dt =>
+                dt.doctor && dt.doctor.rating <= parseFloat(doctorFilters.maxRating)
+            );
+        }
+
+        if (doctorFilters.availability) {
+            filtered = filtered.filter(dt => dt.availability === doctorFilters.availability);
+        }
+
+        setFilteredDoctorTreatments(filtered);
+    }, [doctorFilters, doctorTreatments]);
+
+    // Filter procedures based on filters
+    useEffect(() => {
+        let filtered = procedures;
+
+        if (procedureFilters.title) {
+            filtered = filtered.filter(proc =>
+                proc.title.toLowerCase().includes(procedureFilters.title.toLowerCase())
+            );
+        }
+
+        if (procedureFilters.category) {
+            filtered = filtered.filter(proc =>
+                proc.category.toLowerCase().includes(procedureFilters.category.toLowerCase())
+            );
+        }
+
+        if (procedureFilters.minPrice) {
+            filtered = filtered.filter(proc => proc.basePrice >= parseInt(procedureFilters.minPrice));
+        }
+
+        if (procedureFilters.maxPrice) {
+            filtered = filtered.filter(proc => proc.basePrice <= parseInt(procedureFilters.maxPrice));
+        }
+
+        if (procedureFilters.complexity) {
+            filtered = filtered.filter(proc => proc.complexity === procedureFilters.complexity);
+        }
+
+        if (procedureFilters.minDuration) {
+            filtered = filtered.filter(proc => proc.duration >= parseInt(procedureFilters.minDuration));
+        }
+
+        if (procedureFilters.maxDuration) {
+            filtered = filtered.filter(proc => proc.duration <= parseInt(procedureFilters.maxDuration));
+        }
+
+        setFilteredProcedures(filtered);
+    }, [procedureFilters, procedures]);
+
     // console.log(filteredHospitalTreatments[0].city);
 
     // Extract unique values for filters
@@ -124,6 +240,18 @@ const TreatmentDetails = () => {
         .filter(Boolean)
     )];
 
+    // Extract unique values for doctor filters
+    const doctorSpecialties = [...new Set(doctorTreatments
+        .map(dt => dt.doctor?.specialty)
+        .filter(Boolean)
+    )];
+
+    const doctorRatings = [1, 2, 3, 4, 5];
+    const complexityOptions = ['Low', 'Medium', 'High', 'Very High'];
+    const procedureCategories = [...new Set(procedures
+        .map(proc => proc.category)
+        .filter(Boolean)
+    )];
     const availabilityOptions = [
         'Available', 'Limited', 'Waitlist', 'Not Available'
     ];
@@ -215,7 +343,7 @@ const TreatmentDetails = () => {
                 <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
                     <div className="flex space-x-8 border-b">
 
-                        {['overview', 'hospitals', 'doctors'].map((tab) => (
+                        {['overview', 'hospitals', 'doctors', 'procedures'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
@@ -565,39 +693,93 @@ const TreatmentDetails = () => {
                             </div>
 
                             {/* Doctor Name Filter */}
-                            <div className="mb-5">
-                                <label className="flex items-center gap-2 text-gray-700 font-medium mb-2">
-                                    <FaSearch className="text-teal-500" />
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
                                     Doctor Name
                                 </label>
                                 <input
                                     type="text"
                                     placeholder="Search doctors..."
                                     className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
-                                    value={doctorFilters.name}
-                                    onChange={(e) => setDoctorFilters({ ...doctorFilters, name: e.target.value })}
+                                    value={doctorFilters.firstName}
+                                    onChange={(e) => setDoctorFilters({ ...doctorFilters, firstName: e.target.value })}
                                 />
                             </div>
 
                             {/* Specialty Filter */}
-                            <div className="mb-5">
-                                <label className="flex items-center gap-2 text-gray-700 font-medium mb-2">
-                                    <FaProcedures className="text-teal-500" />
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
                                     Specialty
                                 </label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Cardiology"
+                                <select
                                     className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
                                     value={doctorFilters.specialty}
                                     onChange={(e) => setDoctorFilters({ ...doctorFilters, specialty: e.target.value })}
-                                />
+                                >
+                                    <option value="">All Specialties</option>
+                                    {doctorSpecialties.map((specialty, i) => (
+                                        <option key={i} value={specialty}>
+                                            {specialty}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Experience Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Experience (years)
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                        type="number"
+                                        placeholder="Min"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={doctorFilters.minExperience}
+                                        onChange={(e) => setDoctorFilters({ ...doctorFilters, minExperience: e.target.value })}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Max"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={doctorFilters.maxExperience}
+                                        onChange={(e) => setDoctorFilters({ ...doctorFilters, maxExperience: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Rating Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Rating
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <select
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={doctorFilters.minRating}
+                                        onChange={(e) => setDoctorFilters({ ...doctorFilters, minRating: e.target.value })}
+                                    >
+                                        <option value="">Min Rating</option>
+                                        {doctorRatings.map(rating => (
+                                            <option key={rating} value={rating}>{rating}+</option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={doctorFilters.maxRating}
+                                        onChange={(e) => setDoctorFilters({ ...doctorFilters, maxRating: e.target.value })}
+                                    >
+                                        <option value="">Max Rating</option>
+                                        {doctorRatings.map(rating => (
+                                            <option key={rating} value={rating}>{rating}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             {/* Availability Filter */}
-                            <div className="mb-5">
-                                <label className="flex items-center gap-2 text-gray-700 font-medium mb-2">
-                                    <FaHospital className="text-teal-500" />
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
                                     Availability
                                 </label>
                                 <select
@@ -605,12 +787,20 @@ const TreatmentDetails = () => {
                                     value={doctorFilters.availability}
                                     onChange={(e) => setDoctorFilters({ ...doctorFilters, availability: e.target.value })}
                                 >
-                                    <option value="">All</option>
-                                    <option value="Available">Available</option>
-                                    <option value="Limited">Limited</option>
-                                    <option value="Waitlist">Waitlist</option>
-                                    <option value="Not Available">Not Available</option>
+                                    <option value="">All Availability</option>
+                                    {availabilityOptions.map((option, i) => (
+                                        <option key={i} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
                                 </select>
+                            </div>
+
+                            {/* Results Count */}
+                            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                                <p className="text-sm text-gray-600">
+                                    Showing {filteredDoctorTreatments.length} of {doctorTreatments.length} doctors
+                                </p>
                             </div>
 
                             {/* Reset Filters Button */}
@@ -618,6 +808,10 @@ const TreatmentDetails = () => {
                                 onClick={() => setDoctorFilters({
                                     name: "",
                                     specialty: "",
+                                    minExperience: "",
+                                    maxExperience: "",
+                                    minRating: "",
+                                    maxRating: "",
                                     availability: ""
                                 })}
                                 className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-300 transition"
@@ -625,6 +819,7 @@ const TreatmentDetails = () => {
                                 Reset Filters
                             </button>
                         </div>
+
 
                         {/* Doctors List */}
                         <div className="lg:col-span-3">
@@ -652,7 +847,7 @@ const TreatmentDetails = () => {
                                                 {/* Doctor Info */}
                                                 <div className="flex-grow">
                                                     <h3 className="text-xl font-bold text-gray-800 mb-2">
-                                                        {doctorTreatment.doctor.name}
+                                                        {doctorTreatment.doctor.firstName} {doctorTreatment.doctor.lastName}
                                                     </h3>
 
                                                     <div className="flex items-center text-gray-600 mb-2">
@@ -669,19 +864,19 @@ const TreatmentDetails = () => {
 
                                                     <div className="grid grid-cols-2 gap-4 mb-4">
                                                         <div>
-                                                            <span className="text-sm text-gray-500">Consultation Fee</span>
+                                                            {/* <span className="text-sm text-gray-500">Consultation Fee</span> */}
                                                             <div className="text-xl font-bold text-teal-600">
-                                                                ₹{doctorTreatment.fee || "—"}
+                                                                {/* ₹{doctorTreatment.fee || "—"} */}
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <span className="text-sm text-gray-500">Availability</span>
+                                                            {/* <span className="text-sm text-gray-500">Availability</span> */}
                                                             <div className={`font-semibold ${doctorTreatment.availability === 'Available' ? 'text-green-600' :
                                                                 doctorTreatment.availability === 'Limited' ? 'text-yellow-600' :
                                                                     doctorTreatment.availability === 'Waitlist' ? 'text-orange-600' :
                                                                         'text-red-600'
                                                                 }`}>
-                                                                {doctorTreatment.availability}
+                                                                {/* {doctorTreatment.availability} */}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -716,6 +911,165 @@ const TreatmentDetails = () => {
                                         <h3 className="text-xl font-semibold text-gray-800 mb-2">No doctors found</h3>
                                         <p className="text-gray-600 mb-4">
                                             Try adjusting your filters to find doctors for this treatment.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'procedures' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Filter Sidebar */}
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                            <div className="flex items-center gap-2 mb-6">
+                                <FaFilter className="text-teal-600 text-lg" />
+                                <h2 className="text-xl font-semibold text-gray-800">Filter Procedures</h2>
+                            </div>
+
+                            {/* Procedure Title Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Procedure Title
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Search procedures..."
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={procedureFilters.title}
+                                    onChange={(e) => setProcedureFilters({ ...procedureFilters, title: e.target.value })}
+                                />
+                            </div>
+
+                            {/* Category Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Category
+                                </label>
+                                <select
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={procedureFilters.category}
+                                    onChange={(e) => setProcedureFilters({ ...procedureFilters, category: e.target.value })}
+                                >
+                                    <option value="">All Categories</option>
+                                    {procedureCategories.map((category, i) => (
+                                        <option key={i} value={category}>
+                                            {category}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Price Filter */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Price (₹)
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                        type="number"
+                                        placeholder="Min"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={procedureFilters.minPrice}
+                                        onChange={(e) => setProcedureFilters({ ...procedureFilters, minPrice: e.target.value })}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Max"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={procedureFilters.maxPrice}
+                                        onChange={(e) => setProcedureFilters({ ...procedureFilters, maxPrice: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Complexity Filter
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Complexity
+                                </label>
+                                <select
+                                    className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                    value={procedureFilters.complexity}
+                                    onChange={(e) => setProcedureFilters({ ...procedureFilters, complexity: e.target.value })}
+                                >
+                                    <option value="">All Complexities</option>
+                                    {complexityOptions.map((complexity, i) => (
+                                        <option key={i} value={complexity}>
+                                            {complexity}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            Duration Filter
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Duration (minutes)
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                        type="number"
+                                        placeholder="Min"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={procedureFilters.minDuration}
+                                        onChange={(e) => setProcedureFilters({ ...procedureFilters, minDuration: e.target.value })}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Max"
+                                        className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                                        value={procedureFilters.maxDuration}
+                                        onChange={(e) => setProcedureFilters({ ...procedureFilters, maxDuration: e.target.value })}
+                                    />
+                                </div>
+                            </div> */}
+
+                            {/* Results Count */}
+                            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                                <p className="text-sm text-gray-600">
+                                    Showing {filteredProcedures.length} of {procedures.length} procedures
+                                </p>
+                            </div>
+
+                            {/* Reset Filters Button */}
+                            <button
+                                onClick={() => setProcedureFilters({
+                                    title: "",
+                                    category: "",
+                                    minPrice: "",
+                                    maxPrice: "",
+                                    complexity: "",
+                                    minDuration: "",
+                                    maxDuration: ""
+                                })}
+                                className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-300 transition"
+                            >
+                                Reset Filters
+                            </button>
+                        </div>
+
+                        {/* Procedures List */}
+                        <div className="lg:col-span-3">
+                            <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
+                                <h2 className="text-3xl font-bold text-gray-800 mb-2">Procedures for {treatment.title}</h2>
+                                <p className="text-gray-600">
+                                    {procedures.length} procedures are available for this treatment.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-6">
+                                {filteredProcedures.length > 0 ? (
+                                    filteredProcedures.map((procedure) => (
+                                        <ProcedureCostCard service={procedure} key={procedure._id} />
+                                    ))
+                                ) : (
+                                    <div className="text-center py-12">
+                                        <div className="text-6xl mb-4">⚕️</div>
+                                        <h3 className="text-xl font-semibold text-gray-800 mb-2">No procedures found</h3>
+                                        <p className="text-gray-600 mb-4">
+                                            Try adjusting your filters to find procedures for this treatment.
                                         </p>
                                     </div>
                                 )}

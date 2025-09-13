@@ -13,7 +13,7 @@ const TreatmentCard = ({ t }) => {
   };
 
   return (
-    <div className="bg-white flex flex-row rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
+    <div className="bg-white flex flex-col justify-evenly rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
       <div className="p-6">
         {/* Icon and Title */}
         <div className="flex items-center gap-3 mb-4">

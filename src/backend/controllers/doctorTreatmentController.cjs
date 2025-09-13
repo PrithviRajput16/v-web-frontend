@@ -124,8 +124,8 @@ exports.getTreatmentsByDoctor = async (req, res) => {
 
         res.json({
             success: true,
-            count: treatments.length,
-            data: treatments
+            count: doctorTreatments.length,
+            data: doctorTreatments
         });
     } catch (err) {
         console.error('Get treatments by doctor error:', err);

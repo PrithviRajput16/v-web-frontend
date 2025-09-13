@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaClock, FaFilter, FaProcedures, FaSearch, FaStar } from "react-icons/fa";
 import TreatmentCard from "../components/TreatmentCard";
+import url_prefix from "../data/variable";
 
 const Treatments = () => {
   const [treatments, setTreatments] = useState([]);
@@ -11,7 +12,7 @@ const Treatments = () => {
   useEffect(() => {
     const fetchTreatments = async () => {
       try {
-        const response = await fetch('http://localhost:6003/api/treatments/all');
+        const response = await fetch(url_prefix + '/api/treatments/all');
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

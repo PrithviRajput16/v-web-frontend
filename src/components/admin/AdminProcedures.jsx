@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageUpload from './ImageUpload';
+import url_prefix from "../../data/variable";
 
 // Procedure Cost Management Component
 const ProcedureCostManagement = () => {
@@ -51,7 +52,7 @@ const ProcedureCostManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/procedure-costs?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/procedure-costs?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -82,7 +83,7 @@ const ProcedureCostManagement = () => {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
 
-            const response = await fetch('http://localhost:6003/api/admin/treatments', {
+            const response = await fetch(`${url_prefix}/api/admin/treatments`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
@@ -118,7 +119,7 @@ const ProcedureCostManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/procedure-costs', {
+            const response = await fetch(`${url_prefix}/api/admin/procedure-costs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,7 +179,7 @@ const ProcedureCostManagement = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/procedure-costs/${currentProcedure._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/procedure-costs/${currentProcedure._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -212,7 +213,7 @@ const ProcedureCostManagement = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/procedure-costs/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/procedure-costs/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

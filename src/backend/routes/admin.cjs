@@ -51,7 +51,22 @@ const {
     getHospitalDetailById,
     createHospitalDetail,
     updateHospitalDetail,
-    deleteHospitalDetail
+    deleteHospitalDetail,
+
+    getBookings,
+    getBookingById,
+    updateBookingStatus,
+    deleteBooking,
+    getBookingStats,
+
+    getAboutAdmin,
+    updateAboutAdmin,
+
+    getAdmins,
+    getAdminById,
+    createAdmin,
+    updateAdmin,
+    deleteAdmin
 
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
@@ -151,6 +166,24 @@ router.delete('/hospital-details/:id', protectAdmin, restrictTo('superadmin'), d
 
 
 
+// Booking management routes
+router.get('/bookings', protectAdmin, getBookings);
+router.get('/bookings/stats', protectAdmin, getBookingStats);
+router.get('/bookings/:id', protectAdmin, getBookingById);
+router.put('/bookings/:id', protectAdmin, updateBookingStatus);
+router.delete('/bookings/:id', protectAdmin, restrictTo('superadmin'), deleteBooking);
 
+// About management routes
+router.get('/about', protectAdmin, getAboutAdmin);
+router.put('/about', protectAdmin, updateAboutAdmin);
+
+
+
+// Admin management routes
+router.get('/admins', protectAdmin, restrictTo('superadmin'), getAdmins);
+router.get('/admins/:id', protectAdmin, restrictTo('superadmin'), getAdminById);
+router.post('/admins', protectAdmin, restrictTo('superadmin'), createAdmin);
+router.put('/admins/:id', protectAdmin, restrictTo('superadmin'), updateAdmin);
+router.delete('/admins/:id', protectAdmin, restrictTo('superadmin'), deleteAdmin);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import ServiceCard from './ServiceCard';
 import SectionHeading from './home/SectionHeading';
+import url_prefix from "../data/variable";
 
 export default function Services() {
   const [services, setServices] = useState([]);
@@ -11,7 +12,7 @@ export default function Services() {
     const fetchServices = async () => {
       try {
         // 1. Make the API request
-        const response = await fetch('http://localhost:6003/api/services/all');
+        const response = await fetch(url_prefix + '/api/services/all');
         const result = await response.json();
         setServices(result.data);
         setError(null);

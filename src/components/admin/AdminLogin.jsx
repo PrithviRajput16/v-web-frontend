@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import url_prefix from "../../data/variable";
 
 const AdminLogin = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
@@ -13,7 +14,7 @@ const AdminLogin = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:6003/api/admin/login', {
+            const response = await fetch(`${url_prefix}/api/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

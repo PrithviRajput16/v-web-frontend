@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 require('dotenv').config({ path: './config.env' });
 const path = require('path')
 
+const aboutRouter = require('./routes/about.cjs');
 const collectionsRouter = require('./routes/collections.cjs');
 const serviceRouter = require('./routes/services.cjs');
 const hospitalRouter = require('./routes/hospitals.cjs')
@@ -15,6 +16,7 @@ const doctorRouter = require('./routes/doctor.cjs');
 const treatmentRoutes = require('./routes/treatments.cjs');
 const doctorTreatmentRouter = require('./routes/doctorTreatments.cjs');
 const hospitalTreatmentRouter = require('./routes/hospitalTreatments.cjs');
+const bookingsRouter = require('../backend/routes/bookings.cjs');
 const adminRoutes = require('./routes/admin.cjs');
 
 
@@ -55,7 +57,9 @@ app.use('/api/doctors', doctorRouter);
 app.use('/api/treatments', treatmentRoutes);
 app.use('/api/doctor-treatment', doctorTreatmentRouter);
 app.use('/api/hospital-treatment', hospitalTreatmentRouter);
+app.use('/api/booking', bookingsRouter);
 app.use('/api/admin', adminRoutes);
+app.use('/api/about', aboutRouter);
 // Your existing routes
 const uploadRoutes = require('./routes/upload.cjs');
 app.use('/api/upload', uploadRoutes);

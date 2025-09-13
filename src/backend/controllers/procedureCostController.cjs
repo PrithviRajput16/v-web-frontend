@@ -5,7 +5,7 @@ exports.getProcedureCosts = async (req, res) => {
   try {
     const {
       page = 1,
-      limit = 20,
+      limit = 10000,
       category,
       search
     } = req.query;
@@ -148,7 +148,7 @@ exports.deleteProcedureCost = async (req, res) => {
 // Get procedures by category
 exports.getProceduresByCategory = async (req, res) => {
   try {
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 10000 } = req.query;
     const filter = { category: req.params.category, isActive: true };
 
     const options = {
@@ -181,7 +181,7 @@ exports.getProceduresByCategory = async (req, res) => {
 // Get procedures by treatment
 exports.getProceduresByTreatment = async (req, res) => {
   try {
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 10000 } = req.query;
     const treatmentId = req.params.treatmentId;
 
     if (!treatmentId) {

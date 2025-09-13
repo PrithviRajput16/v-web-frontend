@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageUpload from './ImageUpload';
+import url_prefix from "../../data/variable";
 
 const HospitalManagement = () => {
     const [hospitals, setHospitals] = useState([]);
@@ -37,7 +38,7 @@ const HospitalManagement = () => {
                 return;
             }
             const response = await fetch(
-                `http://localhost:6003/api/admin/hospitals?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/hospitals?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
@@ -94,7 +95,7 @@ const HospitalManagement = () => {
             blurb: formData.blurb
         };
         try {
-            const response = await fetch('http://localhost:6003/api/admin/hospitals', {
+            const response = await fetch(`${url_prefix}/api/admin/hospitals?page=${page}$limit=${limit}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -171,7 +172,7 @@ const HospitalManagement = () => {
             blurb: formData.blurb
         };
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospitals/${currentHospital._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/hospitals/${currentHospital._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +211,7 @@ const HospitalManagement = () => {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:6003/api/admin/hospitals/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/hospitals/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -265,7 +266,7 @@ const HospitalManagement = () => {
             return;
         }
         try {
-            const response = await fetch('http://localhost:6003/api/admin/logout', {
+            const response = await fetch(`${url_prefix}/api/admin/logout`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -276,6 +277,7 @@ const HospitalManagement = () => {
             } else {
                 console.error('Failed to logout:', result.error);
                 alert('Failed to logout');
+
             }
         } catch (err) {
             console.error('Error logging out:', err);
