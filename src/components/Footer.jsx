@@ -34,7 +34,7 @@ export default function Footer() {
 
     fetchAboutData();
   }, []);
-
+console.log(aboutData);
   if (loading) {
     return (
       <section className="relative bg-white py-16 overflow-hidden">
@@ -84,8 +84,8 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold  mb-3">Contact</h3>
             <ul className="space-y-2 text-sm">
-              <li>Email: info@vaidamclone.com</li>
-              <li>Phone: +91-123-456-7890</li>
+              <li>Email: {aboutData.email}</li>
+              <li>Phone: {aboutData.whatsappNumber}</li>
               <li>Location: Delhi, India</li>
             </ul>
           </div>
