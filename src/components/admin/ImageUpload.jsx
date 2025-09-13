@@ -51,7 +51,7 @@ const ImageUpload = ({
         try {
             const token = localStorage.getItem('adminToken');
             const url = folder
-                ? `${url_prefix}/api/upload/${folder}`
+                ? `http://localhost:6003/api/upload/${folder}`
                 : url_prefix + '/api/upload';
 
             const response = await fetch(url, {

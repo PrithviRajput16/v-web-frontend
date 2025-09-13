@@ -2,6 +2,9 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const url_prefix = require("../../data/variable").default;
+
+
 
 // Configure storage with correct path
 const storage = multer.diskStorage({
@@ -78,6 +81,8 @@ const handleUpload = (req, res) => {
                 error: 'No file uploaded'
             });
         }
+
+
 
         // Generate the URL path
         const filePath = `/uploads/${req.params.folder || 'general'}/${req.file.filename}`;

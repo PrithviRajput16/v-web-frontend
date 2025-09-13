@@ -1,61 +1,10 @@
+
+
+import React from "react";
 import { motion } from "framer-motion";
 import { HeartPulse, Stethoscope, Users } from "lucide-react"; // modern icons
-import { useEffect, useState } from "react";
-import url_prefix from "../data/variable";
-
 
 export default function About() {
-  // State to hold API data and loading/error states
-  const [aboutData, setAboutData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Icon mapping for highlights
-  const iconMap = {
-    HeartPulse: <HeartPulse className="w-6 h-6 text-teal-600" />,
-    Stethoscope: <Stethoscope className="w-6 h-6 text-teal-600" />,
-    Users: <Users className="w-6 h-6 text-teal-600" />,
-  };
-
-  // Fetch data from the API
-  useEffect(() => {
-    const fetchAboutData = async () => {
-      try {
-        const response = await fetch(url_prefix + "/api/about?page=1&limit=1000"); // Adjust the endpoint as needed
-        const result = await response.json();
-        if (result.success) {
-          setAboutData(result.data);
-        } else {
-          setError("Failed to load data");
-        }
-      } catch (err) {
-        setError("An error occurred while fetching data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAboutData();
-  }, []);
-
-  // Render loading state
-  if (loading) {
-    return (
-      <section className="flex items-center justify-center min-h-screen">
-        <p className="text-teal-600 text-lg">Loading...</p>
-      </section>
-    );
-  }
-
-  // Render error state
-  if (error) {
-    return (
-      <section className="flex items-center justify-center min-h-screen">
-        <p className="text-red-500 text-lg">{error}</p>
-      </section>
-    );
-  }
-
   return (
     <section className="relative bg-gradient-to-b from-teal-100 via-white to-teal-50 py-20 overflow-hidden">
       {/* Background blob shapes */}
@@ -71,11 +20,7 @@ export default function About() {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl font-extrabold text-teal-800 text-center drop-shadow-sm"
         >
-          {aboutData.title.split(" ").map((word, index) => (
-            <span key={index} className={index === 1 ? "text-teal-500" : ""}>
-              {word}{" "}
-            </span>
-          ))}
+          About <span className="text-teal-500">Us</span>
         </motion.h1>
 
         {/* Subheading */}
@@ -86,18 +31,15 @@ export default function About() {
           viewport={{ once: true }}
           className="mt-6 text-lg text-gray-700 text-center max-w-3xl mx-auto leading-relaxed"
         >
-          {aboutData.subtitle.split(" ").map((word, index) => (
-            <span
-              key={index}
-              className={
-                ["accessible", "transparent", "easy"].includes(word)
-                  ? "font-semibold text-teal-600"
-                  : ""
-              }
-            >
-              {word}{" "}
-            </span>
-          ))}
+          We’re committed to making healthcare{" "}
+          <span className="font-semibold text-teal-600">accessible</span>,
+          <span className="font-semibold text-teal-600"> transparent</span>, and
+          <span className="font-semibold text-teal-600">
+            {" "}
+            easy to navigate
+          </span>{" "}
+          — helping you connect with the right specialists, hospitals, and
+          treatments.
         </motion.p>
 
         {/* Grid Layout */}
@@ -112,7 +54,7 @@ export default function About() {
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-teal-200 via-transparent to-white rounded-3xl shadow-2xl"></div>
             <img
-              src={aboutData.image}
+              src="/aboutpage.jpg" // ✅ Using image from public folder
               alt="Healthcare team"
               className="relative rounded-3xl shadow-2xl z-10"
             />
@@ -126,35 +68,44 @@ export default function About() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-bold text-teal-800 mb-6">
-              {aboutData.missionTitle}
+              Our Mission
             </h2>
             <p className="text-gray-700 mb-6 leading-relaxed">
-              {aboutData.missionDescription.split(" ").map((word, index) => (
-                <span
-                  key={index}
-                  className={
-                    word === "learning"
-                      ? "font-semibold text-teal-600"
-                      : ""
-                  }
-                >
-                  {word}{" "}
-                </span>
-              ))}
+              This platform was created as a{" "}
+              <span className="font-semibold text-teal-600">
+                learning project
+              </span>{" "}
+              to replicate the experience of a modern healthcare directory and
+              booking service. In a real-world application, you could connect
+              this interface to live APIs for booking appointments, browsing
+              hospitals, and comparing treatments.
             </p>
 
             {/* Mission Highlights */}
             <div className="space-y-5">
-              {aboutData.highlights.map((item, i) => (
+              {[
+                {
+                  icon: <HeartPulse className="w-6 h-6 text-teal-600" />,
+                  text: "Simplifying healthcare decisions with clarity",
+                },
+                {
+                  icon: <Stethoscope className="w-6 h-6 text-teal-600" />,
+                  text: "Intuitive tools for better patient experience",
+                },
+                {
+                  icon: <Users className="w-6 h-6 text-teal-600" />,
+                  text: "Building trust through transparency",
+                },
+              ].map((item, i) => (
                 <motion.div
-                  key={item._id}
+                  key={i}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.2 }}
                   viewport={{ once: true }}
                   className="flex items-center gap-3 p-3 bg-white/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition"
                 >
-                  {iconMap[item.icon]}
+                  {item.icon}
                   <span className="text-gray-700 font-medium">{item.text}</span>
                 </motion.div>
               ))}

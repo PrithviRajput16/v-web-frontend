@@ -9,6 +9,7 @@ import AdminHospitalDetails from './components/admin/AdminHospitalDetails';
 import AdminHospitals from './components/admin/AdminHospitals';
 import AdminHospitalTreatment from './components/admin/AdminHospitalTreatment';
 import AdminLogin from './components/admin/AdminLogin';
+import User from "./components/admin/AdminPassword";
 import AdminPatientOpinions from './components/admin/AdminPatientOpinions';
 import AdminProcedures from './components/admin/AdminProcedures';
 import AdminTreatment from './components/admin/AdminTreatment';
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/admin/hospital-details" element={<AdminHospitalDetails />} />
           <Route path="/admin/bookings" element={<Bookings />} />
           <Route path="/admin/about" element={<AboutUs />} />
+          <Route path="/admin/user" element={<User />} />
           {/* admin/bookings */}
         </Routes>
       </main>

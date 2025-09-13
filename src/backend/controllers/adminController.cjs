@@ -1202,3 +1202,82 @@ exports.updateAboutAdmin = async (req, res) => {
         res.status(400).json({ success: false, error: 'Error updating about page' });
     }
 };
+
+
+// Get all admins
+exports.getAdmins = async (req, res) => {
+    try {
+        const admins = await Admin.find({}).select('-password'); // Exclude password
+        res.json({
+            success: true,
+            count: admins.length,
+            data: admins,
+        });
+    } catch (err) {
+        console.error('Get admins error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get single admin by ID
+exports.getAdminById = async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.params.id).select('-password');
+        if (!admin) {
+            return res.status(404).json({ success: false, error: 'Admin not found' });
+        }
+        res.json({ success: true, data: admin });
+    } catch (err) {
+        console.error('Get admin by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Create new admin
+exports.createAdmin = async (req, res) => {
+    try {
+        const admin = await Admin.create(req.body);
+        res.status(201).json({ success: true, data: admin });
+    } catch (err) {
+        console.error('Create admin error:', err);
+        if (err.code === 11000) {
+            return res.status(400).json({ success: false, error: 'Username or email already exists' });
+        }
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Update admin
+exports.updateAdmin = async (req, res) => {
+    try {
+        const { password, ...updateData } = req.body; // Exclude password from update unless explicitly provided
+        if (password) {
+            updateData.password = password;
+        }
+        const admin = await Admin.findByIdAndUpdate(req.params.id, updateData, {
+            new: true,
+            runValidators: true,
+        }).select('-password');
+        if (!admin) {
+            return res.status(404).json({ success: false, error: 'Admin not found' });
+        }
+        res.json({ success: true, data: admin });
+    } catch (err) {
+        console.error('Update admin error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete admin
+exports.deleteAdmin = async (req, res) => {
+    try {
+        const admin = await Admin.findByIdAndDelete(req.params.id);
+        if (!admin) {
+            return res.status(404).json({ success: false, error: 'Admin not found' });
+        }
+        res.json({ success: true, message: 'Admin deleted successfully' });
+    } catch (err) {
+        console.error('Delete admin error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};

@@ -87,6 +87,9 @@ const AdminDashboard = () => {
                 <Link to="/admin/about" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Hospital About Us</h3>
                 </Link>
+                <Link to="/admin/user" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Admin User</h3>
+                </Link>
             </div>
         </div>
     );
