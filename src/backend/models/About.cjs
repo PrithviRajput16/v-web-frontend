@@ -39,6 +39,18 @@ const aboutSchema = new mongoose.Schema({
             trim: true
         }
     }],
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        unique: true,
+        lowercase: true,
+        validate: {
+            validator: function (v) {
+                return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v);
+            },
+            message: 'Please enter a valid email'
+        }
+    },
     whatsappNumber: {
         type: String,
         default: "+1234567890",

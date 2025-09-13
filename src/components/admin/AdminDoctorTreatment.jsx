@@ -278,13 +278,10 @@ const DoctorTreatmentManagement = () => {
             <header className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Doctor Treatment Management</h1>
                 <button
-                    onClick={() => {
-                        localStorage.removeItem('adminToken');
-                        navigate('/admin');
-                    }}
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    onClick={() => navigate('/admin/dashboard')}
+                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                 >
-                    Logout
+                    Back to Dashboard
                 </button>
             </header>
 
@@ -361,7 +358,7 @@ const DoctorTreatmentManagement = () => {
                                     <td className="px-4 py-2">{dt.successRate}%</td>
                                     <td className="px-4 py-2">{dt.experienceWithProcedure} yrs</td>
                                     <td className="px-4 py-2">{dt.casesPerformed}</td>
-                                   {/* <td className="px-4 py-2">
+                                    {/* <td className="px-4 py-2">
                                         {dt.specialTechniques?.slice(0, 2).join(', ')}
                                         {dt.specialTechniques?.length > 2 && '...'}
                                     </td> */}

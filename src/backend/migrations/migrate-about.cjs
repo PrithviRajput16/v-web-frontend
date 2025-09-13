@@ -16,14 +16,10 @@ const migrateAboutUs = async () => {
         // Check if aboutus collection exists
         const collectionExists = await mongoose.connection.db.listCollections({ name: 'aboutus' }).hasNext();
 
-        if (!collectionExists) {
-            console.log('Creating aboutus collection...');
-            await AboutUs.createCollection();
-            console.log('AboutUs collection created successfully');
-        } else {
+        
             await AboutUs.deleteMany({});
             console.log('Cleared existing AboutUs data');
-        }
+       
 
         // Sample AboutUs data based on provided API response
         const sampleAboutUs = [
@@ -47,6 +43,7 @@ const migrateAboutUs = async () => {
                         text: 'Building trust through transparency'
                     }
                 ],
+                email: 'xyz@gmail.com',
                 whatsappNumber: '+1234567890',
                 whatsappMessage: 'Hello! I have a question about your healthcare services.',
                 isActive: true,

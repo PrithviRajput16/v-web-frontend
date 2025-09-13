@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import url_prefix from "../../data/variable";
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchDashboardStats();
@@ -13,6 +14,10 @@ const AdminDashboard = () => {
     const fetchDashboardStats = async () => {
         try {
             const token = localStorage.getItem('adminToken');
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
             const response = await fetch(url_prefix + '/api/admin/dashboard/stats', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -29,7 +34,18 @@ const AdminDashboard = () => {
 
     return (
         <div className="p-6">
-            <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+            <header className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold">Booking Management</h1>
+                <button
+                    onClick={() => {
+                        localStorage.removeItem('adminToken');
+                        navigate('/admin');
+                    }}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                    Logout
+                </button>
+            </header>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -60,9 +76,9 @@ const AdminDashboard = () => {
                 <Link to="/admin/treatments" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Treatments</h3>
                 </Link>
-                <Link to="/admin/hospital-treatments" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                {/* <Link to="/admin/hospital-treatments" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Pricing</h3>
-                </Link>
+                </Link> */}
                 <Link to="/admin/doctor-treatment" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Doctor Treatments</h3>
                 </Link>
