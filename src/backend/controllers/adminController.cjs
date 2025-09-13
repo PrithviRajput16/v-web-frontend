@@ -946,3 +946,182 @@ exports.deleteHospitalDetail = async (req, res) => {
         res.status(500).json({ status: 'error', message: err.message });
     }
 };
+
+
+
+// ==============================
+// BOOKING MANAGEMENT CONTROLLERS
+// ==============================
+
+const Booking = require('../models/Bookings.cjs'); // Make sure to import Booking model
+
+// @desc    Get all bookings
+// @route   GET /api/admin/bookings
+// @access  Protected
+exports.getBookings = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, read, replied, confirmed, search } = req.query;
+        const filter = {};
+
+        // Filter by status
+        if (read !== undefined) filter['status.read'] = read === 'true';
+        if (replied !== undefined) filter['status.replied'] = replied === 'true';
+        if (confirmed !== undefined) filter['status.confirmed'] = confirmed === 'true';
+
+        // Search filter
+        if (search) {
+            filter.$or = [
+                { name: new RegExp(search, 'i') },
+                { email: new RegExp(search, 'i') },
+                { phone: new RegExp(search, 'i') },
+                { doctor: new RegExp(search, 'i') },
+                { hospital: new RegExp(search, 'i') }
+            ];
+        }
+
+        const bookings = await Booking.find(filter)
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Booking.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: bookings.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: bookings
+        });
+    } catch (err) {
+        console.error('Get bookings error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Get booking statistics
+// @route   GET /api/admin/bookings/stats
+// @access  Protected
+exports.getBookingStats = async (req, res) => {
+    try {
+        const [
+            totalBookings,
+            unreadBookings,
+            repliedBookings,
+            confirmedBookings,
+            todayBookings
+        ] = await Promise.all([
+            Booking.countDocuments(),
+            Booking.countDocuments({ 'status.read': false }),
+            Booking.countDocuments({ 'status.replied': true }),
+            Booking.countDocuments({ 'status.confirmed': true }),
+            Booking.countDocuments({
+                createdAt: {
+                    $gte: new Date().setHours(0, 0, 0, 0),
+                    $lt: new Date().setHours(23, 59, 59, 999)
+                }
+            })
+        ]);
+
+        res.json({
+            success: true,
+            data: {
+                total: totalBookings,
+                unread: unreadBookings,
+                replied: repliedBookings,
+                confirmed: confirmedBookings,
+                today: todayBookings
+            }
+        });
+    } catch (err) {
+        console.error('Get booking stats error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Get single booking by ID
+// @route   GET /api/admin/bookings/:id
+// @access  Protected
+exports.getBookingById = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id);
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                error: 'Booking not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: booking
+        });
+    } catch (err) {
+        console.error('Get booking by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Update booking status
+// @route   PUT /api/admin/bookings/:id
+// @access  Protected
+exports.updateBookingStatus = async (req, res) => {
+    try {
+        const { read, replied, confirmed } = req.body;
+        const updateData = {};
+
+        if (read !== undefined) updateData['status.read'] = read;
+        if (replied !== undefined) updateData['status.replied'] = replied;
+        if (confirmed !== undefined) updateData['status.confirmed'] = confirmed;
+
+        const booking = await Booking.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                error: 'Booking not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Booking status updated successfully',
+            data: booking
+        });
+    } catch (err) {
+        console.error('Update booking status error:', err);
+        res.status(400).json({
+            success: false,
+            error: 'Error updating booking status'
+        });
+    }
+};
+
+// @desc    Delete booking
+// @route   DELETE /api/admin/bookings/:id
+// @access  Protected (superadmin only)
+exports.deleteBooking = async (req, res) => {
+    try {
+        const booking = await Booking.findByIdAndDelete(req.params.id);
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                error: 'Booking not found'
+            });
+        }
+        res.json({
+            success: true,
+            message: 'Booking deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete booking error:', err);
+        res.status(500).json({
+            success: false,
+            error: 'Error deleting booking'
+        });
+    }
+};

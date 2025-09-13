@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import Bookings from "./components/admin/AdminAppointments";
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminDoctors from './components/admin/AdminDoctors';
 import AdminDoctorTreatment from './components/admin/AdminDoctorTreatment';
@@ -59,7 +60,8 @@ export default function App() {
           <Route path="/admin/patient-opinions" element={<AdminPatientOpinions />} />
           <Route path="/admin/procedures" element={<AdminProcedures />} />
           <Route path="/admin/hospital-details" element={<AdminHospitalDetails />} />
-
+          <Route path="/admin/bookings" element={<Bookings />} />
+          {/* admin/bookings */}
         </Routes>
       </main>
       <Footer />

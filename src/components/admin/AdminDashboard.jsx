@@ -80,6 +80,9 @@ const AdminDashboard = () => {
                 <Link to="/admin/hospital-details" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Hospital Details</h3>
                 </Link>
+                <Link to="/admin/bookings" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Hospital Bookings</h3>
+                </Link>
             </div>
         </div>
     );

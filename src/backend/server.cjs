@@ -15,6 +15,7 @@ const doctorRouter = require('./routes/doctor.cjs');
 const treatmentRoutes = require('./routes/treatments.cjs');
 const doctorTreatmentRouter = require('./routes/doctorTreatments.cjs');
 const hospitalTreatmentRouter = require('./routes/hospitalTreatments.cjs');
+const bookingsRouter = require('../backend/routes/bookings.cjs');
 const adminRoutes = require('./routes/admin.cjs');
 
 
@@ -55,6 +56,7 @@ app.use('/api/doctors', doctorRouter);
 app.use('/api/treatments', treatmentRoutes);
 app.use('/api/doctor-treatment', doctorTreatmentRouter);
 app.use('/api/hospital-treatment', hospitalTreatmentRouter);
+app.use('/api/booking', bookingsRouter);
 app.use('/api/admin', adminRoutes);
 // Your existing routes
 const uploadRoutes = require('./routes/upload.cjs');
