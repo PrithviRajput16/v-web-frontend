@@ -20,6 +20,7 @@
     "migrate:procedures": "node src/backend/migrations/migrateProcedures.cjs",
     "migrate:create-admin": "node src/backend/migrations/create-admin.cjs",
     "migrate:bookings": "node src/backend/migrations/migrate-bookings.cjs",
+    "migrate:about": "node src/backend/migrations/migrate-about.cjs",
     "migrate:all": "npm run migrate && npm run migrate:hospitals"
   },
   "dependencies": {

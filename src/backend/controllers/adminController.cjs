@@ -8,6 +8,7 @@ const ProcedureCost = require('../models/ProcedureCost.cjs');
 const FAQ = require('../models/FAQ.cjs');
 const PatientOpinion = require('../models/PatientOpinions.cjs');
 const HospitalDetail = require('../models/HospitalDetail.cjs');
+const About = require('../models/About.cjs');
 
 
 
@@ -1133,5 +1134,71 @@ exports.deleteBooking = async (req, res) => {
             success: false,
             error: 'Error deleting booking'
         });
+    }
+};
+
+// controllers/aboutController.cjs - Add these functions
+
+// @desc    Get about page content for admin
+// @route   GET /api/admin/about
+// @access  Protected (Admin)
+exports.getAboutAdmin = async (req, res) => {
+    try {
+        let about = await About.findOne({ isActive: true });
+
+        if (!about) {
+            about = await About.create({
+                title: "About Us",
+                subtitle: "We're committed to making healthcare accessible, transparent, and easy to navigate",
+                missionTitle: "Our Mission",
+                missionDescription: "This platform was created as a learning project to replicate the experience of a modern healthcare directory and booking service.",
+                image: "/aboutpage.jpg",
+                highlights: [
+                    { icon: "HeartPulse", text: "Simplifying healthcare decisions with clarity" },
+                    { icon: "Stethoscope", text: "Intuitive tools for better patient experience" },
+                    { icon: "Users", text: "Building trust through transparency" }
+                ],
+                whatsappNumber: "+1234567890",
+                whatsappMessage: "Hello! I have a question about your healthcare services."
+            });
+        }
+
+        res.json({
+            success: true,
+            data: about
+        });
+    } catch (err) {
+        console.error('Get about admin error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// @desc    Update about page content from admin
+// @route   PUT /api/admin/about
+// @access  Protected (Admin)
+exports.updateAboutAdmin = async (req, res) => {
+    try {
+        let about = await About.findOne({ isActive: true });
+
+        if (!about) {
+            about = new About(req.body);
+        } else {
+            about = await About.findByIdAndUpdate(
+                about._id,
+                req.body,
+                { new: true, runValidators: true }
+            );
+        }
+
+        const savedAbout = await about.save();
+
+        res.json({
+            success: true,
+            message: 'About page updated successfully',
+            data: savedAbout
+        });
+    } catch (err) {
+        console.error('Update about admin error:', err);
+        res.status(400).json({ success: false, error: 'Error updating about page' });
     }
 };

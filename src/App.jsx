@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import AboutUs from './components/admin/AdminAbout';
 import Bookings from "./components/admin/AdminAppointments";
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminDoctors from './components/admin/AdminDoctors';
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/admin/procedures" element={<AdminProcedures />} />
           <Route path="/admin/hospital-details" element={<AdminHospitalDetails />} />
           <Route path="/admin/bookings" element={<Bookings />} />
+          <Route path="/admin/about" element={<AboutUs />} />
           {/* admin/bookings */}
         </Routes>
       </main>
