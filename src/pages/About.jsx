@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { HeartPulse, Stethoscope, Users } from "lucide-react"; // modern icons
 import { useEffect, useState } from "react";
+import url_prefix from "../data/variable";
+
 
 export default function About() {
   // State to hold API data and loading/error states
