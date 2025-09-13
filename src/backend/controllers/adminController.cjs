@@ -146,41 +146,6 @@ exports.getHospitals = async (req, res) => {
     }
 };
 
-// exports.getHospitalDetails = async (req, res) => {
-//     try {
-//         const { page = 1, limit = 10, search } = req.query;
-//         const filter = {};
-
-//         if (search) {
-//             filter.$or = [
-//                 { description: new RegExp(search, 'i') },
-//                 { address: new RegExp(search, 'i') },
-//                 { website: new RegExp(search, 'i') },
-//                 { email: new RegExp(search, 'i') }
-//             ];
-//         }
-
-//         const hospitalDetails = await HospitalDetail.find(filter)
-//             .populate('hospital')
-//             .sort({ createdAt: -1 })
-//             .limit(limit * 1)
-//             .skip((page - 1) * limit);
-
-//         const total = await HospitalDetail.countDocuments(filter);
-
-//         res.json({
-//             success: true,
-//             count: hospitalDetails.length,
-//             total,
-//             page: parseInt(page),
-//             pages: Math.ceil(total / limit),
-//             data: hospitalDetails
-//         });
-//     } catch (err) {
-//         console.error('Get hospital details error:', err);
-//         res.status(500).json({ success: false, error: 'Server Error' });
-//     }
-// };
 
 // Similar methods for doctors, treatments, etc...
 exports.getDoctors = async (req, res) => {
@@ -219,39 +184,6 @@ exports.getDoctors = async (req, res) => {
     }
 };
 
-// exports.getTreatments = async (req, res) => {
-//     try {
-//         const { page = 1, limit = 10, search, category } = req.query;
-//         const filter = {};
-
-//         if (search) {
-//             filter.$or = [
-//                 { title: new RegExp(search, 'i') },
-//                 { description: new RegExp(search, 'i') }
-//             ];
-//         }
-//         if (category) filter.category = category;
-
-//         const treatments = await Treatment.find(filter)
-//             .sort({ title: 1 })
-//             .limit(limit * 1)
-//             .skip((page - 1) * limit);
-
-//         const total = await Treatment.countDocuments(filter);
-
-//         res.json({
-//             success: true,
-//             count: treatments.length,
-//             total,
-//             page: parseInt(page),
-//             pages: Math.ceil(total / limit),
-//             data: treatments
-//         });
-//     } catch (err) {
-//         console.error('Get treatments error:', err);
-//         res.status(500).json({ success: false, error: 'Server Error' });
-//     }
-// };
 
 exports.getHospitalTreatments = async (req, res) => {
     try {
@@ -319,6 +251,20 @@ exports.updateHospital = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+
+exports.deleteHospital = async (req, res) => {
+    try {
+        const hospital = await Hospital.findByIdAndDelete(req.params.id);
+        if (!hospital) {
+            return res.status(404).json({ success: false, error: 'Hospital not found' });
+        }
+        res.json({ success: true, message: 'Hospital deleted successfully' });
+    } catch (err) {
+        console.error('Hospital error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+
+    }
+}
 
 // ================= DOCTOR CRUD =================
 

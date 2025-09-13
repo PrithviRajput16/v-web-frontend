@@ -9,6 +9,7 @@ const {
     getDoctorById,     // ✅ NEW
     createHospital,
     updateHospital,
+    deleteHospital,
     getHospitalTreatments,
     // getHospitalDetails,
     createDoctor,      // ✅ NEW
@@ -86,7 +87,7 @@ router.get('/hospitals', protectAdmin, getHospitals);
 router.get('/hospitaldetails/:hospitalid', protectAdmin, getHospitalDetails);
 router.post('/hospitals', protectAdmin, restrictTo('superadmin', 'admin'), createHospital);
 router.put('/hospitals/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateHospital);
-// router.delete('/hospitals/:id', protectAdmin, restrictTo('superadmin'), deleteHospital);
+router.delete('/hospitals/:id', protectAdmin, restrictTo('superadmin'), deleteHospital);
 
 // Doctor management
 router.get('/doctors', protectAdmin, getDoctors);
