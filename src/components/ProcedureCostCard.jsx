@@ -1,6 +1,21 @@
 import { motion } from "framer-motion";
 
 export default function ProcedureCostCard({ service, index }) {
+
+
+
+  const WhatsAppSectionButton = (service) => {
+    // Replace with your actual WhatsApp number in international format (without +)
+    const phoneNumber = '919555447404';
+
+    // Message that will be pre-filled (optional)
+    const message = `Hello! I have a question about your ${service} procedure`;
+
+    // Create the WhatsApp URL
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, "_blank");
+  }
   return (
     <div className="col">
       <motion.div
@@ -57,8 +72,12 @@ export default function ProcedureCostCard({ service, index }) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-md"
+                onClick={() => WhatsAppSectionButton(service.title)}
               >
+
+
                 Get Quote
+
               </motion.button>
             </div>
           </div>

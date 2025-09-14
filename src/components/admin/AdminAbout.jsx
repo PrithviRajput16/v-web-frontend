@@ -287,15 +287,15 @@ const AboutManagement = () => {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                                         <Phone className="w-4 h-4 mr-1" />
-                                        WhatsApp Number
+                                        WhatsApp Number (Don't use + before code )
                                     </label>
                                     <input
-                                        type="text"
+                                        type="number"
                                         name="whatsappNumber"
                                         value={aboutData.whatsappNumber}
                                         onChange={handleInputChange}
                                         className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                                        placeholder="+1234567890"
+                                        placeholder="1234567890"
                                         required
                                     />
                                 </div>

@@ -43,7 +43,9 @@ export default function App() {
           <Route path="/appointment" element={<Appointment />} />
           <Route path="/hospitals/:id" element={<HospitalDetails />} />
           <Route path="/doctors/:id" element={<DoctorDetails />} />
-          <Route path="/hospitals/:id/book" element={<BookingFlow />} />
+          <Route path="/hospitals/:hospitalId/book" element={<BookingFlow />} />
+          <Route path="/doctors/:doctorId/book" element={<BookingFlow />} />
+          <Route path="/book" element={<BookingFlow />} />
           <Route path="/treatments/:id" element={<TreatmentDetails />} />
 
 

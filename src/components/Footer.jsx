@@ -34,7 +34,6 @@ export default function Footer() {
 
     fetchAboutData();
   }, []);
-console.log(aboutData);
   if (loading) {
     return (
       <section className="relative bg-white py-16 overflow-hidden">
@@ -85,7 +84,7 @@ console.log(aboutData);
             <h3 className="text-lg font-semibold  mb-3">Contact</h3>
             <ul className="space-y-2 text-sm">
               <li>Email: {aboutData.email}</li>
-              <li>Phone: {aboutData.whatsappNumber}</li>
+              <li>Phone: +{aboutData.whatsappNumber}</li>
               <li>Location: Delhi, India</li>
             </ul>
           </div>

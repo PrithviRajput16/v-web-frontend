@@ -1,35 +1,39 @@
 import { useEffect, useState } from "react";
-// const API_URL = process.env.REACT_APP_API_URL;
+import { useParams } from "react-router-dom";
+import url_prefix from "../data/variable";
 
-export default function BookingFlow({ hospital }) {
+export default function BookingFlow() {
+  const { hospitalId, doctorId } = useParams();
+
+  console.log("Hospital ID:", hospitalId);
+  console.log("Doctor ID:", doctorId);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hospitals, setHospitals] = useState([]);
   const [doctors, setDoctors] = useState([]);
-  // const [hId, setHospitalId] = useState();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     doctor: "",
-    doctorId: "",
+    doctorId: doctorId || "",
     hospital: "",
-    hospitalId: hospital?._id || "",
+    hospitalId: hospitalId || "",
     date: "",
     time: "",
     message: ""
   });
+
 
   // Fetch hospitals and doctors
   useEffect(() => {
     const fetchHospitalsAndDoctors = async () => {
       try {
         // Fetch hospitals
-        const hospitalsResponse = await fetch('http://localhost:6003/api/hospitals/all');
+        const hospitalsResponse = await fetch(url_prefix + '/api/hospitals/all?limit=10000');
         const hospitalsResult = await hospitalsResponse.json();
         if (hospitalsResult.success) {
           setHospitals(hospitalsResult.data);
-          console.log(API_URL);
         }
 
 
@@ -41,10 +45,42 @@ export default function BookingFlow({ hospital }) {
     fetchHospitalsAndDoctors();
   }, []);
 
+  useEffect(() => {
+
+
+    if (hospitalId) {
+      // Fetch doctors for the pre-filled hospital
+      fetchDoctors(hospitalId);
+
+      const selectedHospital = hospitals.find(h => h._id === hospitalId);
+      setFormData(prev => ({
+        ...prev,
+        hospitalId,
+        hospital: selectedHospital ? selectedHospital.name : prev.hospital,
+      }));
+    }
+
+    if (doctorId) {
+      const selectedDoctor = doctors.find(d => d._id === doctorId);
+      setFormData(prev => ({
+        ...prev,
+        doctorId,
+        doctor: selectedDoctor
+          ? `${selectedDoctor.firstName} ${selectedDoctor.lastName}`
+          : prev.doctor,
+      }));
+
+
+    }
+
+
+
+  }, [hospitalId, doctorId, hospitals, doctors]);
+
 
   const fetchDoctors = async (hId) => {
     try {
-      const doctorsResponse = await fetch(`http://localhost:6003/api/doctors/hospital/${hId}`);
+      const doctorsResponse = await fetch(`${url_prefix}/api/doctors/hospital/${hId}`);
       const doctorsResult = await doctorsResponse.json();
       if (doctorsResult.success) {
         setDoctors(doctorsResult.data);
@@ -56,6 +92,8 @@ export default function BookingFlow({ hospital }) {
 
   };
 
+  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -65,8 +103,6 @@ export default function BookingFlow({ hospital }) {
   const handleHospitalChange = (e) => {
     const hospitalId = e.target.value;
     const selectedHospital = hospitals.find(h => h._id === hospitalId);
-    // setHospitalId(hospitalId);
-    console.log(hospitalId);
     setLoading(true);
     fetchDoctors(hospitalId);
     setFormData({
@@ -105,7 +141,7 @@ export default function BookingFlow({ hospital }) {
         message: formData.message
       };
 
-      const response = await fetch('http://localhost:6003/api/booking/', {
+      const response = await fetch(url_prefix + '/api/booking/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

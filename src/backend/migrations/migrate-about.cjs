@@ -44,7 +44,7 @@ const migrateAboutUs = async () => {
                     }
                 ],
                 email: 'xyz@gmail.com',
-                whatsappNumber: '+1234567890',
+                whatsappNumber: '1234567890',
                 whatsappMessage: 'Hello! I have a question about your healthcare services.',
                 isActive: true,
                 createdAt: new Date('2025-09-13T10:21:58.519Z'),

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FaChevronDown, FaQuestionCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import url_prefix from "../../data/variable";
 import "./FAQ.css";
 
@@ -9,6 +10,7 @@ const FAQ = () => {
   const [faqData, setFaqData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch FAQs from API
   useEffect(() => {
@@ -40,9 +42,7 @@ const FAQ = () => {
     fetchFAQs();
   }, []);
 
-  const toggleFAQ = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
+
 
   // Split FAQ data into two columns
   const leftColumn = faqData.slice(0, Math.ceil(faqData.length / 2));
@@ -180,10 +180,10 @@ const FAQ = () => {
             may have about your medical journey.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-[#008080] hover:bg-[#006080] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+            <button className="bg-[#008080] hover:bg-[#006080] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300" onClick={() => navigate('/book')}>
               Contact Us Now
             </button>
-            <button className="border border-[#008080] text-[#008080] hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+            <button className="border border-[#008080] text-[#008080] hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors duration-300" onClick={() => navigate('/book')}>
               Request a Call Back
             </button>
           </div>
@@ -195,6 +195,7 @@ const FAQ = () => {
 
 // FAQ Item Component
 const FAQItem = ({ faq, index, isActive, onClick }) => {
+
   return (
     <motion.div
       className="bg-white rounded-xl shadow-sm overflow-hidden border border-blue-100"
