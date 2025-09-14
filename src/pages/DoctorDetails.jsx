@@ -14,8 +14,15 @@ import {
     FaStethoscope
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useLanguage } from '../hooks/useLanguage';
 
 const DoctorDetails = () => {
+    const [language] = useLanguage();
+    const [headings, setHeadings] = useState({
+        'title': 'Not Available For Selected Language',
+        'sub': '',
+        'desc': ''
+    });
     const { id } = useParams();
     const navigate = useNavigate();
     const [doctor, setDoctor] = useState(null);
@@ -32,6 +39,10 @@ const DoctorDetails = () => {
     });
 
     useEffect(() => {
+        if (!language) {
+            console.log('Language not yet available, skipping fetch');
+            return;
+        }
         const fetchDoctorData = async () => {
             try {
                 setLoading(true);
@@ -46,17 +57,59 @@ const DoctorDetails = () => {
                 if (!doctorResult.success) {
                     throw new Error("Invalid doctor data received");
                 }
+                if (doctorResult.success) {
+                    let dataToSet;
+                    if (Array.isArray(doctorResult.data)) {
+                        dataToSet = doctorResult.data.filter(
+                            item => item.language?.toLowerCase() === language?.toLowerCase()
+                        );
+                    } else {
+                        dataToSet =
+                            doctorResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                ? [doctorResult.data]
+                                : [];
+                    }
 
-                setDoctor(doctorResult.data);
+                    if (dataToSet.length > 0) {
+                        console.log('Setting aboutData:', dataToSet);
+                        setDoctor(dataToSet[0]);
+
+                        setHeadings({
+                            title: dataToSet[0].htitle,
+                            sub: dataToSet[0].hsubtitle,
+                            desc: dataToSet[0].hdesc
+                        })
+                    }
+                }
 
                 // Fetch doctor treatments
                 const treatmentsResponse = await fetch(`${url_prefix}/api/doctor-treatment/by-doctor/${id}`);
                 if (treatmentsResponse.ok) {
                     const treatmentsResult = await treatmentsResponse.json();
                     if (treatmentsResult.success) {
-                        setDoctorTreatments(treatmentsResult.data);
-                        setFilteredDoctorTreatments(treatmentsResult.data);
-                        console.log(treatmentsResult.data[0]);
+                        let dataToSet;
+                        if (Array.isArray(treatmentsResult.data)) {
+                            dataToSet = treatmentsResult.data.filter(
+                                item => item.language?.toLowerCase() === language?.toLowerCase()
+                            );
+                        } else {
+                            dataToSet =
+                                treatmentsResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                    ? [treatmentsResult.data]
+                                    : [];
+                        }
+
+                        if (dataToSet.length > 0) {
+                            console.log('Setting aboutData:', dataToSet);
+                            setDoctorTreatments(dataToSet);
+                            setFilteredDoctorTreatments(dataToSet);
+                            setError(null);
+                            setHeadings({
+                                title: dataToSet[0].htitle,
+                                sub: dataToSet[0].hsubtitle,
+                                desc: dataToSet[0].hdesc
+                            })
+                        }
                     }
                 }
 
@@ -70,7 +123,7 @@ const DoctorDetails = () => {
         };
 
         fetchDoctorData();
-    }, [id]);
+    }, [id, language]);
 
     // Filter doctor treatments based on filters
     useEffect(() => {
