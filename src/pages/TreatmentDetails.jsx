@@ -14,9 +14,16 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProcedureCostCard from "../components/ProcedureCostCard";
 import url_prefix from "../data/variable";
+import { useLanguage } from '../hooks/useLanguage';
 
 
 const TreatmentDetails = () => {
+    const [language] = useLanguage();
+    const [headings, setHeadings] = useState({
+        'title': 'Not Available For Selected Language',
+        'sub': '',
+        'desc': ''
+    });
     const { id } = useParams();
     const navigate = useNavigate();
     const [treatment, setTreatment] = useState(null);
@@ -57,6 +64,10 @@ const TreatmentDetails = () => {
     });
 
     useEffect(() => {
+        if (!language) {
+            console.log('Language not yet available, skipping fetch');
+            return;
+        }
         const fetchTreatmentData = async () => {
             try {
                 setLoading(true);
@@ -71,33 +82,130 @@ const TreatmentDetails = () => {
                 if (!treatmentResult.success) {
                     throw new Error('Invalid treatment data received');
                 }
+                if (treatmentResult.success) {
+                    console.log(treatmentResult.data.language)
+                    let dataToSet;
+                    if (Array.isArray(treatmentResult.data)) {
+                        dataToSet = treatmentResult.data.filter(
+                            item => item.language?.toLowerCase() === language?.toLowerCase()
+                        );
+                    } else {
+                        dataToSet =
+                            treatmentResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                ? [treatmentResult.data]
+                                : [];
+                    }
 
-                setTreatment(treatmentResult.data);
+                    if (dataToSet.length > 0) {
+                        console.log('Setting aboutData:', dataToSet[0]);
+                        setTreatment(dataToSet[0]);
+                        setHeadings({
+                            title: dataToSet[0].htitle,
+                            sub: dataToSet[0].hsubtitle,
+                            desc: dataToSet[0].hdesc
+                        })
+                    }
+                }
+
 
                 // Fetch hospital treatments for this procedure
                 const hospitalTreatmentsResponse = await fetch(`${url_prefix}/api/hospital-treatment/by-treatment/${id}`);
                 if (hospitalTreatmentsResponse.ok) {
                     const hospitalTreatmentsResult = await hospitalTreatmentsResponse.json();
+
+
+
                     if (hospitalTreatmentsResult.success) {
-                        setHospitalTreatments(hospitalTreatmentsResult.data);
-                        setFilteredHospitalTreatments(hospitalTreatmentsResult.data);
+
+                        let dataToSet;
+                        if (Array.isArray(hospitalTreatmentsResult.data)) {
+                            dataToSet = hospitalTreatmentsResult.data.filter(
+                                item => item.language?.toLowerCase() === language?.toLowerCase()
+                            );
+                            console.log('hosptial', dataToSet)
+
+                        } else {
+                            dataToSet =
+                                hospitalTreatmentsResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                    ? [hospitalTreatmentsResult.data]
+                                    : [];
+                        }
+
+                        if (dataToSet.length > 0) {
+                            console.log('Setting aboutData:', dataToSet);
+                            setHospitalTreatments(dataToSet);
+                            setFilteredHospitalTreatments(dataToSet);
+                            setError(null);
+                            setHeadings({
+                                title: dataToSet[0].htitle,
+                                sub: dataToSet[0].hsubtitle,
+                                desc: dataToSet[0].hdesc
+                            })
+                        }
                     }
                 }
+
 
                 // Fetch doctor details
                 const doctorTreatmentResponse = await fetch(`${url_prefix}/api/doctor-treatment/by-treatment/${id}`)
                 if (doctorTreatmentResponse.ok) {
                     const doctorTreatmentResult = await doctorTreatmentResponse.json()
-                    setDoctorTreatments(doctorTreatmentResult.data);
-                    setFilteredDoctorTreatments(doctorTreatmentResult.data);
+                    if (doctorTreatmentResult.success) {
+                        let dataToSet;
+                        if (Array.isArray(doctorTreatmentResult.data)) {
+                            dataToSet = doctorTreatmentResult.data.filter(
+                                item => item.language?.toLowerCase() === language?.toLowerCase()
+                            );
+                        } else {
+                            dataToSet =
+                                doctorTreatmentResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                    ? [doctorTreatmentResult.data]
+                                    : [];
+                        }
+
+                        if (dataToSet.length > 0) {
+                            console.log('Setting aboutData:', dataToSet);
+                            setDoctorTreatments(dataToSet);
+                            setFilteredDoctorTreatments(dataToSet);
+                            setError(null);
+                            setHeadings({
+                                title: dataToSet[0].htitle,
+                                sub: dataToSet[0].hsubtitle,
+                                desc: dataToSet[0].hdesc
+                            })
+                        }
+                    }
                 }
 
                 // Fetch Prodecures 
                 const procedureResponse = await fetch(`${url_prefix}/api/procedure-costs/by-treatment/${id}`);
                 if (procedureResponse.ok) {
                     const procedureResult = await procedureResponse.json();
-                    setProcedures(procedureResult.data);
-                    setFilteredProcedures(procedureResult.data);
+                    if (procedureResult.success) {
+                        let dataToSet;
+                        if (Array.isArray(procedureResult.data)) {
+                            dataToSet = procedureResult.data.filter(
+                                item => item.language?.toLowerCase() === language?.toLowerCase()
+                            );
+                        } else {
+                            dataToSet =
+                                procedureResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                    ? [procedureResult.data]
+                                    : [];
+                        }
+
+                        if (dataToSet.length > 0) {
+                            console.log('Setting aboutData:', dataToSet);
+                            setProcedures(dataToSet);
+                            setFilteredProcedures(dataToSet);
+                            setError(null);
+                            setHeadings({
+                                title: dataToSet[0].htitle,
+                                sub: dataToSet[0].hsubtitle,
+                                desc: dataToSet[0].hdesc
+                            })
+                        }
+                    }
 
                 }
 
@@ -113,7 +221,7 @@ const TreatmentDetails = () => {
         };
 
         fetchTreatmentData();
-    }, [id]);
+    }, [id, language]);
 
 
 
