@@ -1,10 +1,9 @@
 
-
 import { motion } from "framer-motion";
 
 export default function ServiceCard({ service, index }) {
   return (
-    <div className = "col" >
+    <div className = "col " >
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
@@ -18,12 +17,12 @@ export default function ServiceCard({ service, index }) {
         scale: 1.03,
         boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)",
       }}
-      className="relative p-[2px] rounded-2xl bg-gradient-to-tr  from-white to-[#006080]"
+      className="relative h-full  p-[2px] rounded-2xl bg-gradient-to-tr  from-white to-[#006080]"
       // className=" relative p-[2px] rounded-2xl bg-gradient-to-tr to-[#004080] from-[#808080]"
       // to-green-600 Removed this from classname from-emrald-400 from-[#008080]
     >
       {/* Glassmorphic Card */}
-      <div className="bg-white/80 flex items-center gap-4 backdrop-blur-md rounded-2xl p-6 transition-all duration-300">
+      <div className="bg-white/80 h-full flex items-center gap-4 backdrop-blur-md rounded-2xl p-6 transition-all duration-300">
         <motion.div
           whileHover={{ 
             rotate: 10, 
@@ -39,7 +38,7 @@ export default function ServiceCard({ service, index }) {
            <img
           src={service.icon}
           // alt={hospital.name}
-          className="w-full h-full object-cover  transition-transform duration-500 group-hover:scale-110"
+          className="w-20 h-full object-cover  transition-transform duration-500 group-hover:scale-110"
         />
         </motion.div>
           <div>
@@ -48,7 +47,7 @@ export default function ServiceCard({ service, index }) {
         </h3>
         
         <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-          {service.desc}
+          {service.description}
         </p>
        
         </div>
