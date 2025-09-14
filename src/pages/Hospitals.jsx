@@ -105,7 +105,7 @@ const Hospitals = () => {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Filter Sidebar */}
-        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
           <div className="flex items-center gap-2 mb-6">
             <FaFilter className="text-teal-600 text-lg" />
             <h2 className="text-xl font-semibold text-gray-800">Filters</h2>

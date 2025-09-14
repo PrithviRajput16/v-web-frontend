@@ -8,6 +8,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        
         fetchDashboardStats();
     }, []);
 

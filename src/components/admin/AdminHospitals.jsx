@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ImageUpload from './ImageUpload';
 import url_prefix from "../../data/variable";
+import ImageUpload from './ImageUpload';
 
 const HospitalManagement = () => {
     const [hospitals, setHospitals] = useState([]);
@@ -473,41 +473,44 @@ const HospitalManagement = () => {
                     placeholder="Search by name, city, or country"
                     className="mb-4 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
-                <table className="w-full table-auto">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            <th className="px-4 py-2">Name</th>
-                            <th className="px-4 py-2">Country</th>
-                            <th className="px-4 py-2">City</th>
-                            <th className="px-4 py-2">Rating</th>
-                            <th className="px-4 py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {hospitals.map((hospital) => (
-                            <tr key={hospital._id}>
-                                <td className="border px-4 py-2">{hospital.name}</td>
-                                <td className="border px-4 py-2">{hospital.country}</td>
-                                <td className="border px-4 py-2">{hospital.city}</td>
-                                <td className="border px-4 py-2">{hospital.rating || 'N/A'}</td>
-                                <td className="border px-4 py-2">
-                                    <button
-                                        onClick={() => openUpdateModal(hospital)}
-                                        className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 mr-2"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteHospital(hospital._id)}
-                                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
+                <div className='overflow-x-auto' >
+                    <table className="w-full table-auto">
+                        <thead>
+                            <tr className="bg-gray-200">
+                                <th className="px-4 py-2">Name</th>
+                                <th className="px-4 py-2">Country</th>
+                                <th className="px-4 py-2">City</th>
+                                <th className="px-4 py-2">Rating</th>
+                                <th className="px-4 py-2">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {hospitals.map((hospital) => (
+                                <tr key={hospital._id}>
+                                    <td className="border px-4 py-2">{hospital.name}</td>
+                                    <td className="border px-4 py-2">{hospital.country}</td>
+                                    <td className="border px-4 py-2">{hospital.city}</td>
+                                    <td className="border px-4 py-2">{hospital.rating || 'N/A'}</td>
+                                    <td className="border px-4 py-2">
+                                        <button
+                                            onClick={() => openUpdateModal(hospital)}
+                                            className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 mr-2"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteHospital(hospital._id)}
+                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
                 <div className="flex justify-between mt-4">
                     <button
                         onClick={handlePrevPage}
@@ -527,146 +530,148 @@ const HospitalManagement = () => {
                 </div>
             </div>
 
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
-                        <h2 className="text-xl font-semibold mb-4">Update Hospital</h2>
-                        <form onSubmit={handleUpdateHospital} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {
+                isModalOpen && (
+                    <div className="fixed inset-0 bg-gray-600  flex items-center justify-center">
+                        <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
+                            <h2 className="text-xl font-semibold mb-4">Update Hospital</h2>
+                            <form onSubmit={handleUpdateHospital} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Name</label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Country</label>
+                                        <input
+                                            type="text"
+                                            name="country"
+                                            value={formData.country}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">City</label>
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={formData.city}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                    {/* Image Upload Component */}
+                                    <ImageUpload
+                                        onImageUpload={(imageUrl) => {
+                                            handleInputChange({
+                                                target: {
+                                                    name: 'image',
+                                                    value: imageUrl
+                                                }
+                                            });
+                                        }}
+                                        currentImage={formData.image}
+                                        folder="hospital"
+                                        maxSize={5}
+                                    />
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Specialties (comma-separated)</label>
+                                        <input
+                                            type="text"
+                                            name="specialties"
+                                            value={formData.specialties}
+                                            onChange={handleInputChange}
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Rating (0-5)</label>
+                                        <input
+                                            type="number"
+                                            name="rating"
+                                            value={formData.rating}
+                                            onChange={handleInputChange}
+                                            min="0"
+                                            max="5"
+                                            step="0.1"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Number of Beds</label>
+                                        <input
+                                            type="number"
+                                            name="beds"
+                                            value={formData.beds}
+                                            onChange={handleInputChange}
+                                            min="0"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Accreditations (comma-separated)</label>
+                                        <input
+                                            type="text"
+                                            name="accreditation"
+                                            value={formData.accreditation}
+                                            onChange={handleInputChange}
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Phone</label>
+                                        <input
+                                            type="text"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                    </div>
+                                </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
+                                    <label className="block text-sm font-medium text-gray-700">Blurb</label>
+                                    <textarea
+                                        name="blurb"
+                                        value={formData.blurb}
                                         onChange={handleInputChange}
                                         required
+                                        maxLength="500"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Country</label>
-                                    <input
-                                        type="text"
-                                        name="country"
-                                        value={formData.country}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
+                                <div className="flex justify-end space-x-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                    >
+                                        Update
+                                    </button>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">City</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                {/* Image Upload Component */}
-                                <ImageUpload
-                                    onImageUpload={(imageUrl) => {
-                                        handleInputChange({
-                                            target: {
-                                                name: 'image',
-                                                value: imageUrl
-                                            }
-                                        });
-                                    }}
-                                    currentImage={formData.image}
-                                    folder="hospital"
-                                    maxSize={5}
-                                />
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Specialties (comma-separated)</label>
-                                    <input
-                                        type="text"
-                                        name="specialties"
-                                        value={formData.specialties}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Rating (0-5)</label>
-                                    <input
-                                        type="number"
-                                        name="rating"
-                                        value={formData.rating}
-                                        onChange={handleInputChange}
-                                        min="0"
-                                        max="5"
-                                        step="0.1"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Number of Beds</label>
-                                    <input
-                                        type="number"
-                                        name="beds"
-                                        value={formData.beds}
-                                        onChange={handleInputChange}
-                                        min="0"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Accreditations (comma-separated)</label>
-                                    <input
-                                        type="text"
-                                        name="accreditation"
-                                        value={formData.accreditation}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Phone</label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Blurb</label>
-                                <textarea
-                                    name="blurb"
-                                    value={formData.blurb}
-                                    onChange={handleInputChange}
-                                    required
-                                    maxLength="500"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                />
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                >
-                                    Update
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

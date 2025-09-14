@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import url_prefix from "../../data/variable";
 
 const AdminLogin = () => {
+    useEffect(() => {
+
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+            navigate('/admin/dashboard');
+            return;
+        }
+    }, []);
+
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');

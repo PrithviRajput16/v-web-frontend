@@ -99,7 +99,6 @@ const TreatmentDetails = () => {
                     setProcedures(procedureResult.data);
                     setFilteredProcedures(procedureResult.data);
 
-                    console.log(procedureResult.data);
                 }
 
 
@@ -116,10 +115,8 @@ const TreatmentDetails = () => {
         fetchTreatmentData();
     }, [id]);
 
-    console.log(doctorTreatments)
 
 
-    // console.log(hospitalTreatments.name);
 
     // Filter hospital treatments based on filters
     useEffect(() => {
@@ -232,7 +229,6 @@ const TreatmentDetails = () => {
         setFilteredProcedures(filtered);
     }, [procedureFilters, procedures]);
 
-    // console.log(filteredHospitalTreatments[0].city);
 
     // Extract unique values for filters
     const hospitals = [...new Set(hospitalTreatments
@@ -481,7 +477,7 @@ const TreatmentDetails = () => {
                 {activeTab === 'hospitals' && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
-                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
                             <div className="flex items-center gap-2 mb-6">
                                 <FaFilter className="text-teal-600 text-lg" />
                                 <h2 className="text-xl font-semibold text-gray-800">Filter Hospitals</h2>
@@ -589,7 +585,7 @@ const TreatmentDetails = () => {
                                                 {/* Hospital Image */}
                                                 <div className="flex-shrink-0">
                                                     <img
-                                                        src={hospitalTreatment.hospital.image}
+                                                        src={hospitalTreatment.hospital?.image}
                                                         alt={hospitalTreatment.hospital?.name}
                                                         className="w-32 h-32 object-cover rounded-lg"
                                                     />
@@ -598,18 +594,18 @@ const TreatmentDetails = () => {
                                                 {/* Hospital Info */}
                                                 <div className="flex-grow">
                                                     <h3 className="text-xl font-bold text-gray-800 mb-2">
-                                                        {hospitalTreatment.hospital.name}
+                                                        {hospitalTreatment.hospital?.name}
                                                     </h3>
 
                                                     <div className="flex items-center text-gray-600 mb-3">
                                                         <FaMapMarkerAlt className="mr-2" />
-                                                        <span>{hospitalTreatment.hospital.city}, {hospitalTreatment.hospital.country}</span>
+                                                        <span>{hospitalTreatment.hospital?.city}, {hospitalTreatment.hospital?.country}</span>
                                                     </div>
 
                                                     <div className="flex items-center mb-4">
                                                         <FaStar className="text-yellow-400 mr-1" />
                                                         <span className="text-gray-700 font-semibold">
-                                                            {hospitalTreatment.hospital.rating}
+                                                            {hospitalTreatment.hospital?.rating}
                                                         </span>
                                                         <span className="text-gray-500 ml-2">({hospitalTreatment.beds} beds)</span>
                                                     </div>
@@ -686,7 +682,7 @@ const TreatmentDetails = () => {
                 {activeTab === 'doctors' && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
-                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
                             <div className="flex items-center gap-2 mb-6">
                                 <FaFilter className="text-teal-600 text-lg" />
                                 <h2 className="text-xl font-semibold text-gray-800">Filter Doctors</h2>
@@ -922,7 +918,7 @@ const TreatmentDetails = () => {
                 {activeTab === 'procedures' && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
-                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
                             <div className="flex items-center gap-2 mb-6">
                                 <FaFilter className="text-teal-600 text-lg" />
                                 <h2 className="text-xl font-semibold text-gray-800">Filter Procedures</h2>
