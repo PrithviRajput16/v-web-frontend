@@ -301,7 +301,7 @@ const HospitalDetails = () => {
 
         {/* Navigation Tabs */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
-          <div className="flex space-x-8 border-b">
+          <div className="flex space-x-8 border-b overflow-x-auto">
             {['overview', 'doctors', 'treatments', 'facilities', 'contact'].map((tab) => (
               <button
                 key={tab}

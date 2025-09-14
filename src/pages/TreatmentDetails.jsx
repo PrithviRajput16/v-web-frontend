@@ -337,7 +337,7 @@ const TreatmentDetails = () => {
 
                 {/* Navigation Tabs */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
-                    <div className="flex space-x-8 border-b">
+                    <div className="flex space-x-8 border-b overflow-x-auto">
 
                         {['overview', 'hospitals', 'doctors', 'procedures'].map((tab) => (
                             <button

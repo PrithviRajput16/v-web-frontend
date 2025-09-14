@@ -363,6 +363,7 @@ const StatusBadge = ({ status }) => {
 };
 
 // Booking Modal Component
+// Booking Modal Component
 const BookingModal = ({ booking, onClose, onUpdate }) => {
     const [status, setStatus] = useState(booking.status);
     const [loading, setLoading] = useState(false);
@@ -387,77 +388,79 @@ const BookingModal = ({ booking, onClose, onUpdate }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-4">Update Booking Status</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                    <h2 className="text-xl font-semibold mb-4">Update Booking Status</h2>
 
-                <div className="mb-4 p-4 bg-gray-50 rounded">
-                    <h3 className="font-medium mb-2">Booking Details:</h3>
-                    <p><strong>Patient:</strong> {booking.name}</p>
-                    <p><strong>Doctor:</strong> {booking.doctor}</p>
-                    <p><strong>Hospital:</strong> {booking.hospital}</p>
-                    <p><strong>Date:</strong> {new Date(booking.date).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {booking.time}</p>
-                    {booking.message && (
-                        <p><strong>Message:</strong> {booking.message}</p>
-                    )}
-                </div>
+                    <div className="mb-4 p-4 bg-gray-50 rounded">
+                        <h3 className="font-medium mb-2">Booking Details:</h3>
+                        <p><strong>Patient:</strong> {booking.name}</p>
+                        <p><strong>Doctor:</strong> {booking.doctor?.firstName} {booking.doctor?.lastName}</p>
+                        <p><strong>Hospital:</strong> {booking.hospital?.name}</p>
+                        <p><strong>Date:</strong> {new Date(booking.date).toLocaleDateString()}</p>
+                        <p><strong>Time:</strong> {booking.time}</p>
+                        {booking.message && (
+                            <p><strong>Message:</strong> {booking.message}</p>
+                        )}
+                    </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
 
-                        <div className="space-y-2">
-                            <label className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={status.read}
-                                    onChange={(e) => handleStatusChange('read', e.target.checked)}
-                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="ml-2">Mark as Read</span>
-                            </label>
+                            <div className="space-y-2">
+                                <label className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={status.read || false}
+                                        onChange={(e) => handleStatusChange('read', e.target.checked)}
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="ml-2">Mark as Read</span>
+                                </label>
 
-                            <label className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={status.replied}
-                                    onChange={(e) => handleStatusChange('replied', e.target.checked)}
-                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="ml-2">Mark as Replied</span>
-                            </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={status.replied || false}
+                                        onChange={(e) => handleStatusChange('replied', e.target.checked)}
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="ml-2">Mark as Replied</span>
+                                </label>
 
-                            <label className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={status.confirmed}
-                                    onChange={(e) => handleStatusChange('confirmed', e.target.checked)}
-                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="ml-2">Mark as Confirmed</span>
-                            </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={status.confirmed || false}
+                                        onChange={(e) => handleStatusChange('confirmed', e.target.checked)}
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="ml-2">Mark as Confirmed</span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex justify-end space-x-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-                            disabled={loading}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-                            disabled={loading}
-                        >
-                            {loading ? 'Updating...' : 'Update Status'}
-                        </button>
-                    </div>
-                </form>
+                        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto"
+                                disabled={loading}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 w-full sm:w-auto"
+                                disabled={loading}
+                            >
+                                {loading ? 'Updating...' : 'Update Status'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
