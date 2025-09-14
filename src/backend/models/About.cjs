@@ -22,6 +22,10 @@ const aboutSchema = new mongoose.Schema({
         default: "This platform was created as a learning project to replicate the experience of a modern healthcare directory and booking service.",
         trim: true
     },
+    language: {
+        type: String,
+
+    },
     image: {
         type: String,
         default: "/aboutpage.jpg",

@@ -29,6 +29,35 @@ const migrateAboutUs = async () => {
                 missionTitle: 'Our Mission',
                 missionDescription: 'This platform was created as a learning project to replicate the experience of a modern healthcare directory and booking service.',
                 image: '/aboutpage.jpg',
+                language:'EN',
+                highlights: [
+                    {
+                        icon: 'HeartPulse',
+                        text: 'Simplifying healthcare decisions with clarity'
+                    },
+                    {
+                        icon: 'Stethoscope',
+                        text: 'Intuitive tools for better patient experience'
+                    },
+                    {
+                        icon: 'Users',
+                        text: 'Building trust through transparency'
+                    }
+                ],
+                email: 'xydz@gmail.com',
+                whatsappNumber: '1234567890',
+                whatsappMessage: 'Hello! I have a question about your healthcare services.',
+                isActive: true,
+                createdAt: new Date('2025-09-13T10:21:58.519Z'),
+                updatedAt: new Date('2025-09-13T10:21:58.522Z')
+            },
+            {
+                title: 'About Us',
+                subtitle: "We're committed to making healthcare accessible, transparent, and easy to navigate",
+                missionTitle: 'Our Mission',
+                missionDescription: 'This platform was created as a learning project to replicate the experience of a modern healthcare directory and booking service.',
+                language:'EN',
+                image: '/aboutpage.jpg',
                 highlights: [
                     {
                         icon: 'HeartPulse',

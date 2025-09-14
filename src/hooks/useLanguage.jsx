@@ -1,29 +1,64 @@
 // src/hooks/useLanguage.js
 import { useEffect, useState } from "react";
 
-let globalLanguage = localStorage.getItem("appLanguage") || "en"; // load from storage or default
+let globalLanguage = "EN"; // default language
 let listeners = [];
 
 export function useLanguage() {
-    const [language, setLanguage] = useState(globalLanguage);
+    const [language, setLanguage] = useState();
+    const [availableLanguages, setAvailableLanguages] = useState([]); // <-- added
 
     // function to update global + local state
     const changeLanguage = (lang) => {
         globalLanguage = lang;
-        localStorage.setItem("appLanguage", lang); // persist in storage
+        localStorage.setItem("language", lang); // persist
         listeners.forEach((listener) => listener(lang));
-        window.location.reload();
+        window.location.reload(); // reload whole site
     };
 
     useEffect(() => {
+        // Restore from localStorage
+        const savedLang = localStorage.getItem("language");
+        if (savedLang) {
+            globalLanguage = savedLang;
+            setLanguage(savedLang);
+        }
+
+        // Fetch available languages
+        const fetchLanguages = async () => {
+            try {
+                const response = await fetch("http://localhost:6003/api/language/");
+                const result = await response.json();
+
+                if (result.success && Array.isArray(result.data)) {
+                    setAvailableLanguages(result.data);
+
+                    // if no saved language, set default from API
+                    if (!savedLang) {
+                        const defaultLang = result.data.find((l) => l.isDefault);
+                        if (defaultLang) {
+                            globalLanguage = defaultLang.shortCode;
+                            setLanguage(defaultLang.shortCode);
+                            localStorage.setItem("language", defaultLang.shortCode);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching languages:", err);
+            }
+        };
+
+        fetchLanguages();
+
         const listener = (lang) => setLanguage(lang);
         listeners.push(listener);
 
-        // cleanup on unmount
         return () => {
             listeners = listeners.filter((l) => l !== listener);
         };
     }, []);
 
-    return [language, changeLanguage];
+    // console.log(language);
+
+    return [language, changeLanguage, availableLanguages]; // <-- return languages too
 }
