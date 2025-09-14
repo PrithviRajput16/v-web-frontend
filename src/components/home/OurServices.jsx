@@ -13,6 +13,8 @@ import {
 } from "react-icons/fa";
 
 import url_prefix from "../../data/variable";
+import { useLanguage } from '../../hooks/useLanguage';
+import SectionHeading from "./SectionHeading";
 
 
 // Icon mapping
@@ -29,12 +31,24 @@ const iconComponents = {
 };
 
 const OurServices = () => {
+  const [language] = useLanguage();
+  const [headings, setHeadings] = useState({
+    'title': 'Not Available For Selected Language',
+    'sub': '',
+    'desc': ''
+  });
+
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Fetch assistance services from API
   useEffect(() => {
+    if (!language) {
+      console.log('Language not yet available, skipping fetch');
+      return;
+    }
+
     const fetchAssistance = async () => {
       try {
         const response = await fetch(url_prefix + "/api/assistance");
@@ -48,9 +62,31 @@ const OurServices = () => {
         if (!result.success || !Array.isArray(result.data)) {
           throw new Error("Invalid API response structure");
         }
+        if (result.success) {
+          let dataToSet;
+          if (Array.isArray(result.data)) {
+            dataToSet = result.data.filter(
+              item => item.language?.toLowerCase() === language?.toLowerCase()
+            );
+          } else {
+            dataToSet =
+              result.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [result.data]
+                : [];
+          }
 
-        setServices(result.data);
-        setError(null);
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setServices(dataToSet);
+            setError(null);
+            setHeadings({
+              title: dataToSet[0].htitle,
+              sub: dataToSet[0].hsubtitle,
+              desc: dataToSet[0].hdesc
+            })
+          }
+        }
+
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -61,7 +97,7 @@ const OurServices = () => {
     };
 
     fetchAssistance();
-  }, []);
+  }, [language]);
 
   // Loading state
   if (loading) {
@@ -131,7 +167,7 @@ const OurServices = () => {
       <div className="container mx-auto px-4">
         {/* Heading */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-darktext mb-4">
+          {/* <h2 className="text-3xl md:text-4xl font-bold text-darktext mb-4">
             Our Services Cover <span className="text-primary">Every Need</span>
           </h2>
           <p className="text-lg text-lighttext max-w-3xl mx-auto mb-6">
@@ -144,8 +180,14 @@ const OurServices = () => {
             <span className="font-semibold">
               Dedicated Case Manager Included
             </span>
-          </div>
+          </div> */}
+          <SectionHeading
+            title={headings.title}
+            subtitle={headings.sub}
+            description={headings.desc}
+          />
         </div>
+
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

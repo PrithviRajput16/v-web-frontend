@@ -1,6 +1,22 @@
 const mongoose = require('mongoose');
 
 const assistanceSchema = new mongoose.Schema({
+    language: {
+        type: String,
+        default: "EN"
+    },
+    htitle: {
+        type: String,
+        default: "Our Medical Services"
+    },
+    hsubtitle: {
+        type: String,
+        default: "Specialized Treatments",
+    },
+    hdesc: {
+        type: String,
+        default: "We offer a wide range of medical treatments and procedures with the highest standards of care"
+    },
     title: {
         type: String,
         required: [true, 'Assistance title is required'],
