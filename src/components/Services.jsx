@@ -18,7 +18,6 @@ export default function Services() {
   useEffect(() => {
     if (!language) {
       console.log('Language not yet available, skipping fetch');
-      // fetchServices();
       return;
     }
     const fetchServices = async () => {
@@ -104,10 +103,10 @@ export default function Services() {
         <SectionHeading
           center={true}
           // title="Our Medical Services"
-          title={headings.title}
           // subtitle="Specialized Treatments"
-          subtitle={headings.sub}
           // description="We offer a wide range of medical treatments and procedures with the highest standards of care"
+          title={headings.title}
+          subtitle={headings.sub}
           description={headings.desc}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4  mx-auto">
