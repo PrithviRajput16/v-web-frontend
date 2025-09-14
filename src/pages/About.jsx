@@ -2,12 +2,14 @@ import { motion } from "framer-motion";
 import { HeartPulse, Stethoscope, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import url_prefix from "../data/variable";
+import { useLanguage } from "../hooks/useLanguage";
 
 
 export default function About() {
   const [aboutData, setAboutData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [language] = useLanguage();
 
   useEffect(() => {
     const fetchAboutData = async () => {
@@ -22,6 +24,14 @@ export default function About() {
         const result = await response.json();
 
         if (result.success) {
+          if (result.data.language === language) {
+            console.log('heyy');
+          } else {
+            setError("No data available for selected language");
+          }
+
+          setAboutData(result.data);
+          // console.log(filtered);
           setAboutData(result.data);
         } else {
           throw new Error(result.message || "Failed to load data");
