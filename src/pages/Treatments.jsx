@@ -2,14 +2,25 @@ import { useEffect, useState } from "react";
 import { FaClock, FaFilter, FaProcedures, FaSearch, FaStar } from "react-icons/fa";
 import TreatmentCard from "../components/TreatmentCard";
 import url_prefix from "../data/variable";
+import { useLanguage } from '../hooks/useLanguage';
 
 const Treatments = () => {
   const [treatments, setTreatments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [language] = useLanguage();
+  const [headings, setHeadings] = useState({
+    'title': 'Not Available For Selected Language',
+    'sub': '',
+    'desc': ''
+  });
 
   // Fetch treatments data from API
   useEffect(() => {
+    if (!language) {
+      console.log('Language not yet available, skipping fetch');
+      return;
+    }
     const fetchTreatments = async () => {
       try {
         const response = await fetch(url_prefix + '/api/treatments/all');
@@ -23,9 +34,31 @@ const Treatments = () => {
         if (!result.success || !Array.isArray(result.data)) {
           throw new Error('Invalid API response structure');
         }
+        if (result.success) {
+          let dataToSet;
+          if (Array.isArray(result.data)) {
+            dataToSet = result.data.filter(
+              item => item.language?.toLowerCase() === language?.toLowerCase()
+            );
+          } else {
+            dataToSet =
+              result.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [result.data]
+                : [];
+          }
 
-        setTreatments(result.data);
-        setError(null);
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setTreatments(dataToSet);
+            setError(null);
+            setHeadings({
+              title: dataToSet[0].ptitle,
+              desc: dataToSet[0].pdesc
+            })
+          }
+        }
+
+
       } catch (err) {
         console.error('Fetch error:', err);
         setError(err.message);
@@ -36,7 +69,7 @@ const Treatments = () => {
     };
 
     fetchTreatments();
-  }, []);
+  }, [language]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -241,9 +274,11 @@ const Treatments = () => {
         <div className="lg:col-span-3">
           {/* Header */}
           <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Medical Treatments & Procedures</h1>
+            {/* <h1 className="text-3xl font-bold text-gray-800 mb-2">Medical Treatments & Procedures</h1> */}
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">{headings.title}</h1>
             <p className="text-gray-600">
-              Explore {treatments.length} medical treatments and procedures with advanced filtering options to find the right care for your needs.
+              {/* Explore {treatments.length} medical treatments and procedures with advanced filtering options to find the right care for your needs. */}
+              {headings.desc}
             </p>
           </div>
 

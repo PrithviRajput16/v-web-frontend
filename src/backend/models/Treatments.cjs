@@ -18,6 +18,14 @@ const treatmentSchema = new mongoose.Schema({
         type: String,
         default: "We offer a wide range of medical treatments and procedures with the highest standards of care"
     },
+    ptitle: {
+        type: String,
+        default: "Medical Treatments & Procedures"
+    },
+    pdesc: {
+        type: String,
+        default: "Explore 2 medical treatments and procedures with advanced filtering options to find the right care for your needs."
+    },
     title: {
         type: String,
         required: [true, 'Please add a title'],

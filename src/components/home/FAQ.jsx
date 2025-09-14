@@ -59,7 +59,7 @@ const FAQ = () => {
 
           if (dataToSet.length > 0) {
             console.log('Setting aboutData:', dataToSet);
-            setFaqData(result.data);
+            setFaqData(dataToSet);
             setError(null);
             setHeadings({
               title: dataToSet[0].htitle,
