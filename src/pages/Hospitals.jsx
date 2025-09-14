@@ -2,15 +2,26 @@ import { useEffect, useState } from "react";
 import { FaFilter, FaHospital, FaMapMarkerAlt, FaSearch, FaStar } from "react-icons/fa";
 import HospitalCard from "../components/HospitalCard";
 import url_prefix from "../data/variable";
+import { useLanguage } from '../hooks/useLanguage';
 
 
 const Hospitals = () => {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [language] = useLanguage();
+  const [headings, setHeadings] = useState({
+    'title': 'Not Available For Selected Language',
+    'sub': '',
+    'desc': ''
+  });
   // Fetch hospitals data from API
   useEffect(() => {
+    if (!language) {
+      console.log('Language not yet available, skipping fetch');
+      return;
+    }
+
     const fetchHospitals = async () => {
       try {
         const response = await fetch(url_prefix + '/api/hospitals/all');
@@ -24,9 +35,31 @@ const Hospitals = () => {
         if (!result.success || !Array.isArray(result.data)) {
           throw new Error('Invalid API response structure');
         }
+        if (result.success) {
+          let dataToSet;
+          if (Array.isArray(result.data)) {
+            dataToSet = result.data.filter(
+              item => item.language?.toLowerCase() === language?.toLowerCase()
+            );
+          } else {
+            dataToSet =
+              result.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [result.data]
+                : [];
+          }
 
-        setHospitals(result.data);
-        setError(null);
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setHospitals(dataToSet);
+            setError(null);
+            setHeadings({
+              title: dataToSet[0].htitle,
+              sub: dataToSet[0].hsubtitle,
+              desc: dataToSet[0].hdesc
+            })
+          }
+        }
+
       } catch (err) {
         console.error('Fetch error:', err);
         setError(err.message);
@@ -37,7 +70,7 @@ const Hospitals = () => {
     };
 
     fetchHospitals();
-  }, []);
+  }, [language]);
   // console.log(hospitals.pages);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
