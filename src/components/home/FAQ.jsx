@@ -3,17 +3,34 @@ import { useEffect, useState } from "react";
 import { FaChevronDown, FaQuestionCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import url_prefix from "../../data/variable";
+import { useLanguage } from '../../hooks/useLanguage';
 import "./FAQ.css";
 
 const FAQ = () => {
+
   const [activeIndex, setActiveIndex] = useState(null);
   const [faqData, setFaqData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const toggleFAQ = (index) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
+  const [language] = useLanguage();
+  const [headings, setHeadings] = useState({
+    'title': 'Not Available For Selected Language',
+    'sub': '',
+    'desc': ''
+  });
+
 
   // Fetch FAQs from API
   useEffect(() => {
+
+    if (!language) {
+      console.log('Language not yet available, skipping fetch');
+      return;
+    }
     const fetchFAQs = async () => {
       try {
         const response = await fetch(url_prefix + "/api/faqs");
@@ -27,9 +44,32 @@ const FAQ = () => {
         if (!result.success || !Array.isArray(result.data)) {
           throw new Error("Invalid API response structure");
         }
+        if (result.success) {
+          let dataToSet;
+          if (Array.isArray(result.data)) {
+            dataToSet = result.data.filter(
+              item => item.language?.toLowerCase() === language?.toLowerCase()
+            );
+          } else {
+            dataToSet =
+              result.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [result.data]
+                : [];
+          }
 
-        setFaqData(result.data);
-        setError(null);
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setFaqData(result.data);
+            setError(null);
+            setHeadings({
+              title: dataToSet[0].htitle,
+              sub: dataToSet[0].hsubtitle,
+              desc: dataToSet[0].hdesc
+            })
+          }
+        }
+
+
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -40,7 +80,7 @@ const FAQ = () => {
     };
 
     fetchFAQs();
-  }, []);
+  }, [language]);
 
 
 
