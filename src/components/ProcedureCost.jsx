@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react';
+import url_prefix from "../data/variable";
+import { useLanguage } from '../hooks/useLanguage';
 import ProcedureCostCard from './ProcedureCostCard';
 import SectionHeading from './home/SectionHeading';
-import url_prefix from "../data/variable";
 
 
 export default function ProcedureCost() {
   const [procedureCosts, setProcedureCosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [language] = useLanguage();
+  const [headings, setHeadings] = useState({
+    'title': 'Not Available For Selected Language',
+    'sub': '',
+    'desc': ''
+  });
 
   useEffect(() => {
+    if (!language) {
+      console.log('Language not yet available, skipping fetch');
+      return;
+    }
+
     const fetchProcedureCosts = async () => {
       try {
         const response = await fetch(url_prefix + "/api/procedure-costs/all");
@@ -23,9 +35,31 @@ export default function ProcedureCost() {
         if (!result.success || !Array.isArray(result.data)) {
           throw new Error('Invalid API response structure');
         }
+        if (result.success) {
+          let dataToSet;
+          if (Array.isArray(result.data)) {
+            dataToSet = result.data.filter(
+              item => item.language?.toLowerCase() === language?.toLowerCase()
+            );
+          } else {
+            dataToSet =
+              result.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [result.data]
+                : [];
+          }
 
-        setProcedureCosts(result.data);
-        setError(null);
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setProcedureCosts(dataToSet);
+            setError(null);
+            setHeadings({
+              title: dataToSet[0].htitle,
+              sub: dataToSet[0].hsubtitle,
+              desc: dataToSet[0].hdesc
+            })
+          }
+        }
+
       } catch (err) {
         console.error('Fetch error:', err);
         setError(err.message);
@@ -36,7 +70,7 @@ export default function ProcedureCost() {
     };
 
     fetchProcedureCosts();
-  }, []);
+  }, [language]);
 
   if (loading) {
     return (
@@ -44,8 +78,10 @@ export default function ProcedureCost() {
         <div className="container mx-auto py-12">
           <SectionHeading
             center={true}
-            title="Lowest Quotes Assured"
-            subtitle="Quality Care at Best Prices"
+            title={headings.title}
+            subtitle={headings.sub}
+          // description={headings.desc}
+
           />
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
@@ -61,8 +97,10 @@ export default function ProcedureCost() {
         <div className="container mx-auto py-12">
           <SectionHeading
             center={true}
-            title="Lowest Quotes Assured"
-            subtitle="Quality Care at Best Prices"
+            title={headings.title}
+            subtitle={headings.sub}
+          // description={headings.desc}
+
           />
           <div className="text-center py-10">
             <div className="bg-red-50 text-red-600 p-4 rounded-lg max-w-md mx-auto">
@@ -86,9 +124,10 @@ export default function ProcedureCost() {
       <div className="container mx-auto py-12">
         <SectionHeading
           center={true}
-          title="Lowest Quotes Assured"
-          subtitle="Quality Care at Best Prices"
-          description="We constantly negotiate better prices and alternatives without compromising treatment quality. Our prices are consistently lower."
+          title={headings.title}
+          subtitle={headings.sub}
+          description={headings.desc}
+
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9 p-2 mx-auto">
           {procedureCosts.map((pc) => (
