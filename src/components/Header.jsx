@@ -2,10 +2,13 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FiMenu, FiPhone, FiX } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
+import { useLanguage } from "../hooks/useLanguage";
+import LanguageDropdown from "./LanguageDropdown";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [language, setLanguage] = useLanguage();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -104,6 +107,7 @@ export default function Header() {
           >
             <FiPhone /> +91 12345 67890
           </a>
+          <LanguageDropdown />
         </div>
 
         {/* Mobile Menu Button */}
@@ -113,6 +117,11 @@ export default function Header() {
           aria-label="menu"
         >
           {open ? <FiX size={22} /> : <FiMenu size={22} />}
+        </button>
+        <button
+
+          onClick={() => console.log(language)}>
+          click
         </button>
       </div>
 

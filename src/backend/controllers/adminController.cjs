@@ -9,6 +9,7 @@ const FAQ = require('../models/FAQ.cjs');
 const PatientOpinion = require('../models/PatientOpinions.cjs');
 const HospitalDetail = require('../models/HospitalDetail.cjs');
 const About = require('../models/About.cjs');
+const Language = require('../models/Language.cjs');
 
 
 
@@ -146,41 +147,6 @@ exports.getHospitals = async (req, res) => {
     }
 };
 
-// exports.getHospitalDetails = async (req, res) => {
-//     try {
-//         const { page = 1, limit = 10, search } = req.query;
-//         const filter = {};
-
-//         if (search) {
-//             filter.$or = [
-//                 { description: new RegExp(search, 'i') },
-//                 { address: new RegExp(search, 'i') },
-//                 { website: new RegExp(search, 'i') },
-//                 { email: new RegExp(search, 'i') }
-//             ];
-//         }
-
-//         const hospitalDetails = await HospitalDetail.find(filter)
-//             .populate('hospital')
-//             .sort({ createdAt: -1 })
-//             .limit(limit * 1)
-//             .skip((page - 1) * limit);
-
-//         const total = await HospitalDetail.countDocuments(filter);
-
-//         res.json({
-//             success: true,
-//             count: hospitalDetails.length,
-//             total,
-//             page: parseInt(page),
-//             pages: Math.ceil(total / limit),
-//             data: hospitalDetails
-//         });
-//     } catch (err) {
-//         console.error('Get hospital details error:', err);
-//         res.status(500).json({ success: false, error: 'Server Error' });
-//     }
-// };
 
 // Similar methods for doctors, treatments, etc...
 exports.getDoctors = async (req, res) => {
@@ -219,39 +185,6 @@ exports.getDoctors = async (req, res) => {
     }
 };
 
-// exports.getTreatments = async (req, res) => {
-//     try {
-//         const { page = 1, limit = 10, search, category } = req.query;
-//         const filter = {};
-
-//         if (search) {
-//             filter.$or = [
-//                 { title: new RegExp(search, 'i') },
-//                 { description: new RegExp(search, 'i') }
-//             ];
-//         }
-//         if (category) filter.category = category;
-
-//         const treatments = await Treatment.find(filter)
-//             .sort({ title: 1 })
-//             .limit(limit * 1)
-//             .skip((page - 1) * limit);
-
-//         const total = await Treatment.countDocuments(filter);
-
-//         res.json({
-//             success: true,
-//             count: treatments.length,
-//             total,
-//             page: parseInt(page),
-//             pages: Math.ceil(total / limit),
-//             data: treatments
-//         });
-//     } catch (err) {
-//         console.error('Get treatments error:', err);
-//         res.status(500).json({ success: false, error: 'Server Error' });
-//     }
-// };
 
 exports.getHospitalTreatments = async (req, res) => {
     try {
@@ -319,6 +252,20 @@ exports.updateHospital = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+
+exports.deleteHospital = async (req, res) => {
+    try {
+        const hospital = await Hospital.findByIdAndDelete(req.params.id);
+        if (!hospital) {
+            return res.status(404).json({ success: false, error: 'Hospital not found' });
+        }
+        res.json({ success: true, message: 'Hospital deleted successfully' });
+    } catch (err) {
+        console.error('Hospital error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+
+    }
+}
 
 // ================= DOCTOR CRUD =================
 
@@ -1278,6 +1225,237 @@ exports.deleteAdmin = async (req, res) => {
         res.json({ success: true, message: 'Admin deleted successfully' });
     } catch (err) {
         console.error('Delete admin error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// ================= LANGUAGE CRUD OPERATIONS =================
+
+// Get all languages for admin
+exports.getLanguages = async (req, res) => {
+    try {
+        const { page = 1, limit = 10000, search = '', isActive } = req.query;
+        const filter = {};
+
+        if (search) {
+            filter.$or = [
+                { fullName: { $regex: search, $options: 'i' } },
+                { shortCode: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        if (isActive !== undefined) {
+            filter.isActive = isActive === 'true';
+        }
+
+        const languages = await Language.find(filter)
+            .sort({ fullName: 1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Language.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: languages.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: languages
+        });
+    } catch (err) {
+        console.error('Get languages error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get single language by ID
+exports.getLanguageById = async (req, res) => {
+    try {
+        const language = await Language.findById(req.params.id);
+
+        if (!language) {
+            return res.status(404).json({
+                success: false,
+                error: 'Language not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: language
+        });
+    } catch (err) {
+        console.error('Get language by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Create new language
+exports.createLanguage = async (req, res) => {
+    try {
+        const { fullName, shortCode, isActive = true, isDefault = false } = req.body;
+
+        // Check if language already exists
+        const existingLanguage = await Language.findOne({
+            $or: [
+                { fullName: fullName.trim() },
+                { shortCode: shortCode.trim().toUpperCase() }
+            ]
+        });
+
+        if (existingLanguage) {
+            return res.status(400).json({
+                success: false,
+                error: 'Language with this name or code already exists'
+            });
+        }
+
+        const language = await Language.create({
+            fullName: fullName.trim(),
+            shortCode: shortCode.trim().toUpperCase(),
+            isActive,
+            isDefault
+        });
+
+        res.status(201).json({
+            success: true,
+            data: language
+        });
+    } catch (err) {
+        console.error('Create language error:', err);
+
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                error: Object.values(err.errors).map(e => e.message).join(', ')
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Update language
+exports.updateLanguage = async (req, res) => {
+    try {
+        const { fullName, shortCode, isActive, isDefault } = req.body;
+
+        const language = await Language.findById(req.params.id);
+        if (!language) {
+            return res.status(404).json({
+                success: false,
+                error: 'Language not found'
+            });
+        }
+
+        // Check for duplicate languages (excluding current one)
+        if (fullName || shortCode) {
+            const duplicateQuery = {
+                _id: { $ne: req.params.id },
+                $or: []
+            };
+
+            if (fullName) duplicateQuery.$or.push({ fullName: fullName.trim() });
+            if (shortCode) duplicateQuery.$or.push({ shortCode: shortCode.trim().toUpperCase() });
+
+            if (duplicateQuery.$or.length > 0) {
+                const existingLanguage = await Language.findOne(duplicateQuery);
+                if (existingLanguage) {
+                    return res.status(400).json({
+                        success: false,
+                        error: 'Language with this name or code already exists'
+                    });
+                }
+            }
+        }
+
+        // Update fields
+        const updateData = {};
+        if (fullName) updateData.fullName = fullName.trim();
+        if (shortCode) updateData.shortCode = shortCode.trim().toUpperCase();
+        if (typeof isActive !== 'undefined') updateData.isActive = isActive;
+        if (typeof isDefault !== 'undefined') updateData.isDefault = isDefault;
+
+        const updatedLanguage = await Language.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        res.json({
+            success: true,
+            data: updatedLanguage
+        });
+    } catch (err) {
+        console.error('Update language error:', err);
+
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                error: Object.values(err.errors).map(e => e.message).join(', ')
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete language
+exports.deleteLanguage = async (req, res) => {
+    try {
+        const language = await Language.findById(req.params.id);
+        if (!language) {
+            return res.status(404).json({
+                success: false,
+                error: 'Language not found'
+            });
+        }
+
+        // Prevent deletion of default language
+        if (language.isDefault) {
+            return res.status(400).json({
+                success: false,
+                error: 'Cannot delete default language'
+            });
+        }
+
+        await Language.findByIdAndDelete(req.params.id);
+
+        res.json({
+            success: true,
+            message: 'Language deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete language error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Set default language
+exports.setDefaultLanguage = async (req, res) => {
+    try {
+        const language = await Language.findById(req.params.id);
+        if (!language) {
+            return res.status(404).json({
+                success: false,
+                error: 'Language not found'
+            });
+        }
+
+        // Update all languages to not default
+        await Language.updateMany({}, { $set: { isDefault: false } });
+
+        // Set this language as default
+        language.isDefault = true;
+        await language.save();
+
+        res.json({
+            success: true,
+            data: language
+        });
+    } catch (err) {
+        console.error('Set default language error:', err);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };

@@ -22,6 +22,10 @@ const aboutSchema = new mongoose.Schema({
         default: "This platform was created as a learning project to replicate the experience of a modern healthcare directory and booking service.",
         trim: true
     },
+    language: {
+        type: String,
+
+    },
     image: {
         type: String,
         default: "/aboutpage.jpg",
@@ -39,6 +43,18 @@ const aboutSchema = new mongoose.Schema({
             trim: true
         }
     }],
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        unique: true,
+        lowercase: true,
+        validate: {
+            validator: function (v) {
+                return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v);
+            },
+            message: 'Please enter a valid email'
+        }
+    },
     whatsappNumber: {
         type: String,
         default: "+1234567890",

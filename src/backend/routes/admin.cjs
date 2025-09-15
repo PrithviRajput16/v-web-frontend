@@ -9,6 +9,7 @@ const {
     getDoctorById,     // ✅ NEW
     createHospital,
     updateHospital,
+    deleteHospital,
     getHospitalTreatments,
     // getHospitalDetails,
     createDoctor,      // ✅ NEW
@@ -66,7 +67,14 @@ const {
     getAdminById,
     createAdmin,
     updateAdmin,
-    deleteAdmin
+    deleteAdmin,
+
+    getLanguages,
+    getLanguageById,
+    createLanguage,
+    updateLanguage,
+    deleteLanguage,
+    setDefaultLanguage
 
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
@@ -86,7 +94,7 @@ router.get('/hospitals', protectAdmin, getHospitals);
 router.get('/hospitaldetails/:hospitalid', protectAdmin, getHospitalDetails);
 router.post('/hospitals', protectAdmin, restrictTo('superadmin', 'admin'), createHospital);
 router.put('/hospitals/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateHospital);
-// router.delete('/hospitals/:id', protectAdmin, restrictTo('superadmin'), deleteHospital);
+router.delete('/hospitals/:id', protectAdmin, restrictTo('superadmin'), deleteHospital);
 
 // Doctor management
 router.get('/doctors', protectAdmin, getDoctors);
@@ -187,3 +195,12 @@ router.put('/admins/:id', protectAdmin, restrictTo('superadmin'), updateAdmin);
 router.delete('/admins/:id', protectAdmin, restrictTo('superadmin'), deleteAdmin);
 
 module.exports = router;
+
+
+// ================= LANGUAGE ROUTES =================
+router.get('/languages', protectAdmin, getLanguages);
+router.get('/languages/:id', protectAdmin, getLanguageById);
+router.post('/languages', protectAdmin, restrictTo('superadmin', 'admin'), createLanguage);
+router.put('/languages/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateLanguage);
+router.delete('/languages/:id', protectAdmin, restrictTo('superadmin'), deleteLanguage);
+router.patch('/languages/:id/set-default', protectAdmin, restrictTo('superadmin', 'admin'), setDefaultLanguage);

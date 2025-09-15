@@ -1,16 +1,29 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react'; // Added useEffect
 import SectionHeading from "../components/home/SectionHeading";
-import HospitalCard from './HospitalCard';
 import url_prefix from "../data/variable";
+import { useLanguage } from '../hooks/useLanguage';
+import HospitalCard from './HospitalCard';
 
 const HospitalCarousel = () => { // Removed hospitals prop
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [language] = useLanguage();
+  const [headings, setHeadings] = useState({
+    'title': 'Not Available For Selected Language',
+    'sub': '',
+    'desc': ''
+  });
+
   // Fetch hospitals data from API
   useEffect(() => {
+    if (!language) {
+      console.log('Language not yet available, skipping fetch');
+      return;
+    }
+
     const fetchHospitals = async () => {
       try {
         const response = await fetch(url_prefix + '/api/hospitals/all');
@@ -21,12 +34,30 @@ const HospitalCarousel = () => { // Removed hospitals prop
 
         const result = await response.json();
 
-        if (!result.success || !Array.isArray(result.data)) {
-          throw new Error('Invalid API response structure');
-        }
+        if (result.success) {
+          let dataToSet;
+          if (Array.isArray(result.data)) {
+            dataToSet = result.data.filter(
+              item => item.language?.toLowerCase() === language?.toLowerCase()
+            );
+          } else {
+            dataToSet =
+              result.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [result.data]
+                : [];
+          }
 
-        setHospitals(result.data);
-        setError(null);
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setHospitals(dataToSet);
+            setError(null);
+            setHeadings({
+              title: dataToSet[0].htitle,
+              sub: dataToSet[0].hsubtitle,
+              desc: dataToSet[0].hdesc
+            })
+          }
+        }
       } catch (err) {
         console.error('Fetch error:', err);
         setError(err.message);
@@ -37,7 +68,7 @@ const HospitalCarousel = () => { // Removed hospitals prop
     };
 
     fetchHospitals();
-  }, []);
+  }, [language]);
 
   // Group hospitals by country
   const countryGroups = hospitals.reduce((acc, hospital) => {
@@ -80,9 +111,13 @@ const HospitalCarousel = () => { // Removed hospitals prop
         <div className="container mx-auto px-4">
           <SectionHeading
             center={true}
-            title="Partner Hospitals"
-            subtitle="World-Class Healthcare Facilities"
-            description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
+            // title="Partner Hospitals"
+            // subtitle="World-Class Healthcare Facilities"
+            // description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
+            title={headings.title}
+            subtitle={headings.sub}
+            description={headings.desc}
+
           />
           <div className="flex justify-center mb-8">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
@@ -123,8 +158,10 @@ const HospitalCarousel = () => { // Removed hospitals prop
         <div className="container mx-auto px-4">
           <SectionHeading
             center={true}
-            title="Partner Hospitals"
-            subtitle="World-Class Healthcare Facilities"
+            title={headings.title}
+subtitle={headings.sub}
+// description={headings.desc}
+
           />
           <div className="text-center text-gray-500 py-8">
             <p>No hospitals found.</p>
@@ -144,7 +181,7 @@ const HospitalCarousel = () => { // Removed hospitals prop
           center={true}
           title="Partner Hospitals"
           subtitle="World-Class Healthcare Facilities"
-          description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
+          // description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
         />
 
         {/* Country tabs */}
@@ -155,8 +192,8 @@ const HospitalCarousel = () => { // Removed hospitals prop
                 key={country}
                 onClick={() => selectCountry(index)}
                 className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${index === currentCountryIndex
-                    ? 'bg-[#008080] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-[#008080] text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
               >
                 {country}

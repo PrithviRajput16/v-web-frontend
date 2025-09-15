@@ -8,6 +8,7 @@ const serviceSchema = new mongoose.Schema({
     trim: true,
     maxlength: [50, 'Title cannot exceed 50 characters']
   },
+
   desc: {
     type: String,
     required: [true, 'Please add a description'],

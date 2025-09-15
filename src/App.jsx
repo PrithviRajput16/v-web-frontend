@@ -26,6 +26,7 @@ import HospitalDetails from "./pages/HospitalDetails";
 import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
 import TreatmentDetails from "./pages/TreatmentDetails";
 import Treatments from "./pages/Treatments";
+import Languages from "./components/admin/AdminLanguageManagement";
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col text-gray-800">
@@ -43,8 +44,11 @@ export default function App() {
           <Route path="/appointment" element={<Appointment />} />
           <Route path="/hospitals/:id" element={<HospitalDetails />} />
           <Route path="/doctors/:id" element={<DoctorDetails />} />
-          <Route path="/hospitals/:id/book" element={<BookingFlow />} />
+          <Route path="/hospitals/:hospitalId/book" element={<BookingFlow />} />
+          <Route path="/doctors/:doctorId/book" element={<BookingFlow />} />
+          <Route path="/book" element={<BookingFlow />} />
           <Route path="/treatments/:id" element={<TreatmentDetails />} />
+          
 
 
           {/* Public routes */}
@@ -65,6 +69,7 @@ export default function App() {
           <Route path="/admin/bookings" element={<Bookings />} />
           <Route path="/admin/about" element={<AboutUs />} />
           <Route path="/admin/user" element={<User />} />
+          <Route path="/admin/lang" element={<Languages />} />
           {/* admin/bookings */}
         </Routes>
       </main>

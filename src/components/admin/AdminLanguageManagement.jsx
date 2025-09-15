@@ -2,31 +2,31 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import url_prefix from "../../data/variable";
 
-// FAQ Management Component
-const FAQManagement = () => {
-    const [faqs, setFaqs] = useState([]);
+// Language Management Component
+const LanguageManagement = () => {
+    const [languages, setLanguages] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [currentFaq, setCurrentFaq] = useState(null);
+    const [currentLanguage, setCurrentLanguage] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const limit = 10;
 
     const initialFormData = {
-        question: '',
-        answer: '',
-        category: 'General',
-        order: 0
+        fullName: '',
+        shortCode: '',
+        isActive: true,
+        isDefault: false
     };
 
     const [formData, setFormData] = useState(initialFormData);
 
-    // Fetch FAQs
-    const fetchFAQs = async (pageNum = 1, searchQuery = '') => {
+    // Fetch languages
+    const fetchLanguages = async (pageNum = 1, searchQuery = '') => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
@@ -35,26 +35,26 @@ const FAQManagement = () => {
                 return;
             }
             const response = await fetch(
-                `${url_prefix}/api/admin/faqs?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
+                `${url_prefix}/api/admin/languages?page=${pageNum}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
             const result = await response.json();
             if (result.success) {
-                setFaqs(result.data);
+                setLanguages(result.data);
                 setTotal(result.total);
                 setPage(result.page);
                 setPages(result.pages);
             } else {
-                console.error('Failed to fetch FAQs:', result.error);
+                console.error('Failed to fetch languages:', result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
                     navigate('/admin');
                 }
             }
         } catch (err) {
-            console.error('Error fetching FAQs:', err);
+            console.error('Error fetching languages:', err);
         } finally {
             setLoading(false);
         }
@@ -62,12 +62,15 @@ const FAQManagement = () => {
 
     // Input handler
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
 
-    // Add FAQ
-    const handleAddFAQ = async (e) => {
+    // Add language
+    const handleAddLanguage = async (e) => {
         e.preventDefault();
         setLoading(true);
         const token = localStorage.getItem('adminToken');
@@ -76,50 +79,45 @@ const FAQManagement = () => {
             return;
         }
 
-        const data = {
-            ...formData,
-            order: Number(formData.order)
-        };
-
         try {
-            const response = await fetch(`${url_prefix}/api/admin/faqs`, {
+            const response = await fetch(`${url_prefix}/api/admin/languages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(formData),
             });
             const result = await response.json();
             if (result.success) {
-                alert('FAQ added successfully');
+                alert('Language added successfully');
                 setIsAddModalOpen(false);
                 setFormData(initialFormData);
-                fetchFAQs(page, search);
+                fetchLanguages(page, search);
             } else {
                 alert('Failed: ' + result.error);
             }
         } catch (err) {
-            console.error('Error adding FAQ:', err);
+            console.error('Error adding language:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    // Update FAQ modal
-    const openUpdateModal = (faq) => {
-        setCurrentFaq(faq);
+    // Update language modal
+    const openUpdateModal = (language) => {
+        setCurrentLanguage(language);
         setFormData({
-            question: faq.question || '',
-            answer: faq.answer || '',
-            category: faq.category || 'General',
-            order: faq.order || 0
+            fullName: language.fullName || '',
+            shortCode: language.shortCode || '',
+            isActive: language.isActive ?? true,
+            isDefault: language.isDefault ?? false
         });
         setIsModalOpen(true);
     };
 
-    // Update FAQ
-    const handleUpdateFAQ = async (e) => {
+    // Update language
+    const handleUpdateLanguage = async (e) => {
         e.preventDefault();
         setLoading(true);
         const token = localStorage.getItem('adminToken');
@@ -128,38 +126,33 @@ const FAQManagement = () => {
             return;
         }
 
-        const data = {
-            ...formData,
-            order: Number(formData.order)
-        };
-
         try {
-            const response = await fetch(`${url_prefix}/api/admin/faqs/${currentFaq._id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/languages/${currentLanguage._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(formData),
             });
             const result = await response.json();
             if (result.success) {
-                alert('FAQ updated successfully');
+                alert('Language updated successfully');
                 setIsModalOpen(false);
-                fetchFAQs(page, search);
+                fetchLanguages(page, search);
             } else {
                 alert('Failed: ' + result.error);
             }
         } catch (err) {
-            console.error('Error updating FAQ:', err);
+            console.error('Error updating language:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    // Delete FAQ
-    const handleDeleteFAQ = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this FAQ?')) return;
+    // Delete language
+    const handleDeleteLanguage = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this language?')) return;
         setLoading(true);
         const token = localStorage.getItem('adminToken');
         if (!token) {
@@ -168,19 +161,48 @@ const FAQManagement = () => {
         }
 
         try {
-            const response = await fetch(`${url_prefix}/api/admin/faqs/${id}`, {
+            const response = await fetch(`${url_prefix}/api/admin/languages/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await response.json();
             if (result.success) {
-                alert('FAQ deleted successfully');
-                fetchFAQs(page, search);
+                alert('Language deleted successfully');
+                fetchLanguages(page, search);
             } else {
                 alert('Failed: ' + result.error);
             }
         } catch (err) {
-            console.error('Error deleting FAQ:', err);
+            console.error('Error deleting language:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Set default language
+    const handleSetDefaultLanguage = async (id) => {
+        if (!window.confirm('Are you sure you want to set this language as default?')) return;
+        setLoading(true);
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            navigate('/admin');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${url_prefix}/api/admin/languages/${id}/set-default`, {
+                method: 'PATCH',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Default language set successfully');
+                fetchLanguages(page, search);
+            } else {
+                alert('Failed: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error setting default language:', err);
         } finally {
             setLoading(false);
         }
@@ -190,15 +212,15 @@ const FAQManagement = () => {
     const handleSearch = (e) => {
         setSearch(e.target.value);
         setPage(1);
-        fetchFAQs(1, e.target.value);
+        fetchLanguages(1, e.target.value);
     };
 
     // Pagination
     const handlePrevPage = () => {
-        if (page > 1) fetchFAQs(page - 1, search);
+        if (page > 1) fetchLanguages(page - 1, search);
     };
     const handleNextPage = () => {
-        if (page < pages) fetchFAQs(page + 1, search);
+        if (page < pages) fetchLanguages(page + 1, search);
     };
 
     useEffect(() => {
@@ -206,7 +228,7 @@ const FAQManagement = () => {
         if (!token) {
             navigate('/admin');
         } else {
-            fetchFAQs();
+            fetchLanguages();
         }
     }, [navigate]);
 
@@ -215,7 +237,7 @@ const FAQManagement = () => {
     return (
         <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
             <header className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">FAQ Management</h1>
+                <h1 className="text-3xl font-bold">Language Management</h1>
                 <button
                     onClick={() => navigate('/admin/dashboard')}
                     className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
@@ -224,34 +246,34 @@ const FAQManagement = () => {
                 </button>
             </header>
 
-            {/* Add FAQ Modal */}
+            {/* Add Language Modal */}
             {isAddModalOpen && (
-                <FAQForm
+                <LanguageForm
                     formData={formData}
                     handleInputChange={handleInputChange}
-                    handleSubmit={handleAddFAQ}
+                    handleSubmit={handleAddLanguage}
                     onClose={() => {
                         setIsAddModalOpen(false);
                         setFormData(initialFormData);
                     }}
-                    title="Add New FAQ"
+                    title="Add New Language"
                 />
             )}
 
-            {/* Update FAQ Modal */}
+            {/* Update Language Modal */}
             {isModalOpen && (
-                <FAQForm
+                <LanguageForm
                     formData={formData}
                     handleInputChange={handleInputChange}
-                    handleSubmit={handleUpdateFAQ}
+                    handleSubmit={handleUpdateLanguage}
                     onClose={() => setIsModalOpen(false)}
-                    title="Update FAQ"
+                    title="Update Language"
                 />
             )}
 
             <div className="bg-white p-6 rounded-lg shadow">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold">FAQ List</h2>
+                    <h2 className="text-xl font-semibold">Language List</h2>
                     <button
                         onClick={() => {
                             setFormData(initialFormData);
@@ -259,48 +281,59 @@ const FAQManagement = () => {
                         }}
                         className="bg-[#008080] text-white px-4 py-2 rounded hover:bg-teal-600"
                     >
-                        + Add FAQ
+                        + Add Language
                     </button>
                 </div>
                 <input
                     type="text"
                     value={search}
                     onChange={handleSearch}
-                    placeholder="Search by question or category"
+                    placeholder="Search by full name or short code"
                     className="mb-4 w-full p-2 rounded-md border border-gray-300 shadow-sm"
                 />
                 <div className="overflow-x-auto">
                     <table className="w-full table-auto">
                         <thead>
                             <tr className="bg-gray-200">
-                                <th className="px-4 py-2">Question</th>
-                                <th className="px-4 py-2">Category</th>
-                                <th className="px-4 py-2">Order</th>
+                                <th className="px-4 py-2">Full Name</th>
+                                <th className="px-4 py-2">Short Code</th>
+                                <th className="px-4 py-2">Active</th>
+                                <th className="px-4 py-2">Default</th>
                                 <th className="px-4 py-2">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {faqs.map((faq) => (
-                                <tr key={faq._id} className="border-b">
+                            {languages.map((language) => (
+                                <tr key={language._id} className="border-b">
+                                    <td className="px-4 py-2">{language.fullName}</td>
+                                    <td className="px-4 py-2">{language.shortCode}</td>
                                     <td className="px-4 py-2">
-                                        <div className="font-medium">{faq.question}</div>
-                                        <div className="text-sm text-gray-600 mt-1 line-clamp-2">{faq.answer}</div>
+                                        {language.isActive ? 'Yes' : 'No'}
                                     </td>
-                                    <td className="px-4 py-2">{faq.category}</td>
-                                    <td className="px-4 py-2">{faq.order}</td>
+                                    <td className="px-4 py-2">
+                                        {language.isDefault ? 'Yes' : 'No'}
+                                    </td>
                                     <td className="px-4 py-2">
                                         <button
-                                            onClick={() => openUpdateModal(faq)}
+                                            onClick={() => openUpdateModal(language)}
                                             className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
                                         >
                                             Edit
                                         </button>
                                         <button
-                                            onClick={() => handleDeleteFAQ(faq._id)}
-                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                            onClick={() => handleDeleteLanguage(language._id)}
+                                            className="bg-red-500 text-white px-2 py-1 rounded mr-2 hover:bg-red-600"
                                         >
                                             Delete
                                         </button>
+                                        {!language.isDefault && (
+                                            <button
+                                                onClick={() => handleSetDefaultLanguage(language._id)}
+                                                className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                            >
+                                                Set Default
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -329,7 +362,7 @@ const FAQManagement = () => {
     );
 };
 
-const FAQForm = ({
+const LanguageForm = ({
     formData,
     handleInputChange,
     handleSubmit,
@@ -338,54 +371,59 @@ const FAQForm = ({
 }) => {
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl max-h-screen overflow-y-auto">
+            <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md max-h-screen overflow-y-auto">
                 <h2 className="text-xl font-semibold mb-4">{title}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Question</label>
+                        <label className="block text-sm font-medium text-gray-700">Full Name</label>
                         <input
                             type="text"
-                            name="question"
-                            value={formData.question}
+                            name="fullName"
+                            value={formData.fullName}
                             onChange={handleInputChange}
                             required
-                            maxLength="200"
+                            maxLength="100"
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         />
-                        <p className="text-xs text-gray-500">{formData.question.length}/200 characters</p>
+                        <p className="text-xs text-gray-500">{formData.fullName.length}/100 characters</p>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Category</label>
+                        <label className="block text-sm font-medium text-gray-700">Short Code</label>
                         <input
                             type="text"
-                            name="category"
-                            value={formData.category}
+                            name="shortCode"
+                            value={formData.shortCode}
                             onChange={handleInputChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Order</label>
-                        <input
-                            type="number"
-                            name="order"
-                            value={formData.order}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Answer</label>
-                        <textarea
-                            name="answer"
-                            value={formData.answer}
-                            onChange={handleInputChange}
-                            rows="5"
                             required
-                            maxLength="1000"
+                            minLength="2"
+                            maxLength="5"
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         />
-                        <p className="text-xs text-gray-500">{formData.answer.length}/1000 characters</p>
+                        <p className="text-xs text-gray-500">2-5 characters, uppercase</p>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                            <input
+                                type="checkbox"
+                                name="isActive"
+                                checked={formData.isActive}
+                                onChange={handleInputChange}
+                                className="mr-2"
+                            />
+                            Active
+                        </label>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                            <input
+                                type="checkbox"
+                                name="isDefault"
+                                checked={formData.isDefault}
+                                onChange={handleInputChange}
+                                className="mr-2"
+                            />
+                            Set as Default
+                        </label>
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button
@@ -408,4 +446,4 @@ const FAQForm = ({
     );
 };
 
-export default FAQManagement;
+export default LanguageManagement;

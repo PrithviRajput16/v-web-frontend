@@ -1,17 +1,36 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FaChevronDown, FaQuestionCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import url_prefix from "../../data/variable";
+import { useLanguage } from '../../hooks/useLanguage';
 import "./FAQ.css";
 
 const FAQ = () => {
+
   const [activeIndex, setActiveIndex] = useState(null);
   const [faqData, setFaqData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const toggleFAQ = (index) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
+  const [language] = useLanguage();
+  const [headings, setHeadings] = useState({
+    'title': 'Not Available For Selected Language',
+    'sub': '',
+    'desc': ''
+  });
+
 
   // Fetch FAQs from API
   useEffect(() => {
+
+    if (!language) {
+      console.log('Language not yet available, skipping fetch');
+      return;
+    }
     const fetchFAQs = async () => {
       try {
         const response = await fetch(url_prefix + "/api/faqs");
@@ -25,9 +44,32 @@ const FAQ = () => {
         if (!result.success || !Array.isArray(result.data)) {
           throw new Error("Invalid API response structure");
         }
+        if (result.success) {
+          let dataToSet;
+          if (Array.isArray(result.data)) {
+            dataToSet = result.data.filter(
+              item => item.language?.toLowerCase() === language?.toLowerCase()
+            );
+          } else {
+            dataToSet =
+              result.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [result.data]
+                : [];
+          }
 
-        setFaqData(result.data);
-        setError(null);
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setFaqData(dataToSet);
+            setError(null);
+            setHeadings({
+              title: dataToSet[0].htitle,
+              sub: dataToSet[0].hsubtitle,
+              desc: dataToSet[0].hdesc
+            })
+          }
+        }
+
+
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -38,11 +80,9 @@ const FAQ = () => {
     };
 
     fetchFAQs();
-  }, []);
+  }, [language]);
 
-  const toggleFAQ = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
+
 
   // Split FAQ data into two columns
   const leftColumn = faqData.slice(0, Math.ceil(faqData.length / 2));
@@ -180,10 +220,10 @@ const FAQ = () => {
             may have about your medical journey.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-[#008080] hover:bg-[#006080] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+            <button className="bg-[#008080] hover:bg-[#006080] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300" onClick={() => navigate('/book')}>
               Contact Us Now
             </button>
-            <button className="border border-[#008080] text-[#008080] hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+            <button className="border border-[#008080] text-[#008080] hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors duration-300" onClick={() => navigate('/book')}>
               Request a Call Back
             </button>
           </div>
@@ -195,6 +235,7 @@ const FAQ = () => {
 
 // FAQ Item Component
 const FAQItem = ({ faq, index, isActive, onClick }) => {
+
   return (
     <motion.div
       className="bg-white rounded-xl shadow-sm overflow-hidden border border-blue-100"

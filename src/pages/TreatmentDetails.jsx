@@ -14,9 +14,16 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProcedureCostCard from "../components/ProcedureCostCard";
 import url_prefix from "../data/variable";
+import { useLanguage } from '../hooks/useLanguage';
 
 
 const TreatmentDetails = () => {
+    const [language] = useLanguage();
+    const [headings, setHeadings] = useState({
+        'title': 'Not Available For Selected Language',
+        'sub': '',
+        'desc': ''
+    });
     const { id } = useParams();
     const navigate = useNavigate();
     const [treatment, setTreatment] = useState(null);
@@ -57,6 +64,10 @@ const TreatmentDetails = () => {
     });
 
     useEffect(() => {
+        if (!language) {
+            console.log('Language not yet available, skipping fetch');
+            return;
+        }
         const fetchTreatmentData = async () => {
             try {
                 setLoading(true);
@@ -71,35 +82,131 @@ const TreatmentDetails = () => {
                 if (!treatmentResult.success) {
                     throw new Error('Invalid treatment data received');
                 }
+                if (treatmentResult.success) {
+                    console.log(treatmentResult.data.language)
+                    let dataToSet;
+                    if (Array.isArray(treatmentResult.data)) {
+                        dataToSet = treatmentResult.data.filter(
+                            item => item.language?.toLowerCase() === language?.toLowerCase()
+                        );
+                    } else {
+                        dataToSet =
+                            treatmentResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                ? [treatmentResult.data]
+                                : [];
+                    }
 
-                setTreatment(treatmentResult.data);
+                    if (dataToSet.length > 0) {
+                        console.log('Setting aboutData:', dataToSet[0]);
+                        setTreatment(dataToSet[0]);
+                        setHeadings({
+                            title: dataToSet[0].htitle,
+                            sub: dataToSet[0].hsubtitle,
+                            desc: dataToSet[0].hdesc
+                        })
+                    }
+                }
+
 
                 // Fetch hospital treatments for this procedure
                 const hospitalTreatmentsResponse = await fetch(`${url_prefix}/api/hospital-treatment/by-treatment/${id}`);
                 if (hospitalTreatmentsResponse.ok) {
                     const hospitalTreatmentsResult = await hospitalTreatmentsResponse.json();
+
+
+
                     if (hospitalTreatmentsResult.success) {
-                        setHospitalTreatments(hospitalTreatmentsResult.data);
-                        setFilteredHospitalTreatments(hospitalTreatmentsResult.data);
+
+                        let dataToSet;
+                        if (Array.isArray(hospitalTreatmentsResult.data)) {
+                            dataToSet = hospitalTreatmentsResult.data.filter(
+                                item => item.language?.toLowerCase() === language?.toLowerCase()
+                            );
+                            console.log('hosptial', dataToSet)
+
+                        } else {
+                            dataToSet =
+                                hospitalTreatmentsResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                    ? [hospitalTreatmentsResult.data]
+                                    : [];
+                        }
+
+                        if (dataToSet.length > 0) {
+                            console.log('Setting aboutData:', dataToSet);
+                            setHospitalTreatments(dataToSet);
+                            setFilteredHospitalTreatments(dataToSet);
+                            setError(null);
+                            setHeadings({
+                                title: dataToSet[0].htitle,
+                                sub: dataToSet[0].hsubtitle,
+                                desc: dataToSet[0].hdesc
+                            })
+                        }
                     }
                 }
+
 
                 // Fetch doctor details
                 const doctorTreatmentResponse = await fetch(`${url_prefix}/api/doctor-treatment/by-treatment/${id}`)
                 if (doctorTreatmentResponse.ok) {
                     const doctorTreatmentResult = await doctorTreatmentResponse.json()
-                    setDoctorTreatments(doctorTreatmentResult.data);
-                    setFilteredDoctorTreatments(doctorTreatmentResult.data);
+                    if (doctorTreatmentResult.success) {
+                        let dataToSet;
+                        if (Array.isArray(doctorTreatmentResult.data)) {
+                            dataToSet = doctorTreatmentResult.data.filter(
+                                item => item.language?.toLowerCase() === language?.toLowerCase()
+                            );
+                        } else {
+                            dataToSet =
+                                doctorTreatmentResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                    ? [doctorTreatmentResult.data]
+                                    : [];
+                        }
+
+                        if (dataToSet.length > 0) {
+                            console.log('Setting aboutData:', dataToSet);
+                            setDoctorTreatments(dataToSet);
+                            setFilteredDoctorTreatments(dataToSet);
+                            setError(null);
+                            setHeadings({
+                                title: dataToSet[0].htitle,
+                                sub: dataToSet[0].hsubtitle,
+                                desc: dataToSet[0].hdesc
+                            })
+                        }
+                    }
                 }
 
                 // Fetch Prodecures 
                 const procedureResponse = await fetch(`${url_prefix}/api/procedure-costs/by-treatment/${id}`);
                 if (procedureResponse.ok) {
                     const procedureResult = await procedureResponse.json();
-                    setProcedures(procedureResult.data);
-                    setFilteredProcedures(procedureResult.data);
+                    if (procedureResult.success) {
+                        let dataToSet;
+                        if (Array.isArray(procedureResult.data)) {
+                            dataToSet = procedureResult.data.filter(
+                                item => item.language?.toLowerCase() === language?.toLowerCase()
+                            );
+                        } else {
+                            dataToSet =
+                                procedureResult.data.language?.toLowerCase() === language?.toLowerCase()
+                                    ? [procedureResult.data]
+                                    : [];
+                        }
 
-                    console.log(procedureResult.data);
+                        if (dataToSet.length > 0) {
+                            console.log('Setting aboutData:', dataToSet);
+                            setProcedures(dataToSet);
+                            setFilteredProcedures(dataToSet);
+                            setError(null);
+                            setHeadings({
+                                title: dataToSet[0].htitle,
+                                sub: dataToSet[0].hsubtitle,
+                                desc: dataToSet[0].hdesc
+                            })
+                        }
+                    }
+
                 }
 
 
@@ -114,12 +221,10 @@ const TreatmentDetails = () => {
         };
 
         fetchTreatmentData();
-    }, [id]);
-
-    console.log(doctorTreatments)
+    }, [id, language]);
 
 
-    // console.log(hospitalTreatments.name);
+
 
     // Filter hospital treatments based on filters
     useEffect(() => {
@@ -232,7 +337,6 @@ const TreatmentDetails = () => {
         setFilteredProcedures(filtered);
     }, [procedureFilters, procedures]);
 
-    // console.log(filteredHospitalTreatments[0].city);
 
     // Extract unique values for filters
     const hospitals = [...new Set(hospitalTreatments
@@ -341,7 +445,7 @@ const TreatmentDetails = () => {
 
                 {/* Navigation Tabs */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
-                    <div className="flex space-x-8 border-b">
+                    <div className="flex space-x-8 border-b overflow-x-auto">
 
                         {['overview', 'hospitals', 'doctors', 'procedures'].map((tab) => (
                             <button
@@ -481,7 +585,7 @@ const TreatmentDetails = () => {
                 {activeTab === 'hospitals' && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
-                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
                             <div className="flex items-center gap-2 mb-6">
                                 <FaFilter className="text-teal-600 text-lg" />
                                 <h2 className="text-xl font-semibold text-gray-800">Filter Hospitals</h2>
@@ -589,7 +693,7 @@ const TreatmentDetails = () => {
                                                 {/* Hospital Image */}
                                                 <div className="flex-shrink-0">
                                                     <img
-                                                        src={hospitalTreatment.hospital.image}
+                                                        src={hospitalTreatment.hospital?.image}
                                                         alt={hospitalTreatment.hospital?.name}
                                                         className="w-32 h-32 object-cover rounded-lg"
                                                     />
@@ -598,18 +702,18 @@ const TreatmentDetails = () => {
                                                 {/* Hospital Info */}
                                                 <div className="flex-grow">
                                                     <h3 className="text-xl font-bold text-gray-800 mb-2">
-                                                        {hospitalTreatment.hospital.name}
+                                                        {hospitalTreatment.hospital?.name}
                                                     </h3>
 
                                                     <div className="flex items-center text-gray-600 mb-3">
                                                         <FaMapMarkerAlt className="mr-2" />
-                                                        <span>{hospitalTreatment.hospital.city}, {hospitalTreatment.hospital.country}</span>
+                                                        <span>{hospitalTreatment.hospital?.city}, {hospitalTreatment.hospital?.country}</span>
                                                     </div>
 
                                                     <div className="flex items-center mb-4">
                                                         <FaStar className="text-yellow-400 mr-1" />
                                                         <span className="text-gray-700 font-semibold">
-                                                            {hospitalTreatment.hospital.rating}
+                                                            {hospitalTreatment.hospital?.rating}
                                                         </span>
                                                         <span className="text-gray-500 ml-2">({hospitalTreatment.beds} beds)</span>
                                                     </div>
@@ -686,7 +790,7 @@ const TreatmentDetails = () => {
                 {activeTab === 'doctors' && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
-                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
                             <div className="flex items-center gap-2 mb-6">
                                 <FaFilter className="text-teal-600 text-lg" />
                                 <h2 className="text-xl font-semibold text-gray-800">Filter Doctors</h2>
@@ -922,7 +1026,7 @@ const TreatmentDetails = () => {
                 {activeTab === 'procedures' && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
-                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
                             <div className="flex items-center gap-2 mb-6">
                                 <FaFilter className="text-teal-600 text-lg" />
                                 <h2 className="text-xl font-semibold text-gray-800">Filter Procedures</h2>

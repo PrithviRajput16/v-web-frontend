@@ -6,7 +6,7 @@ const About = require('../models/About.cjs');
 // @access  Public
 exports.getAbout = async (req, res) => {
     try {
-        let about = await About.findOne({ isActive: true });
+        let about = await About.find({ isActive: true });
 
         // If no about content exists, create default
         if (!about) {
