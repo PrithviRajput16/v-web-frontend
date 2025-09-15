@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ImageUpload from './ImageUpload';
 import url_prefix from "../../data/variable";
+import ImageUpload from './ImageUpload';
 
 // Procedure Cost Management Component
 const ProcedureCostManagement = () => {
     const [procedures, setProcedures] = useState([]);
+    const [languages, setLanguages] = useState([]);
     const [treatments, setTreatments] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
@@ -34,6 +35,7 @@ const ProcedureCostManagement = () => {
         icon: '🦴',
         basePrice: 0,
         category: 'Orthopedics',
+        language: 'EN',
         duration: 60,
         complexity: 'Medium',
         recoveryTime: 'Varies',
@@ -41,6 +43,31 @@ const ProcedureCostManagement = () => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
+
+    // Fetch languages
+    const fetchLanguages = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
+            const response = await fetch(`${url_prefix}/api/language/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Fetched languages:', result.data);
+                setLanguages(result.data);
+            } else {
+                console.error('Failed to fetch languages:', result.error);
+                alert('Failed to fetch languages: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error fetching languages:', err);
+            alert('Error fetching languages');
+        }
+    };
 
     // Fetch procedure costs
     const fetchProcedureCosts = async (pageNum = 1, searchQuery = '') => {
@@ -152,6 +179,7 @@ const ProcedureCostManagement = () => {
             description: procedure.description || '',
             icon: procedure.icon || '🦴',
             basePrice: procedure.basePrice || 0,
+            language: procedure.language,
             category: procedure.category || 'Orthopedics',
             duration: procedure.duration || 60,
             complexity: procedure.complexity || 'Medium',
@@ -253,6 +281,7 @@ const ProcedureCostManagement = () => {
         } else {
             fetchProcedureCosts();
             fetchTreatments();
+            fetchLanguages();
         }
     }, [navigate]);
 
@@ -282,6 +311,7 @@ const ProcedureCostManagement = () => {
                     }}
                     treatments={treatments}
                     categories={categories}
+                    languages={languages}
                     complexityLevels={complexityLevels}
                     title="Add New Procedure Cost"
                 />
@@ -294,6 +324,7 @@ const ProcedureCostManagement = () => {
                     handleInputChange={handleInputChange}
                     handleSubmit={handleUpdateProcedureCost}
                     onClose={() => setIsModalOpen(false)}
+                    languages={languages}
                     treatments={treatments}
                     categories={categories}
                     complexityLevels={complexityLevels}
@@ -393,6 +424,7 @@ const ProcedureCostForm = ({
     onClose,
     treatments,
     categories,
+    languages,
     complexityLevels,
     title
 }) => {
@@ -402,6 +434,23 @@ const ProcedureCostForm = ({
                 <h2 className="text-xl font-semibold mb-4">{title}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Language</label>
+                            <select
+                                name="language"
+                                value={formData.language}
+                                onChange={handleInputChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                            >
+                                <option value="">Select a language</option>
+                                {languages.map(lang => (
+                                    <option key={lang._id} value={lang.shortCode}>
+                                        {lang.fullName} ({lang.shortCode})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Title</label>
                             <input

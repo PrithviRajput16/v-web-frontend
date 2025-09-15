@@ -12,11 +12,14 @@ const TreatmentManagement = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [currentTreatment, setCurrentTreatment] = useState(null);
+    const [languages, setLanguages] = useState([]);
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         icon: '⚕️',
         category: '',
+        language: 'EN',
         typicalDuration: '',
         typicalComplexity: 'Medium',
         typicalRecoveryTime: 'Varies',
@@ -24,7 +27,31 @@ const TreatmentManagement = () => {
     });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const limit = 10;
+    const limit = 10000;
+
+    const fetchLanguages = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
+            const response = await fetch(`${url_prefix}/api/language/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Fetched languages:', result.data);
+                setLanguages(result.data);
+            } else {
+                console.error('Failed to fetch languages:', result.error);
+                alert('Failed to fetch languages: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error fetching languages:', err);
+            alert('Error fetching languages');
+        }
+    };
 
     // Fetch treatments
     const fetchTreatments = async (pageNum = 1, searchQuery = '') => {
@@ -84,6 +111,7 @@ const TreatmentManagement = () => {
             description: formData.description,
             icon: formData.icon || '⚕️',
             category: formData.category,
+            language: formData.language,
             typicalDuration: Number(formData.typicalDuration),
             typicalComplexity: formData.typicalComplexity,
             typicalRecoveryTime: formData.typicalRecoveryTime || 'Varies',
@@ -137,6 +165,7 @@ const TreatmentManagement = () => {
             description: treatment.description,
             icon: treatment.icon,
             category: treatment.category,
+            language: treatment.language,
             typicalDuration: treatment.typicalDuration.toString(),
             typicalComplexity: treatment.typicalComplexity,
             typicalRecoveryTime: treatment.typicalRecoveryTime,
@@ -153,6 +182,7 @@ const TreatmentManagement = () => {
             icon: '⚕️',
             category: '',
             typicalDuration: '',
+            language: 'EN',
             typicalComplexity: 'Medium',
             typicalRecoveryTime: 'Varies',
             isActive: true,
@@ -174,6 +204,7 @@ const TreatmentManagement = () => {
             description: formData.description,
             icon: formData.icon || '⚕️',
             category: formData.category,
+            language: formData.language,
             typicalDuration: Number(formData.typicalDuration),
             typicalComplexity: formData.typicalComplexity,
             typicalRecoveryTime: formData.typicalRecoveryTime || 'Varies',
@@ -301,6 +332,7 @@ const TreatmentManagement = () => {
             navigate('/admin');
         } else {
             fetchTreatments();
+            fetchLanguages();
         }
     }, [navigate]);
 
@@ -325,6 +357,23 @@ const TreatmentManagement = () => {
                         <div className="p-6">
                             <h2 className="text-xl font-semibold mb-4">Add New Treatment</h2>
                             <form onSubmit={handleAddTreatment} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Language</label>
+                                    <select
+                                        name="language"
+                                        value={formData.language}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                    >
+                                        <option value="">Select a language</option>
+                                        {languages.map(lang => (
+                                            <option key={lang._id} value={lang.shortCode}>
+                                                {lang.fullName} ({lang.shortCode})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Title</label>
@@ -539,6 +588,23 @@ const TreatmentManagement = () => {
                         <div className="p-6">
                             <h2 className="text-xl font-semibold mb-4">Update Treatment</h2>
                             <form onSubmit={handleUpdateTreatment} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Language</label>
+                                    <select
+                                        name="language"
+                                        value={formData.language}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                    >
+                                        <option value="">Select a language</option>
+                                        {languages.map(lang => (
+                                            <option key={lang._id} value={lang.shortCode}>
+                                                {lang.fullName} ({lang.shortCode})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Title</label>

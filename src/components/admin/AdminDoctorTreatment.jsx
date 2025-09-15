@@ -193,6 +193,7 @@ const DoctorTreatmentManagement = () => {
         setFormData({
             doctor: treatment.doctor?._id || treatment.doctor,
             treatment: treatment.treatment?._id || treatment.treatment,
+            language: treatment.language,
             successRate: treatment.successRate || 0,
             experienceWithProcedure: treatment.experienceWithProcedure || 0,
             casesPerformed: treatment.casesPerformed || 0,
