@@ -40,7 +40,7 @@ export default function About() {
 
           if (dataToSet.length > 0) {
             console.log('Setting aboutData:', dataToSet);
-            setAboutData(dataToSet);
+            setAboutData(dataToSet[0]);
           } else {
             console.log('Language mismatch:', {
               apiLanguage: Array.isArray(result.data)

@@ -9,6 +9,7 @@ const HospitalManagement = () => {
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
     const [search, setSearch] = useState('');
+    const [languages, setLanguages] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [currentHospital, setCurrentHospital] = useState(null);
@@ -22,7 +23,11 @@ const HospitalManagement = () => {
         beds: '',
         accreditation: '',
         phone: '',
-        blurb: ''
+        blurb: '',
+        language: 'EN',
+        htitle: 'Our Medical Services',
+        hsubtitle: 'Specialized Treatments',
+        hdesc: 'We offer a wide range of medical treatments and procedures with the highest standards of care'
     });
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -45,6 +50,7 @@ const HospitalManagement = () => {
             );
             const result = await response.json();
             if (result.success) {
+                console.log('Fetched hospitals:', result.data);
                 setHospitals(result.data);
                 setTotal(result.total);
                 setPage(result.page);
@@ -65,12 +71,56 @@ const HospitalManagement = () => {
         }
     };
 
-
+    // Fetch languages
+    const fetchLanguages = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
+            const response = await fetch(`${url_prefix}/api/language/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Fetched languages:', result.data);
+                setLanguages(result.data);
+            } else {
+                console.error('Failed to fetch languages:', result.error);
+                alert('Failed to fetch languages: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error fetching languages:', err);
+            alert('Error fetching languages');
+        }
+    };
 
     // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        console.log(`Input changed: ${name} = ${value}`);
         setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // Reset form data for adding a new hospital
+    const resetFormData = () => {
+        setFormData({
+            name: '',
+            country: '',
+            city: '',
+            image: '',
+            specialties: '',
+            rating: '',
+            beds: '',
+            accreditation: '',
+            phone: '',
+            blurb: '',
+            language: 'EN',
+            htitle: 'Our Medical Services',
+            hsubtitle: 'Specialized Treatments',
+            hdesc: 'We offer a wide range of medical treatments and procedures with the highest standards of care'
+        });
     };
 
     // Add hospital
@@ -80,6 +130,11 @@ const HospitalManagement = () => {
         const token = localStorage.getItem('adminToken');
         if (!token) {
             navigate('/admin');
+            return;
+        }
+        if (!formData.language) {
+            alert('Please select a language');
+            setLoading(false);
             return;
         }
         const data = {
@@ -92,10 +147,15 @@ const HospitalManagement = () => {
             beds: formData.beds ? parseInt(formData.beds) : undefined,
             accreditation: formData.accreditation ? formData.accreditation.split(',').map(a => a.trim()) : [],
             phone: formData.phone,
-            blurb: formData.blurb
+            blurb: formData.blurb,
+            language: formData.language,
+            htitle: formData.htitle,
+            hsubtitle: formData.hsubtitle,
+            hdesc: formData.hdesc
         };
+        console.log('Adding hospital with data:', data);
         try {
-            const response = await fetch(`${url_prefix}/api/admin/hospitals?page=${page}$limit=${limit}`, {
+            const response = await fetch(`${url_prefix}/api/admin/hospitals`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,12 +164,11 @@ const HospitalManagement = () => {
                 body: JSON.stringify(data)
             });
             const result = await response.json();
+            console.log('Add hospital response:', result);
             if (result.success) {
                 alert('Hospital added successfully');
-                setFormData({
-                    name: '', country: '', city: '', image: '', specialties: '',
-                    rating: '', beds: '', accreditation: '', phone: '', blurb: ''
-                });
+                resetFormData();
+                setIsAddModalOpen(false);
                 fetchHospitals(page, search);
             } else {
                 console.error('Failed to add hospital:', result.error);
@@ -129,6 +188,7 @@ const HospitalManagement = () => {
 
     // Open update modal
     const openUpdateModal = (hospital) => {
+        console.log('Opening update modal for hospital:', hospital);
         setCurrentHospital(hospital);
         setFormData({
             name: hospital.name,
@@ -140,13 +200,18 @@ const HospitalManagement = () => {
             beds: hospital.beds || '',
             accreditation: hospital.accreditation.join(', '),
             phone: hospital.phone,
-            blurb: hospital.blurb
+            blurb: hospital.blurb,
+            language: hospital.language || 'EN',
+            htitle: hospital.htitle || 'Our Medical Services',
+            hsubtitle: hospital.hsubtitle || 'Specialized Treatments',
+            hdesc: hospital.hdesc || 'We offer a wide range of medical treatments and procedures with the highest standards of care'
         });
         setIsModalOpen(true);
     };
 
-    //add hospital modal
+    // Add hospital modal
     const openAddModal = () => {
+        resetFormData();
         setIsAddModalOpen(true);
     };
 
@@ -159,6 +224,11 @@ const HospitalManagement = () => {
             navigate('/admin');
             return;
         }
+        if (!formData.language) {
+            alert('Please select a language');
+            setLoading(false);
+            return;
+        }
         const data = {
             name: formData.name,
             country: formData.country,
@@ -169,8 +239,13 @@ const HospitalManagement = () => {
             beds: formData.beds ? parseInt(formData.beds) : undefined,
             accreditation: formData.accreditation ? formData.accreditation.split(',').map(a => a.trim()) : [],
             phone: formData.phone,
-            blurb: formData.blurb
+            blurb: formData.blurb,
+            language: formData.language,
+            htitle: formData.htitle,
+            hsubtitle: formData.hsubtitle,
+            hdesc: formData.hdesc
         };
+        console.log('Updating hospital with data:', data);
         try {
             const response = await fetch(`${url_prefix}/api/admin/hospitals/${currentHospital._id}`, {
                 method: 'PUT',
@@ -181,6 +256,7 @@ const HospitalManagement = () => {
                 body: JSON.stringify(data)
             });
             const result = await response.json();
+            console.log('Update hospital response:', result);
             if (result.success) {
                 alert('Hospital updated successfully');
                 setIsModalOpen(false);
@@ -257,36 +333,6 @@ const HospitalManagement = () => {
         }
     };
 
-    // Logout
-    const handleLogout = async () => {
-        setLoading(true);
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            navigate('/admin');
-            return;
-        }
-        try {
-            const response = await fetch(`${url_prefix}/api/admin/logout`, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const result = await response.json();
-            if (result.success) {
-                localStorage.removeItem('adminToken');
-                navigate('/admin');
-            } else {
-                console.error('Failed to logout:', result.error);
-                alert('Failed to logout');
-
-            }
-        } catch (err) {
-            console.error('Error logging out:', err);
-            alert('Failed to logout');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     // Initial fetch
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
@@ -294,6 +340,7 @@ const HospitalManagement = () => {
             navigate('/admin');
         } else {
             fetchHospitals();
+            fetchLanguages();
         }
     }, [navigate]);
 
@@ -319,7 +366,6 @@ const HospitalManagement = () => {
                             <h2 className="text-xl font-semibold mb-4">Add New Hospital</h2>
                             <form onSubmit={handleAddHospital} className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {/* Form fields remain the same */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Name</label>
                                         <input
@@ -353,7 +399,23 @@ const HospitalManagement = () => {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
-                                    {/* Image Upload Component */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Language</label>
+                                        <select
+                                            name="language"
+                                            value={formData.language}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                        >
+                                            <option value="">Select a language</option>
+                                            {languages.map(lang => (
+                                                <option key={lang._id} value={lang.shortCode}>
+                                                    {lang.fullName} ({lang.shortCode})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <div className="md:col-span-2">
                                         <ImageUpload
                                             onImageUpload={(imageUrl) => {
@@ -424,6 +486,28 @@ const HospitalManagement = () => {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700">Header Title</label>
+                                        <input
+                                            type="text"
+                                            name="htitle"
+                                            value={formData.htitle}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700">Header Subtitle</label>
+                                        <input
+                                            type="text"
+                                            name="hsubtitle"
+                                            value={formData.hsubtitle}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Blurb</label>
@@ -433,6 +517,18 @@ const HospitalManagement = () => {
                                         onChange={handleInputChange}
                                         required
                                         maxLength="500"
+                                        rows="4"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Header Description</label>
+                                    <textarea
+                                        name="hdesc"
+                                        value={formData.hdesc}
+                                        onChange={handleInputChange}
+                                        required
+                                        maxLength="1000"
                                         rows="4"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                     />
@@ -483,6 +579,7 @@ const HospitalManagement = () => {
                                 <th className="px-4 py-2">Country</th>
                                 <th className="px-4 py-2">City</th>
                                 <th className="px-4 py-2">Rating</th>
+                                <th className="px-4 py-2">Language</th>
                                 <th className="px-4 py-2">Actions</th>
                             </tr>
                         </thead>
@@ -493,6 +590,7 @@ const HospitalManagement = () => {
                                     <td className="border px-4 py-2">{hospital.country}</td>
                                     <td className="border px-4 py-2">{hospital.city}</td>
                                     <td className="border px-4 py-2">{hospital.rating || 'N/A'}</td>
+                                    <td className="border px-4 py-2">{hospital.language || 'N/A'}</td>
                                     <td className="border px-4 py-2">
                                         <div className="flex flex-col sm:flex-row gap-2">
                                             <button
@@ -575,7 +673,23 @@ const HospitalManagement = () => {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
-                                    {/* Image Upload Component */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Language</label>
+                                        <select
+                                            name="language"
+                                            value={formData.language}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                        >
+                                            <option value="">Select a language</option>
+                                            {languages.map(lang => (
+                                                <option key={lang._id} value={lang.shortCode}>
+                                                    {lang.fullName} ({lang.shortCode})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <div className="md:col-span-2">
                                         <ImageUpload
                                             onImageUpload={(imageUrl) => {
@@ -646,6 +760,28 @@ const HospitalManagement = () => {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700">Header Title</label>
+                                        <input
+                                            type="text"
+                                            name="htitle"
+                                            value={formData.htitle}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700">Header Subtitle</label>
+                                        <input
+                                            type="text"
+                                            name="hsubtitle"
+                                            value={formData.hsubtitle}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Blurb</label>
@@ -655,6 +791,18 @@ const HospitalManagement = () => {
                                         onChange={handleInputChange}
                                         required
                                         maxLength="500"
+                                        rows="4"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Header Description</label>
+                                    <textarea
+                                        name="hdesc"
+                                        value={formData.hdesc}
+                                        onChange={handleInputChange}
+                                        required
+                                        maxLength="1000"
                                         rows="4"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                     />
