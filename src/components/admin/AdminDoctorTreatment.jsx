@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 import url_prefix from "../../data/variable";
-
 
 // Doctor Treatment Management Component
 const DoctorTreatmentManagement = () => {
     const [languages, setLanguages] = useState([]);
     const [treatments, setTreatments] = useState([]);
     const [doctors, setDoctors] = useState([]);
+    const [allDoctors, setAllDoctors] = useState([]); // Store all doctors initially
     const [allTreatments, setAllTreatments] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
@@ -18,8 +17,9 @@ const DoctorTreatmentManagement = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [currentTreatment, setCurrentTreatment] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [doctorsLoading, setDoctorsLoading] = useState(false);
     const navigate = useNavigate();
-    const limit = 10;
+    const limit = 10000;
 
     const initialFormData = {
         doctor: '',
@@ -70,7 +70,6 @@ const DoctorTreatmentManagement = () => {
         }
     };
 
-
     // Fetch languages
     const fetchLanguages = async () => {
         try {
@@ -96,8 +95,8 @@ const DoctorTreatmentManagement = () => {
         }
     };
 
-    // Fetch doctors for dropdown
-    const fetchDoctors = async () => {
+    // Fetch all doctors
+    const fetchAllDoctors = async () => {
         try {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
@@ -107,11 +106,25 @@ const DoctorTreatmentManagement = () => {
             });
             const result = await response.json();
             if (result.success) {
-                setDoctors(result.data);
+                setAllDoctors(result.data);
+                setDoctors(result.data); // Initially set doctors to all doctors
             }
         } catch (err) {
             console.error('Error fetching doctors:', err);
         }
+    };
+
+    // Filter doctors by language
+    const filterDoctorsByLanguage = (language) => {
+        if (!language || language === '') {
+            setDoctors(allDoctors);
+            return;
+        }
+
+        const filteredDoctors = allDoctors.filter(
+            doctor => doctor.language?.toLowerCase() === language?.toLowerCase()
+        );
+        setDoctors(filteredDoctors);
     };
 
     // Fetch all treatments for dropdown
@@ -135,6 +148,12 @@ const DoctorTreatmentManagement = () => {
     // Input handler
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'language') {
+            // Filter doctors based on selected language
+            filterDoctorsByLanguage(value);
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -200,6 +219,9 @@ const DoctorTreatmentManagement = () => {
             specialTechniques: treatment.specialTechniques || [],
             isActive: treatment.isActive
         });
+
+        // Filter doctors based on the treatment's language
+        filterDoctorsByLanguage(treatment.language);
         setIsModalOpen(true);
     };
 
@@ -295,10 +317,9 @@ const DoctorTreatmentManagement = () => {
             navigate('/admin');
         } else {
             fetchDoctorTreatments();
-            fetchDoctors();
+            fetchAllDoctors();
             fetchAllTreatments();
             fetchLanguages();
-
         }
     }, [navigate]);
 
@@ -331,6 +352,7 @@ const DoctorTreatmentManagement = () => {
                     languages={languages}
                     allTreatments={allTreatments}
                     title="Add New Doctor Treatment"
+                    doctorsLoading={doctorsLoading}
                 />
             )}
 
@@ -346,6 +368,7 @@ const DoctorTreatmentManagement = () => {
                     languages={languages}
                     allTreatments={allTreatments}
                     title="Update Doctor Treatment"
+                    doctorsLoading={doctorsLoading}
                 />
             )}
 
@@ -378,7 +401,6 @@ const DoctorTreatmentManagement = () => {
                                 <th className="px-4 py-2">Success Rate</th>
                                 <th className="px-4 py-2">Experience (yrs)</th>
                                 <th className="px-4 py-2">Cases Performed</th>
-                                {/* <th className="px-4 py-2">Special Techniques</th> */}
                                 <th className="px-4 py-2">Active</th>
                                 <th className="px-4 py-2">Actions</th>
                             </tr>
@@ -391,10 +413,6 @@ const DoctorTreatmentManagement = () => {
                                     <td className="px-4 py-2">{dt.successRate}%</td>
                                     <td className="px-4 py-2">{dt.experienceWithProcedure} yrs</td>
                                     <td className="px-4 py-2">{dt.casesPerformed}</td>
-                                    {/* <td className="px-4 py-2">
-                                        {dt.specialTechniques?.slice(0, 2).join(', ')}
-                                        {dt.specialTechniques?.length > 2 && '...'}
-                                    </td> */}
                                     <td className="px-4 py-2">{dt.isActive ? 'Yes' : 'No'}</td>
                                     <td className="px-4 py-2">
                                         <button
@@ -446,6 +464,7 @@ const DoctorTreatmentForm = ({
     doctors,
     allTreatments,
     languages,
+    doctorsLoading,
     title
 }) => {
     return (
@@ -474,20 +493,27 @@ const DoctorTreatmentForm = ({
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Doctor</label>
-                            <select
-                                name="doctor"
-                                value={formData.doctor}
-                                onChange={handleInputChange}
-                                required
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="">Select Doctor</option>
-                                {doctors.map(doctor => (
-                                    <option key={doctor._id} value={doctor._id}>
-                                        {doctor.firstName} {doctor.lastName}
-                                    </option>
-                                ))}
-                            </select>
+                            {doctorsLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                                    <span>Loading doctors...</span>
+                                </div>
+                            ) : (
+                                <select
+                                    name="doctor"
+                                    value={formData.doctor}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                >
+                                    <option value="">Select Doctor</option>
+                                    {doctors.map(doctor => (
+                                        <option key={doctor._id} value={doctor._id}>
+                                            {doctor.firstName} {doctor.lastName} ({doctor.language})
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Treatment</label>
@@ -552,15 +578,6 @@ const DoctorTreatmentForm = ({
                                 <option value={false}>Inactive</option>
                             </select>
                         </div>
-                        {/* <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700">Special Techniques (comma separated)</label>
-                            <input
-                                type="text"
-                                value={formData.specialTechniques.join(', ')}
-                                onChange={handleSpecialTechniquesChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            />
-                        </div> */}
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button
