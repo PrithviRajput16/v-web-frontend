@@ -6,6 +6,7 @@ import url_prefix from "../../data/variable";
 
 // Doctor Treatment Management Component
 const DoctorTreatmentManagement = () => {
+    const [languages, setLanguages] = useState([]);
     const [treatments, setTreatments] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [allTreatments, setAllTreatments] = useState([]);
@@ -23,6 +24,7 @@ const DoctorTreatmentManagement = () => {
     const initialFormData = {
         doctor: '',
         treatment: '',
+        language: "EN",
         successRate: 0,
         experienceWithProcedure: 0,
         casesPerformed: 0,
@@ -65,6 +67,32 @@ const DoctorTreatmentManagement = () => {
             console.error('Error fetching doctor treatments:', err);
         } finally {
             setLoading(false);
+        }
+    };
+
+
+    // Fetch languages
+    const fetchLanguages = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
+            const response = await fetch(`${url_prefix}/api/language/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Fetched languages:', result.data);
+                setLanguages(result.data);
+            } else {
+                console.error('Failed to fetch languages:', result.error);
+                alert('Failed to fetch languages: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error fetching languages:', err);
+            alert('Error fetching languages');
         }
     };
 
@@ -268,6 +296,8 @@ const DoctorTreatmentManagement = () => {
             fetchDoctorTreatments();
             fetchDoctors();
             fetchAllTreatments();
+            fetchLanguages();
+
         }
     }, [navigate]);
 
@@ -297,6 +327,7 @@ const DoctorTreatmentManagement = () => {
                         setFormData(initialFormData);
                     }}
                     doctors={doctors}
+                    languages={languages}
                     allTreatments={allTreatments}
                     title="Add New Doctor Treatment"
                 />
@@ -311,6 +342,7 @@ const DoctorTreatmentManagement = () => {
                     handleSubmit={handleUpdateDoctorTreatment}
                     onClose={() => setIsModalOpen(false)}
                     doctors={doctors}
+                    languages={languages}
                     allTreatments={allTreatments}
                     title="Update Doctor Treatment"
                 />
@@ -412,6 +444,7 @@ const DoctorTreatmentForm = ({
     onClose,
     doctors,
     allTreatments,
+    languages,
     title
 }) => {
     return (
@@ -420,6 +453,24 @@ const DoctorTreatmentForm = ({
                 <h2 className="text-xl font-semibold mb-4">{title}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Language</label>
+                            <select
+                                name="language"
+                                value={formData.language}
+                                onChange={handleInputChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                            >
+                                <option value="">Select a language</option>
+                                {languages.map(lang => (
+                                    <option key={lang._id} value={lang.shortCode}>
+                                        {lang.fullName} ({lang.shortCode})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Doctor</label>
                             <select

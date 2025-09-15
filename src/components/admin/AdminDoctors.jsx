@@ -14,8 +14,9 @@ const DoctorManagement = () => {
     const [currentDoctor, setCurrentDoctor] = useState(null);
     const [loading, setLoading] = useState(false);
     const [hospitals, setHospitals] = useState([]);
+    const [languages, setLanguages] = useState([]);
     const navigate = useNavigate();
-    const limit = 100;
+    const limit = 10000;
 
     const initialFormData = {
         firstName: '',
@@ -38,6 +39,7 @@ const DoctorManagement = () => {
             Sunday: [{ start: '', end: '' }]
         },
         bio: '',
+        language: 'EN', // Set default to 'EN' to match schema
         awards: [{ name: '', year: '', presentedBy: '' }],
         memberships: [],
         publications: [{ title: '', journal: '', year: '', link: '' }],
@@ -46,6 +48,31 @@ const DoctorManagement = () => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
+
+    // Fetch languages
+    const fetchLanguages = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
+            const response = await fetch(`${url_prefix}/api/language/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Fetched languages:', result.data);
+                setLanguages(result.data);
+            } else {
+                console.error('Failed to fetch languages:', result.error);
+                alert('Failed to fetch languages: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error fetching languages:', err);
+            alert('Error fetching languages');
+        }
+    };
 
     // Fetch doctors
     const fetchDoctors = async (pageNum = 1, searchQuery = '') => {
@@ -64,12 +91,14 @@ const DoctorManagement = () => {
             );
             const result = await response.json();
             if (result.success) {
+                console.log('Fetched doctors:', result.data);
                 setDoctors(result.data);
                 setTotal(result.total);
                 setPage(result.page);
                 setPages(result.pages);
             } else {
                 console.error('Failed to fetch doctors:', result.error);
+                alert('Failed to fetch doctors: ' + result.error);
                 if (response.status === 401) {
                     localStorage.removeItem('adminToken');
                     navigate('/admin');
@@ -77,6 +106,7 @@ const DoctorManagement = () => {
             }
         } catch (err) {
             console.error('Error fetching doctors:', err);
+            alert('Error fetching doctors');
         } finally {
             setLoading(false);
         }
@@ -94,29 +124,36 @@ const DoctorManagement = () => {
             const result = await response.json();
             if (result.success) {
                 setHospitals(result.data);
-                console.log(hospitals[0]);
+                console.log('Fetched hospitals:', result.data);
+            } else {
+                console.error('Failed to fetch hospitals:', result.error);
+                alert('Failed to fetch hospitals: ' + result.error);
             }
         } catch (err) {
             console.error('Error fetching hospitals:', err);
+            alert('Error fetching hospitals');
         }
     };
 
     // Input handler for simple fields
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        console.log(`Input changed: ${name} = ${value}`);
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     // Handler for array fields (specialties, memberships, languages)
     const handleArrayInputChange = (field, value) => {
         const items = value.split(',').map(item => item.trim()).filter(item => item !== '');
+        console.log(`Array input changed: ${field} =`, items);
         setFormData((prev) => ({ ...prev, [field]: items }));
     };
 
-    // Handler for nested objects (qualifications, awards, publications, availability)
+    // Handler for nested objects (qualifications, awards, publications)
     const handleNestedChange = (field, index, key, value) => {
         const updatedItems = [...formData[field]];
         updatedItems[index][key] = value;
+        console.log(`Nested change: ${field}[${index}].${key} = ${value}`);
         setFormData((prev) => ({ ...prev, [field]: updatedItems }));
     };
 
@@ -138,6 +175,7 @@ const DoctorManagement = () => {
     const handleAvailabilityChange = (day, index, key, value) => {
         const updatedAvailability = { ...formData.availability };
         updatedAvailability[day][index][key] = value;
+        console.log(`Availability change: ${day}[${index}].${key} = ${value}`);
         setFormData((prev) => ({ ...prev, availability: updatedAvailability }));
     };
 
@@ -155,6 +193,11 @@ const DoctorManagement = () => {
         setFormData((prev) => ({ ...prev, availability: updatedAvailability }));
     };
 
+    // Reset form data for adding a new doctor
+    const resetFormData = () => {
+        setFormData(initialFormData);
+    };
+
     // Add doctor
     const handleAddDoctor = async (e) => {
         e.preventDefault();
@@ -164,8 +207,11 @@ const DoctorManagement = () => {
             navigate('/admin');
             return;
         }
-
-        // Prepare data for API
+        if (!formData.language) {
+            alert('Please select a language');
+            setLoading(false);
+            return;
+        }
         const data = {
             ...formData,
             experience: Number(formData.experience),
@@ -184,9 +230,9 @@ const DoctorManagement = () => {
             })),
             isActive: formData.isActive === 'true' || formData.isActive === true
         };
-
+        console.log('Adding doctor with data:', data);
         try {
-            const response = await fetch(`${url_prefix}/api/admin/doctors?pages=1&limit=10000`, {
+            const response = await fetch(`${url_prefix}/api/admin/doctors?page=1&limit=10000`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -195,26 +241,32 @@ const DoctorManagement = () => {
                 body: JSON.stringify(data),
             });
             const result = await response.json();
+            console.log('Add doctor response:', result);
             if (result.success) {
                 alert('Doctor added successfully');
                 setIsAddModalOpen(false);
-                setFormData(initialFormData);
+                resetFormData();
                 fetchDoctors(page, search);
             } else {
-                alert('Failed: ' + result.error);
+                console.error('Failed to add doctor:', result.error);
+                alert('Failed to add doctor: ' + result.error);
+                if (response.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    navigate('/admin');
+                }
             }
         } catch (err) {
             console.error('Error adding doctor:', err);
+            alert('Error adding doctor');
         } finally {
             setLoading(false);
         }
     };
 
-    // Update doctor modal
+    // Open update modal
     const openUpdateModal = (doctor) => {
+        console.log('Opening update modal for doctor:', doctor);
         setCurrentDoctor(doctor);
-
-        // Transform doctor data to match form structure
         const formattedData = {
             firstName: doctor.firstName || '',
             lastName: doctor.lastName || '',
@@ -238,6 +290,7 @@ const DoctorManagement = () => {
                 Sunday: [{ start: '', end: '' }]
             },
             bio: doctor.bio || '',
+            language: doctor.language || 'EN',
             awards: doctor.awards?.length > 0
                 ? doctor.awards
                 : [{ name: '', year: '', presentedBy: '' }],
@@ -248,9 +301,14 @@ const DoctorManagement = () => {
             rating: doctor.rating || 0,
             isActive: doctor.isActive
         };
-
         setFormData(formattedData);
         setIsModalOpen(true);
+    };
+
+    // Add doctor modal
+    const openAddModal = () => {
+        resetFormData();
+        setIsAddModalOpen(true);
     };
 
     // Update doctor
@@ -262,8 +320,11 @@ const DoctorManagement = () => {
             navigate('/admin');
             return;
         }
-
-        // Prepare data for API
+        if (!formData.language) {
+            alert('Please select a language');
+            setLoading(false);
+            return;
+        }
         const data = {
             ...formData,
             experience: Number(formData.experience),
@@ -282,7 +343,7 @@ const DoctorManagement = () => {
             })),
             isActive: formData.isActive === 'true' || formData.isActive === true
         };
-
+        console.log('Updating doctor with data:', data);
         try {
             const response = await fetch(`${url_prefix}/api/admin/doctors/${currentDoctor._id}`, {
                 method: 'PUT',
@@ -293,15 +354,22 @@ const DoctorManagement = () => {
                 body: JSON.stringify(data),
             });
             const result = await response.json();
+            console.log('Update doctor response:', result);
             if (result.success) {
                 alert('Doctor updated successfully');
                 setIsModalOpen(false);
                 fetchDoctors(page, search);
             } else {
-                alert('Failed: ' + result.error);
+                console.error('Failed to update doctor:', result.error);
+                alert('Failed to update doctor: ' + result.error);
+                if (response.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    navigate('/admin');
+                }
             }
         } catch (err) {
             console.error('Error updating doctor:', err);
+            alert('Error updating doctor');
         } finally {
             setLoading(false);
         }
@@ -316,7 +384,6 @@ const DoctorManagement = () => {
             navigate('/admin');
             return;
         }
-
         try {
             const response = await fetch(`${url_prefix}/api/admin/doctors/${id}`, {
                 method: 'DELETE',
@@ -327,10 +394,16 @@ const DoctorManagement = () => {
                 alert('Doctor deleted successfully');
                 fetchDoctors(page, search);
             } else {
-                alert('Failed: ' + result.error);
+                console.error('Failed to delete doctor:', result.error);
+                alert('Failed to delete doctor: ' + result.error);
+                if (response.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    navigate('/admin');
+                }
             }
         } catch (err) {
             console.error('Error deleting doctor:', err);
+            alert('Error deleting doctor');
         } finally {
             setLoading(false);
         }
@@ -345,12 +418,20 @@ const DoctorManagement = () => {
 
     // Pagination
     const handlePrevPage = () => {
-        if (page > 1) fetchDoctors(page - 1, search);
-    };
-    const handleNextPage = () => {
-        if (page < pages) fetchDoctors(page + 1, search);
+        if (page > 1) {
+            setPage(page - 1);
+            fetchDoctors(page - 1, search);
+        }
     };
 
+    const handleNextPage = () => {
+        if (page < pages) {
+            setPage(page + 1);
+            fetchDoctors(page + 1, search);
+        }
+    };
+
+    // Initial fetch
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
         if (!token) {
@@ -358,6 +439,7 @@ const DoctorManagement = () => {
         } else {
             fetchDoctors();
             fetchHospitals();
+            fetchLanguages();
         }
     }, [navigate]);
 
@@ -391,9 +473,10 @@ const DoctorManagement = () => {
                     handleSubmit={handleAddDoctor}
                     onClose={() => {
                         setIsAddModalOpen(false);
-                        setFormData(initialFormData);
+                        resetFormData();
                     }}
                     hospitals={hospitals}
+                    languages={languages}
                     title="Add New Doctor"
                 />
             )}
@@ -414,6 +497,7 @@ const DoctorManagement = () => {
                     handleSubmit={handleUpdateDoctor}
                     onClose={() => setIsModalOpen(false)}
                     hospitals={hospitals}
+                    languages={languages}
                     title="Update Doctor"
                 />
             )}
@@ -422,10 +506,7 @@ const DoctorManagement = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-semibold">Doctor List</h2>
                     <button
-                        onClick={() => {
-                            setFormData(initialFormData);
-                            setIsAddModalOpen(true);
-                        }}
+                        onClick={openAddModal}
                         className="bg-[#008080] text-white px-4 py-2 rounded hover:bg-teal-600"
                     >
                         + Add Doctor
@@ -448,6 +529,7 @@ const DoctorManagement = () => {
                                 <th className="px-4 py-2">Experience</th>
                                 <th className="px-4 py-2">Fee</th>
                                 <th className="px-4 py-2">Rating</th>
+                                <th className="px-4 py-2">Language</th>
                                 <th className="px-4 py-2">Active</th>
                                 <th className="px-4 py-2">Actions</th>
                             </tr>
@@ -461,6 +543,7 @@ const DoctorManagement = () => {
                                     <td className="px-4 py-2">{doc.experience} yrs</td>
                                     <td className="px-4 py-2">₹{doc.consultationFee}</td>
                                     <td className="px-4 py-2">{doc.rating || 'N/A'}</td>
+                                    <td className="px-4 py-2">{doc.language || 'N/A'}</td>
                                     <td className="px-4 py-2">{doc.isActive ? 'Yes' : 'No'}</td>
                                     <td className="px-4 py-2">
                                         <button
@@ -505,6 +588,7 @@ const DoctorManagement = () => {
 
 const DoctorForm = ({
     formData,
+    setFormData,
     handleInputChange,
     handleArrayInputChange,
     handleNestedChange,
@@ -516,6 +600,7 @@ const DoctorForm = ({
     handleSubmit,
     onClose,
     hospitals,
+    languages,
     title
 }) => {
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -530,6 +615,23 @@ const DoctorForm = ({
                         <h3 className="text-lg font-medium mb-2">Basic Information</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
+                                <label className="block text-sm font-medium text-gray-700">Language</label>
+                                <select
+                                    name="language"
+                                    value={formData.language}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                                >
+                                    <option value="">Select a language</option>
+                                    {languages.map(lang => (
+                                        <option key={lang._id} value={lang.shortCode}>
+                                            {lang.fullName} ({lang.shortCode})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
                                 <label className="block text-sm font-medium text-gray-700">First Name</label>
                                 <input
                                     type="text"
@@ -537,7 +639,7 @@ const DoctorForm = ({
                                     value={formData.firstName}
                                     onChange={handleInputChange}
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
                             <div>
@@ -548,22 +650,24 @@ const DoctorForm = ({
                                     value={formData.lastName}
                                     onChange={handleInputChange}
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
-                            <ImageUpload
-                                onImageUpload={(imageUrl) => {
-                                    handleInputChange({
-                                        target: {
-                                            name: 'image',
-                                            value: imageUrl
-                                        }
-                                    });
-                                }}
-                                currentImage={formData.image}
-                                folder="doctor"
-                                maxSize={5}
-                            />
+                            <div className="md:col-span-2">
+                                <ImageUpload
+                                    onImageUpload={(imageUrl) => {
+                                        handleInputChange({
+                                            target: {
+                                                name: 'image',
+                                                value: imageUrl
+                                            }
+                                        });
+                                    }}
+                                    currentImage={formData.image}
+                                    folder="doctor"
+                                    maxSize={5}
+                                />
+                            </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Primary Specialty</label>
                                 <input
@@ -572,7 +676,7 @@ const DoctorForm = ({
                                     value={formData.specialty}
                                     onChange={handleInputChange}
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
                             <div>
@@ -581,7 +685,7 @@ const DoctorForm = ({
                                     type="text"
                                     value={formData.specialties.join(', ')}
                                     onChange={(e) => handleArrayInputChange('specialties', e.target.value)}
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
                             <div>
@@ -591,7 +695,7 @@ const DoctorForm = ({
                                     value={formData.hospital}
                                     onChange={handleInputChange}
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 >
                                     <option value="">Select Hospital</option>
                                     {hospitals.map(hospital => (
@@ -610,7 +714,7 @@ const DoctorForm = ({
                                     onChange={handleInputChange}
                                     min="0"
                                     max="60"
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
                             <div>
@@ -622,7 +726,7 @@ const DoctorForm = ({
                                     onChange={handleInputChange}
                                     min="0"
                                     required
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
                             <div>
@@ -631,7 +735,7 @@ const DoctorForm = ({
                                     type="text"
                                     value={formData.languages.join(', ')}
                                     onChange={(e) => handleArrayInputChange('languages', e.target.value)}
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
                             <div>
@@ -640,7 +744,7 @@ const DoctorForm = ({
                                     type="text"
                                     value={formData.memberships.join(', ')}
                                     onChange={(e) => handleArrayInputChange('memberships', e.target.value)}
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 />
                             </div>
                             <div>
@@ -649,7 +753,7 @@ const DoctorForm = ({
                                     name="isActive"
                                     value={formData.isActive}
                                     onChange={handleInputChange}
-                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                 >
                                     <option value={true}>Active</option>
                                     <option value={false}>Inactive</option>
@@ -678,7 +782,7 @@ const DoctorForm = ({
                                         type="text"
                                         value={qual.degree}
                                         onChange={(e) => handleNestedChange('qualifications', index, 'degree', e.target.value)}
-                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                     />
                                 </div>
                                 <div>
@@ -687,7 +791,7 @@ const DoctorForm = ({
                                         type="text"
                                         value={qual.institute}
                                         onChange={(e) => handleNestedChange('qualifications', index, 'institute', e.target.value)}
-                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                     />
                                 </div>
                                 <div className="flex items-end">
@@ -699,7 +803,7 @@ const DoctorForm = ({
                                             onChange={(e) => handleNestedChange('qualifications', index, 'year', e.target.value)}
                                             min="1900"
                                             max={new Date().getFullYear()}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
                                     {formData.qualifications.length > 1 && (
@@ -739,7 +843,7 @@ const DoctorForm = ({
                                                 type="time"
                                                 value={slot.start}
                                                 onChange={(e) => handleAvailabilityChange(day, index, 'start', e.target.value)}
-                                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                             />
                                         </div>
                                         <div>
@@ -748,7 +852,7 @@ const DoctorForm = ({
                                                 type="time"
                                                 value={slot.end}
                                                 onChange={(e) => handleAvailabilityChange(day, index, 'end', e.target.value)}
-                                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                             />
                                         </div>
                                         <div className="flex items-end">
@@ -777,7 +881,7 @@ const DoctorForm = ({
                             onChange={handleInputChange}
                             rows="4"
                             maxLength="1000"
-                            className="w-full border border-gray-300 rounded-md p-2"
+                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                             placeholder="Doctor's biography (max 1000 characters)"
                         />
                         <p className="text-xs text-gray-500">{formData.bio.length}/1000 characters</p>
@@ -803,7 +907,7 @@ const DoctorForm = ({
                                         type="text"
                                         value={award.name}
                                         onChange={(e) => handleNestedChange('awards', index, 'name', e.target.value)}
-                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                     />
                                 </div>
                                 <div>
@@ -814,7 +918,7 @@ const DoctorForm = ({
                                         onChange={(e) => handleNestedChange('awards', index, 'year', e.target.value)}
                                         min="1900"
                                         max={new Date().getFullYear()}
-                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                     />
                                 </div>
                                 <div className="flex items-end">
@@ -824,7 +928,7 @@ const DoctorForm = ({
                                             type="text"
                                             value={award.presentedBy}
                                             onChange={(e) => handleNestedChange('awards', index, 'presentedBy', e.target.value)}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
                                     {formData.awards.length > 1 && (
@@ -862,7 +966,7 @@ const DoctorForm = ({
                                             type="text"
                                             value={pub.title}
                                             onChange={(e) => handleNestedChange('publications', index, 'title', e.target.value)}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
                                     <div>
@@ -871,7 +975,7 @@ const DoctorForm = ({
                                             type="text"
                                             value={pub.journal}
                                             onChange={(e) => handleNestedChange('publications', index, 'journal', e.target.value)}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
                                 </div>
@@ -884,7 +988,7 @@ const DoctorForm = ({
                                             onChange={(e) => handleNestedChange('publications', index, 'year', e.target.value)}
                                             min="1900"
                                             max={new Date().getFullYear()}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
                                     <div>
@@ -893,7 +997,7 @@ const DoctorForm = ({
                                             type="text"
                                             value={pub.link}
                                             onChange={(e) => handleNestedChange('publications', index, 'link', e.target.value)}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
                                         />
                                     </div>
                                 </div>

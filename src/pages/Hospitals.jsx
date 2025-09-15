@@ -284,9 +284,11 @@ const Hospitals = () => {
         <div className="lg:col-span-3">
           {/* Header */}
           <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Find Hospitals</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">{headings.title}</h1>
+            {/* <h1 className="text-3xl font-bold text-gray-800 mb-2">Find Hospitals</h1> */}
             <p className="text-gray-600">
-              Discover {hospitals.length} healthcare facilities worldwide with advanced filtering options.
+              {/* Discover {hospitals.length} healthcare facilities worldwide with advanced filtering options. */}
+              {headings.desc}
             </p>
           </div>
 

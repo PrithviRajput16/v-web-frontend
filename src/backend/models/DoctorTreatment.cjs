@@ -58,6 +58,6 @@ const doctorTreatmentSchema = new mongoose.Schema({
 });
 
 // Compound index for unique doctor-treatment combination
-doctorTreatmentSchema.index({ doctor: 1, treatment: 1 }, { unique: true });
+doctorTreatmentSchema.index({ doctor: 1, treatment: 1, language: 1 }, { unique: true });
 
 module.exports = mongoose.model('DoctorTreatment', doctorTreatmentSchema);
