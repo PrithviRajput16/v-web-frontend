@@ -78,9 +78,10 @@ export default function ProcedureCost() {
         <div className="container mx-auto py-12">
           <SectionHeading
             center={true}
-            title={headings.title}
+            // title={headings.title}
             subtitle={headings.sub}
           // description={headings.desc}
+          title='procedure'
 
           />
           <div className="flex justify-center items-center h-64">
@@ -97,9 +98,10 @@ export default function ProcedureCost() {
         <div className="container mx-auto py-12">
           <SectionHeading
             center={true}
-            title={headings.title}
-            subtitle={headings.sub}
+            // title={headings.title}
+            // subtitle={headings.sub}
           // description={headings.desc}
+          title='procedure'
 
           />
           <div className="text-center py-10">
@@ -124,9 +126,10 @@ export default function ProcedureCost() {
       <div className="container mx-auto py-12">
         <SectionHeading
           center={true}
-          title={headings.title}
+          // title={headings.title}
           subtitle={headings.sub}
           description={headings.desc}
+          title='procedure'
 
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9 p-2 mx-auto">

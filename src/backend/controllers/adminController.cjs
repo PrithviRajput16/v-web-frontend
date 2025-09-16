@@ -1459,3 +1459,150 @@ exports.setDefaultLanguage = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+const Heading = require('../models/Headings.cjs');
+
+// Get all headings
+exports.getHeadings = async (req, res) => {
+    try {
+        const { page = 1, limit = 10000, section, language, search } = req.query;
+        const filter = {};
+
+        if (section) filter.section = section;
+        if (language) filter.language = language;
+        if (search) {
+            filter.$or = [
+                { 'home.heading': new RegExp(search, 'i') },
+                { 'home.subheading': new RegExp(search, 'i') },
+                { 'page.heading': new RegExp(search, 'i') },
+                { 'detailPage.headings.text': new RegExp(search, 'i') }
+            ];
+        }
+
+        const headings = await Heading.find(filter)
+            .sort({ section: 1, language: 1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Heading.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: headings.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: headings
+        });
+    } catch (err) {
+        console.error('Get headings error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get heading by ID
+exports.getHeadingById = async (req, res) => {
+    try {
+        const heading = await Heading.findById(req.params.id);
+
+        if (!heading) {
+            return res.status(404).json({
+                success: false,
+                error: 'Heading not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: heading
+        });
+    } catch (err) {
+        console.error('Get heading by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Create heading
+exports.createHeading = async (req, res) => {
+    try {
+        const { section, language } = req.body;
+
+        // Check if heading with same section and language already exists
+        const existingHeading = await Heading.findOne({ section, language });
+        if (existingHeading) {
+            return res.status(400).json({
+                success: false,
+                error: 'Heading for this section and language already exists'
+            });
+        }
+
+        const heading = await Heading.create(req.body);
+        res.status(201).json({ success: true, data: heading });
+    } catch (err) {
+        console.error('Create heading error:', err);
+
+        if (err.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Heading for this section and language already exists'
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Update heading
+exports.updateHeading = async (req, res) => {
+    try {
+        const heading = await Heading.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!heading) {
+            return res.status(404).json({
+                success: false,
+                error: 'Heading not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: heading
+        });
+    } catch (err) {
+        console.error('Update heading error:', err);
+
+        if (err.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Heading for this section and language already exists'
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete heading
+exports.deleteHeading = async (req, res) => {
+    try {
+        const heading = await Heading.findByIdAndDelete(req.params.id);
+
+        if (!heading) {
+            return res.status(404).json({
+                success: false,
+                error: 'Heading not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Heading deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete heading error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};

@@ -8,7 +8,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        
+
         fetchDashboardStats();
     }, []);
 
@@ -109,6 +109,9 @@ const AdminDashboard = () => {
                 </Link>
                 <Link to="/admin/lang" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Admin Languages</h3>
+                </Link>
+                <Link to="/admin/head" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Admin Headings</h3>
                 </Link>
             </div>
         </div>

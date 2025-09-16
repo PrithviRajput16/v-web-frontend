@@ -5,9 +5,11 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import AdminDoctors from './components/admin/AdminDoctors';
 import AdminDoctorTreatment from './components/admin/AdminDoctorTreatment';
 import AdminFaqs from './components/admin/AdminFAQ';
+import Headings from "./components/admin/AdminHeadings";
 import AdminHospitalDetails from './components/admin/AdminHospitalDetails';
 import AdminHospitals from './components/admin/AdminHospitals';
 import AdminHospitalTreatment from './components/admin/AdminHospitalTreatment';
+import Languages from "./components/admin/AdminLanguageManagement";
 import AdminLogin from './components/admin/AdminLogin';
 import User from "./components/admin/AdminPassword";
 import AdminPatientOpinions from './components/admin/AdminPatientOpinions';
@@ -26,7 +28,6 @@ import HospitalDetails from "./pages/HospitalDetails";
 import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
 import TreatmentDetails from "./pages/TreatmentDetails";
 import Treatments from "./pages/Treatments";
-import Languages from "./components/admin/AdminLanguageManagement";
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col text-gray-800">
@@ -48,7 +49,7 @@ export default function App() {
           <Route path="/doctors/:doctorId/book" element={<BookingFlow />} />
           <Route path="/book" element={<BookingFlow />} />
           <Route path="/treatments/:id" element={<TreatmentDetails />} />
-          
+
 
 
           {/* Public routes */}
@@ -70,6 +71,7 @@ export default function App() {
           <Route path="/admin/about" element={<AboutUs />} />
           <Route path="/admin/user" element={<User />} />
           <Route path="/admin/lang" element={<Languages />} />
+          <Route path="/admin/head" element={<Headings />} />
           {/* admin/bookings */}
         </Routes>
       </main>

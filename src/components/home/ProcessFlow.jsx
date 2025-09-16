@@ -45,9 +45,10 @@ export default function ProcessFlow() {
       <div className="container mx-auto px-6 md:px-12">
         <SectionHeading
             center={true}
-            title="Our Process"
-            subtitle="Simple & Transparent"
-            description="From initial consultation to post-treatment care, we guide you through every step of your medical journey"
+            // title="Our Process"
+            // subtitle="Simple & Transparent"
+            // description="From initial consultation to post-treatment care, we guide you through every step of your medical journey"
+            title='process'
           />
 
         <div className="max-w-4xl mx-auto">

@@ -74,7 +74,13 @@ const {
     createLanguage,
     updateLanguage,
     deleteLanguage,
-    setDefaultLanguage
+    setDefaultLanguage,
+    
+    getHeadings,
+    createHeading,
+    getHeadingById,
+    updateHeading,
+    deleteHeading
 
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
@@ -204,3 +210,14 @@ router.post('/languages', protectAdmin, restrictTo('superadmin', 'admin'), creat
 router.put('/languages/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateLanguage);
 router.delete('/languages/:id', protectAdmin, restrictTo('superadmin'), deleteLanguage);
 router.patch('/languages/:id/set-default', protectAdmin, restrictTo('superadmin', 'admin'), setDefaultLanguage);
+
+// Headings routes
+// Headings management
+router.get('/headings', protectAdmin, restrictTo('admin', 'superadmin'), getHeadings);
+router.post('/headings', protectAdmin, restrictTo('admin', 'superadmin'), createHeading);
+router.get('/headings/:id', protectAdmin, restrictTo('admin', 'superadmin'), getHeadingById);
+router.put('/headings/:id', protectAdmin, restrictTo('admin', 'superadmin'), updateHeading);
+router.delete('/headings/:id', protectAdmin, restrictTo('superadmin'), deleteHeading);
+
+
+module.exports = router;
