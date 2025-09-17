@@ -1,4 +1,5 @@
-const Appointment = require('../models/Appointment.cjs');
+// controllers/patientController.cjs
+const Booking = require('../models/Bookings.cjs'); // Change from Appointment to Booking
 const Patient = require('../models/Patient.cjs');
 const jwt = require('jsonwebtoken');
 
@@ -7,6 +8,7 @@ const signToken = (id) => {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 };
+
 // Patient Login
 exports.patientLogin = async (req, res) => {
     try {
@@ -207,21 +209,54 @@ exports.updatePatientProfile = async (req, res) => {
     }
 };
 
-// Get patient appointments
-exports.getPatientAppointments = async (req, res) => {
+// Get patient bookings (changed from appointments)
+exports.getPatientBookings = async (req, res) => {
     try {
-        const { status } = req.query;
+        const { status, type } = req.query;
         const filter = { patientId: req.patient.id };
 
         if (status) {
-            filter.status = status;
+            filter['status.mainStatus'] = status;
         }
 
-        const appointments = await Appointment.find(filter)
-            .populate('hospitalId', 'name city address phone')
-            .populate('doctorId', 'firstName lastName specialty')
-            .populate('treatmentId', 'title category')
-            .sort({ appointmentDate: 1 });
+        if (type) {
+            filter.type = type;
+        }
+
+        const bookings = await Booking.find(filter)
+            .populate('hospital', 'name city address phone')
+            .populate('doctor', 'firstName lastName specialty')
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            count: bookings.length,
+            data: bookings
+        });
+    } catch (err) {
+        console.error('Get patient bookings error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get patient appointments (approved bookings)
+exports.getPatientAppointments = async (req, res) => {
+    try {
+        const { status } = req.query;
+        const filter = {
+            patientId: req.patient.id,
+            type: 'appointment',
+            'status.mainStatus': { $in: ['scheduled', 'confirmed', 'completed'] }
+        };
+
+        if (status) {
+            filter['status.mainStatus'] = status;
+        }
+
+        const appointments = await Booking.find(filter)
+            .populate('hospital', 'name city address phone')
+            .populate('doctor', 'firstName lastName specialty')
+            .sort({ date: 1, time: 1 });
 
         res.json({
             success: true,

@@ -1,7 +1,6 @@
 // routes/bookings.js
 const express = require('express');
 const router = express.Router();
-
 const {
     createBooking,
     getBookings,
@@ -15,10 +14,10 @@ const {
 router.post('/', createBooking);
 
 // Protected routes (for admin)
-// router.get('/', getBookings);
-// router.get('/stats', getBookingStats);
-// router.get('/:id', getBookingById);
-// router.put('/:id', updateBookingStatus);
-// router.delete('/:id', deleteBooking);
+router.get('/', getBookings);
+router.get('/stats', getBookingStats);
+router.get('/:id', getBookingById);
+router.put('/:id', updateBookingStatus);
+router.delete('/:id', deleteBooking);
 
 module.exports = router;
