@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { FiMenu, FiPhone, FiX } from "react-icons/fi";
+import { FiMenu, FiX } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
 import LanguageDropdown from "./LanguageDropdown";
@@ -91,6 +91,16 @@ export default function Header() {
           >
             About
           </NavLink>
+          <NavLink
+            to="/patient/login"
+            className={({ isActive }) =>
+              isActive
+                ? "text-primary font-semibold"
+                : "text-darktext hover:text-primary transition"
+            }
+          >
+            Log In
+          </NavLink>
         </nav>
 
         {/* Desktop CTA */}
@@ -149,6 +159,7 @@ export default function Header() {
             <NavLink to="/about" onClick={() => setOpen(false)}>
               About
             </NavLink>
+
           </div>
         </motion.div>
       )}

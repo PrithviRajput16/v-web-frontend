@@ -75,12 +75,30 @@ const {
     updateLanguage,
     deleteLanguage,
     setDefaultLanguage,
-    
+
     getHeadings,
     createHeading,
     getHeadingById,
     updateHeading,
-    deleteHeading
+    deleteHeading,
+
+
+    // Add the new patient and appointment controller functions
+    getPatients,
+    createPatient,
+    getPatientById,
+    updatePatient,
+    deletePatient,
+    getAppointments,
+    createAppointment,
+    getAppointmentById,
+    updateAppointment,
+    deleteAppointment,
+    getPatientDashboard,
+
+    registerPatient,
+
+    generatePassword
 
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
@@ -219,5 +237,30 @@ router.get('/headings/:id', protectAdmin, restrictTo('admin', 'superadmin'), get
 router.put('/headings/:id', protectAdmin, restrictTo('admin', 'superadmin'), updateHeading);
 router.delete('/headings/:id', protectAdmin, restrictTo('superadmin'), deleteHeading);
 
+
+
+// ================= APPOINTMENT MANAGEMENT ROUTES =================
+router.get('/appointments', protectAdmin, restrictTo('admin', 'superadmin'), getAppointments);
+router.post('/appointments', protectAdmin, restrictTo('admin', 'superadmin'), createAppointment);
+router.get('/appointments/:id', protectAdmin, restrictTo('admin', 'superadmin'), getAppointmentById);
+router.put('/appointments/:id', protectAdmin, restrictTo('admin', 'superadmin'), updateAppointment);
+router.delete('/appointments/:id', protectAdmin, restrictTo('superadmin'), deleteAppointment);
+
+// ================= PATIENT DASHBOARD ROUTE =================
+router.get('/patients/:patientId/dashboard', protectAdmin, restrictTo('admin', 'superadmin'), getPatientDashboard);
+
+// Patient registration route
+router.post('/patients/register', protectAdmin, restrictTo('admin', 'superadmin'), registerPatient);
+
+// Generate password route
+router.get('/patients/generate-password', protectAdmin, restrictTo('admin', 'superadmin'),generatePassword);
+
+
+
+router.get('/patients', protectAdmin, restrictTo('admin', 'superadmin'), getPatients);
+router.post('/patients', protectAdmin, restrictTo('admin', 'superadmin'), createPatient);
+router.get('/patients/:id', protectAdmin, restrictTo('admin', 'superadmin'), getPatientById);
+router.put('/patients/:id', protectAdmin, restrictTo('admin', 'superadmin'), updatePatient);
+router.delete('/patients/:id', protectAdmin, restrictTo('superadmin'), deletePatient);
 
 module.exports = router;

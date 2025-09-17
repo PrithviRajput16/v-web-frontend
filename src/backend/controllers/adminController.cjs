@@ -1606,3 +1606,461 @@ exports.deleteHeading = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+
+
+
+
+const Appointment = require('../models/Appointment.cjs');
+const Patient = require('../models/Patient.cjs');
+
+// Get all patients
+exports.getPatients = async (req, res) => {
+    try {
+        const { page = 1, limit = 10000, search } = req.query;
+        const filter = {};
+
+        if (search) {
+            filter.$or = [
+                { firstName: new RegExp(search, 'i') },
+                { lastName: new RegExp(search, 'i') },
+                { email: new RegExp(search, 'i') },
+                { phone: new RegExp(search, 'i') }
+            ];
+        }
+
+        const patients = await Patient.find(filter)
+            .select('-password')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Patient.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: patients.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: patients
+        });
+    } catch (err) {
+        console.error('Get patients error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get patient by ID
+exports.getPatientById = async (req, res) => {
+    try {
+        const patient = await Patient.findById(req.params.id).select('-password');
+
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                error: 'Patient not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: patient
+        });
+    } catch (err) {
+        console.error('Get patient by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Create patient
+exports.createPatient = async (req, res) => {
+    try {
+        const patient = await Patient.create(req.body);
+
+        // Remove password from response
+        const patientResponse = patient.toObject();
+        delete patientResponse.password;
+
+        res.status(201).json({ success: true, data: patientResponse });
+    } catch (err) {
+        console.error('Create patient error:', err);
+
+        if (err.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Patient with this email already exists'
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Update patient
+exports.updatePatient = async (req, res) => {
+    try {
+        // Don't update password through this method
+        if (req.body.password) {
+            delete req.body.password;
+        }
+
+        const patient = await Patient.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                error: 'Patient not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: patient
+        });
+    } catch (err) {
+        console.error('Update patient error:', err);
+
+        if (err.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Patient with this email already exists'
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete patient
+exports.deletePatient = async (req, res) => {
+    try {
+        const patient = await Patient.findByIdAndDelete(req.params.id);
+
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                error: 'Patient not found'
+            });
+        }
+
+        // Also delete all appointments for this patient
+        await Appointment.deleteMany({ patientId: req.params.id });
+
+        res.json({
+            success: true,
+            message: 'Patient and associated appointments deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete patient error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get all appointments
+exports.getAppointments = async (req, res) => {
+    try {
+        const { page = 1, limit = 10000, patientId, status, dateFrom, dateTo } = req.query;
+        const filter = {};
+
+        if (patientId) filter.patientId = patientId;
+        if (status) filter.status = status;
+
+        // Date range filter
+        if (dateFrom || dateTo) {
+            filter.appointmentDate = {};
+            if (dateFrom) filter.appointmentDate.$gte = new Date(dateFrom);
+            if (dateTo) filter.appointmentDate.$lte = new Date(dateTo);
+        }
+
+        const appointments = await Appointment.find(filter)
+            .populate('patientId', 'firstName lastName email phone')
+            .populate('hospitalId', 'name city')
+            .populate('doctorId', 'firstName lastName specialty')
+            .populate('treatmentId', 'title category')
+            .sort({ appointmentDate: 1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Appointment.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: appointments.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: appointments
+        });
+    } catch (err) {
+        console.error('Get appointments error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get appointment by ID
+exports.getAppointmentById = async (req, res) => {
+    try {
+        const appointment = await Appointment.findById(req.params.id)
+            .populate('patientId', 'firstName lastName email phone dateOfBirth gender')
+            .populate('hospitalId', 'name city address phone')
+            .populate('doctorId', 'firstName lastName specialty experience')
+            .populate('treatmentId', 'title category description');
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                error: 'Appointment not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: appointment
+        });
+    } catch (err) {
+        console.error('Get appointment by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Create appointment
+exports.createAppointment = async (req, res) => {
+    try {
+        const appointment = await Appointment.create(req.body);
+
+        // Populate the created appointment
+        const populatedAppointment = await Appointment.findById(appointment._id)
+            .populate('patientId', 'firstName lastName email phone')
+            .populate('hospitalId', 'name city')
+            .populate('doctorId', 'firstName lastName specialty')
+            .populate('treatmentId', 'title category');
+
+        res.status(201).json({ success: true, data: populatedAppointment });
+    } catch (err) {
+        console.error('Create appointment error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Update appointment
+exports.updateAppointment = async (req, res) => {
+    try {
+        const appointment = await Appointment.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        )
+            .populate('patientId', 'firstName lastName email phone')
+            .populate('hospitalId', 'name city')
+            .populate('doctorId', 'firstName lastName specialty')
+            .populate('treatmentId', 'title category');
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                error: 'Appointment not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: appointment
+        });
+    } catch (err) {
+        console.error('Update appointment error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete appointment
+exports.deleteAppointment = async (req, res) => {
+    try {
+        const appointment = await Appointment.findByIdAndDelete(req.params.id);
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                error: 'Appointment not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Appointment deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete appointment error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get patient dashboard data
+exports.getPatientDashboard = async (req, res) => {
+    try {
+        const { patientId } = req.params;
+
+        // Verify patient exists
+        const patient = await Patient.findById(patientId).select('-password');
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                error: 'Patient not found'
+            });
+        }
+
+        const currentDate = new Date();
+
+        // Get upcoming appointments (from today onward)
+        const upcomingAppointments = await Appointment.find({
+            patientId,
+            appointmentDate: { $gte: currentDate },
+            status: { $in: ['scheduled', 'confirmed'] }
+        })
+            .populate('hospitalId', 'name city address phone')
+            .populate('doctorId', 'firstName lastName specialty')
+            .populate('treatmentId', 'title category')
+            .sort({ appointmentDate: 1 });
+
+        // Get past appointments (before today)
+        const pastAppointments = await Appointment.find({
+            patientId,
+            appointmentDate: { $lt: currentDate }
+        })
+            .populate('hospitalId', 'name city')
+            .populate('doctorId', 'firstName lastName specialty')
+            .populate('treatmentId', 'title category')
+            .sort({ appointmentDate: -1 })
+            .limit(10); // Limit to last 10 appointments
+
+        // Get appointment statistics
+        const totalAppointments = await Appointment.countDocuments({ patientId });
+        const completedAppointments = await Appointment.countDocuments({
+            patientId,
+            status: 'completed'
+        });
+        const upcomingCount = await Appointment.countDocuments({
+            patientId,
+            appointmentDate: { $gte: currentDate },
+            status: { $in: ['scheduled', 'confirmed'] }
+        });
+
+        res.json({
+            success: true,
+            data: {
+                patient,
+                upcomingAppointments,
+                pastAppointments,
+                stats: {
+                    total: totalAppointments,
+                    completed: completedAppointments,
+                    upcoming: upcomingCount
+                }
+            }
+        });
+    } catch (err) {
+        console.error('Get patient dashboard error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Patient registration (for admin adding patients)
+exports.registerPatient = async (req, res) => {
+    try {
+        const {
+            firstName,
+            lastName,
+            email,
+            phone,
+            password,
+            dateOfBirth,
+            gender,
+            address,
+            medicalHistory,
+            allergies,
+            emergencyContact,
+            insurance,
+            language
+        } = req.body;
+
+        // Check if patient already exists
+        const existingPatient = await Patient.findOne({ email });
+        if (existingPatient) {
+            return res.status(400).json({
+                success: false,
+                error: 'Patient with this email already exists'
+            });
+        }
+
+        // Create new patient
+        const patient = await Patient.create({
+            firstName,
+            lastName,
+            email,
+            phone,
+            password,
+            dateOfBirth: dateOfBirth || null,
+            gender: gender || undefined,
+            address: address || {},
+            medicalHistory: medicalHistory || [],
+            allergies: allergies || [],
+            emergencyContact: emergencyContact || {},
+            insurance: insurance || {},
+            language: language || 'EN',
+            verified: true // Admin-added patients are automatically verified
+        });
+
+        // Remove password from response
+        const patientResponse = patient.toObject();
+        delete patientResponse.password;
+
+        res.status(201).json({
+            success: true,
+            message: 'Patient created successfully',
+            data: patientResponse
+        });
+    } catch (err) {
+        console.error('Register patient error:', err);
+
+        if (err.name === 'ValidationError') {
+            const errors = Object.values(err.errors).map(el => el.message);
+            return res.status(400).json({
+                success: false,
+                error: errors.join(', ')
+            });
+        }
+
+        if (err.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Patient with this email already exists'
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Generate random password
+exports.generatePassword = async (req, res) => {
+    try {
+        const length = req.query.length || 12;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+        let password = "";
+
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+
+        res.json({
+            success: true,
+            data: { password }
+        });
+    } catch (err) {
+        console.error('Generate password error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};

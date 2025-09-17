@@ -113,6 +113,9 @@ const AdminDashboard = () => {
                 <Link to="/admin/head" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
                     <h3 className="font-semibold">Manage Admin Headings</h3>
                 </Link>
+                <Link to="/admin/patients" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                    <h3 className="font-semibold">Manage Patients</h3>
+                </Link>
             </div>
         </div>
     );

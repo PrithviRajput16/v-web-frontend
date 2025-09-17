@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import AboutUs from './components/admin/AdminAbout';
+import AddPatient from './components/admin/AdminAddPatient';
 import Bookings from "./components/admin/AdminAppointments";
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminDoctors from './components/admin/AdminDoctors';
@@ -12,6 +13,7 @@ import AdminHospitalTreatment from './components/admin/AdminHospitalTreatment';
 import Languages from "./components/admin/AdminLanguageManagement";
 import AdminLogin from './components/admin/AdminLogin';
 import User from "./components/admin/AdminPassword";
+import PatientManagement from './components/admin/AdminPatient';
 import AdminPatientOpinions from './components/admin/AdminPatientOpinions';
 import AdminProcedures from './components/admin/AdminProcedures';
 import AdminTreatment from './components/admin/AdminTreatment';
@@ -22,10 +24,18 @@ import Appointment from "./pages/Appointment";
 import BookingFlow from "./pages/BookingFlow";
 import Contact from "./pages/Contact";
 import DoctorDetails from "./pages/DoctorDetails";
+
+
+
+import PatientDashboardp from './components/patient/PatientDashboard';
+import PatientLogin from './components/patient/PatientLogin';
+import PatientRegister from './components/patient/PatientRegister';
+
 import Doctors from "./pages/Doctors";
 import Home from "./pages/Home";
 import HospitalDetails from "./pages/HospitalDetails";
 import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
+import PatientDashboard from './pages/PatientDashboard';
 import TreatmentDetails from "./pages/TreatmentDetails";
 import Treatments from "./pages/Treatments";
 export default function App() {
@@ -73,6 +83,22 @@ export default function App() {
           <Route path="/admin/lang" element={<Languages />} />
           <Route path="/admin/head" element={<Headings />} />
           {/* admin/bookings */}
+
+          {/* // Import the components */}
+
+
+          {/* // Add these routes */}
+          <Route path="/patient/login" element={<PatientLogin />} />
+          <Route path="/patient/register" element={<PatientRegister />} />
+          <Route path="/patient/dashboard" element={<PatientDashboardp />} />
+
+          <Route path="/admin/patients" element={<PatientManagement />} />
+          <Route path="/admin/patients/:patientId/dashboard" element={<PatientDashboard />} />
+
+          {/* import AddPatient from './components/AddPatient'; */}
+
+
+          <Route path="/admin/patients/add" element={<AddPatient />} />
         </Routes>
       </main>
       <Footer />

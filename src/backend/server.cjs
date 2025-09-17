@@ -67,7 +67,8 @@ app.use('/api/headings', headingRouter);
 // Your existing routes
 const uploadRoutes = require('./routes/upload.cjs');
 app.use('/api/upload', uploadRoutes);
-
+const patientRoutes = require('./routes/patient.cjs');
+app.use('/api/patients', patientRoutes);
 // Serve static files from public directory
 app.use(express.static('public'));
 
