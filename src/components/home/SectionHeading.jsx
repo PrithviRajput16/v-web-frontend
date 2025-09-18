@@ -19,22 +19,25 @@ export default function SectionHeading({ title, page = 'home', detail = 'nav', s
 
   useEffect(() => {
     const fetchHeadings = async () => {
+      if (!language) {
+        return;
+      }
       const response = await fetch(url_prefix + `/api/headings/${title}/${language}`);
       const result = await response.json();
       if (result.success) {
         // if (result.data.length > 0) {
-        console.log(result.data['home'])
+        // console.log(result.data['home'])
         if (page == 'home') {
 
           setHeadings(result.data['home'][0])
         } else if (page == 'page') {
           setHeadings(result.data['page'][0]);
-          console.log(result.data['page'][0])
+          // console.log(result.data['page'][0])
         } else if (page == 'detailPage') {
 
           setNavbarTabs(result.data.detailPage.navbar);
           setHeadings(result.data.detailPage.headings[0]);
-          console.log(headings)
+          // console.log(headings)
         }
 
         // }

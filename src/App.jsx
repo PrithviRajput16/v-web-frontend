@@ -31,6 +31,8 @@ import PatientDashboardp from './components/patient/PatientDashboard';
 import PatientLogin from './components/patient/PatientLogin';
 import PatientRegister from './components/patient/PatientRegister';
 
+import AdminBlogManagement from './components/admin/AdminBlog';
+
 import Doctors from "./pages/Doctors";
 import Home from "./pages/Home";
 import HospitalDetails from "./pages/HospitalDetails";
@@ -38,6 +40,13 @@ import Hospitals from "./pages/Hospitals"; // ✅ Import Hospitals page
 import PatientDashboard from './pages/PatientDashboard';
 import TreatmentDetails from "./pages/TreatmentDetails";
 import Treatments from "./pages/Treatments";
+
+
+// Add these imports
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+
+// Add these routes to your router configuration
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col text-gray-800">
@@ -60,7 +69,8 @@ export default function App() {
           <Route path="/book" element={<BookingFlow />} />
           <Route path="/treatments/:id" element={<TreatmentDetails />} />
 
-
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
 
           {/* Public routes */}
           <Route path="/admin" element={<AdminLogin />} />
@@ -96,7 +106,7 @@ export default function App() {
           <Route path="/admin/patients/:patientId/dashboard" element={<PatientDashboard />} />
 
           {/* import AddPatient from './components/AddPatient'; */}
-
+          <Route path="/admin/blogs" element={<AdminBlogManagement />} />
 
           <Route path="/admin/patients/add" element={<AddPatient />} />
         </Routes>

@@ -98,7 +98,17 @@ const {
 
     registerPatient,
 
-    generatePassword
+    generatePassword,
+
+    // Blog management functions
+    getBlogs,
+    getBlogById,
+    createBlog,
+    updateBlog,
+    deleteBlog,
+    approveBlogComment,
+    deleteBlogComment,
+    getBlogStats
 
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
@@ -253,7 +263,7 @@ router.get('/patients/:patientId/dashboard', protectAdmin, restrictTo('admin', '
 router.post('/patients/register', protectAdmin, restrictTo('admin', 'superadmin'), registerPatient);
 
 // Generate password route
-router.get('/patients/generate-password', protectAdmin, restrictTo('admin', 'superadmin'),generatePassword);
+router.get('/patients/generate-password', protectAdmin, restrictTo('admin', 'superadmin'), generatePassword);
 
 
 
@@ -262,5 +272,16 @@ router.post('/patients', protectAdmin, restrictTo('admin', 'superadmin'), create
 router.get('/patients/:id', protectAdmin, restrictTo('admin', 'superadmin'), getPatientById);
 router.put('/patients/:id', protectAdmin, restrictTo('admin', 'superadmin'), updatePatient);
 router.delete('/patients/:id', protectAdmin, restrictTo('superadmin'), deletePatient);
+
+
+router.get('/blogs', protectAdmin, getBlogs);
+router.get('/blogs/stats', protectAdmin, getBlogStats);
+router.get('/blogs/:id', protectAdmin, getBlogById);
+router.post('/blogs', protectAdmin, restrictTo('admin', 'superadmin'), createBlog);
+router.put('/blogs/:id', protectAdmin, restrictTo('admin', 'superadmin'), updateBlog);
+router.delete('/blogs/:id', protectAdmin, restrictTo('superadmin'), deleteBlog);
+router.patch('/blogs/:blogId/comments/:commentId/approve', protectAdmin, restrictTo('admin', 'superadmin'), approveBlogComment);
+router.delete('/blogs/:blogId/comments/:commentId', protectAdmin, restrictTo('admin', 'superadmin'), deleteBlogComment);
+
 
 module.exports = router;

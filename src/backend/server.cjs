@@ -20,6 +20,7 @@ const bookingsRouter = require('../backend/routes/bookings.cjs');
 const adminRoutes = require('./routes/admin.cjs');
 const languageRouter = require('./routes/language.cjs');
 const headingRouter = require('./routes/headings.cjs')
+const blogRouter = require('./routes/blog.cjs')
 
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/api/language', languageRouter);
 app.use('/api/admin', adminRoutes);
 app.use('/api/about', aboutRouter);
 app.use('/api/headings', headingRouter);
+app.use('/api/blogs', blogRouter);
 // Your existing routes
 const uploadRoutes = require('./routes/upload.cjs');
 app.use('/api/upload', uploadRoutes);

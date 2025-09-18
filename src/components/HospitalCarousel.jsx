@@ -183,7 +183,7 @@ subtitle={headings.sub}
           // title="Partner Hospitals"
           // subtitle="World-Class Healthcare Facilities"
           // // description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
-          title={'Hospital'}
+          title={'hospital'}
         />
 
         {/* Country tabs */}

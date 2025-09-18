@@ -2064,3 +2064,254 @@ exports.generatePassword = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+
+
+// ================= BLOG MANAGEMENT CONTROLLERS =================
+const Blog = require('../models/Blog.cjs');
+
+// Get all blogs for admin
+exports.getBlogs = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, status, search, category } = req.query;
+        const filter = {};
+
+        if (status && status !== 'all') filter.status = status;
+        if (search) {
+            filter.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { excerpt: { $regex: search, $options: 'i' } },
+                { content: { $regex: search, $options: 'i' } }
+            ];
+        }
+        if (category) filter.categories = category;
+
+        const blogs = await Blog.find(filter)
+            .populate('author', 'username email')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Blog.countDocuments(filter);
+
+        res.json({
+            success: true,
+            count: blogs.length,
+            total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: blogs
+        });
+    } catch (err) {
+        console.error('Get blogs error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get blog statistics
+exports.getBlogStats = async (req, res) => {
+    try {
+        const [
+            totalBlogs,
+            publishedBlogs,
+            draftBlogs,
+            archivedBlogs,
+            featuredBlogs,
+            totalComments,
+            pendingComments
+        ] = await Promise.all([
+            Blog.countDocuments(),
+            Blog.countDocuments({ status: 'published' }),
+            Blog.countDocuments({ status: 'draft' }),
+            Blog.countDocuments({ status: 'archived' }),
+            Blog.countDocuments({ isFeatured: true }),
+            Blog.aggregate([{ $project: { commentCount: { $size: '$comments' } } }, { $group: { _id: null, total: { $sum: '$commentCount' } } }]),
+            Blog.aggregate([{ $unwind: '$comments' }, { $match: { 'comments.isApproved': false } }, { $count: 'total' }])
+        ]);
+
+        res.json({
+            success: true,
+            data: {
+                total: totalBlogs,
+                published: publishedBlogs,
+                draft: draftBlogs,
+                archived: archivedBlogs,
+                featured: featuredBlogs,
+                totalComments: totalComments[0]?.total || 0,
+                pendingComments: pendingComments[0]?.total || 0
+            }
+        });
+    } catch (err) {
+        console.error('Get blog stats error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Get single blog by ID
+exports.getBlogById = async (req, res) => {
+    try {
+        const blog = await Blog.findById(req.params.id)
+            .populate('author', 'username email')
+            .populate('comments.patient', 'name email');
+
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                error: 'Blog not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: blog
+        });
+    } catch (err) {
+        console.error('Get blog by id error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Create new blog
+exports.createBlog = async (req, res) => {
+    try {
+        const blogData = {
+            ...req.body,
+            author: req.admin.id // Set the current admin as author
+        };
+
+        const blog = await Blog.create(blogData);
+        const populatedBlog = await Blog.findById(blog._id).populate('author', 'username email');
+
+        res.status(201).json({
+            success: true,
+            data: populatedBlog
+        });
+    } catch (err) {
+        console.error('Create blog error:', err);
+
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                error: Object.values(err.errors).map(e => e.message).join(', ')
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Update blog
+exports.updateBlog = async (req, res) => {
+    try {
+        const blog = await Blog.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        ).populate('author', 'username email');
+
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                error: 'Blog not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: blog
+        });
+    } catch (err) {
+        console.error('Update blog error:', err);
+
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                error: Object.values(err.errors).map(e => e.message).join(', ')
+            });
+        }
+
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete blog
+exports.deleteBlog = async (req, res) => {
+    try {
+        const blog = await Blog.findByIdAndDelete(req.params.id);
+
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                error: 'Blog not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Blog deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete blog error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Approve blog comment
+exports.approveBlogComment = async (req, res) => {
+    try {
+        const { blogId, commentId } = req.params;
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                error: 'Blog not found'
+            });
+        }
+
+        const comment = blog.comments.id(commentId);
+        if (!comment) {
+            return res.status(404).json({
+                success: false,
+                error: 'Comment not found'
+            });
+        }
+
+        comment.isApproved = true;
+        await blog.save();
+
+        res.json({
+            success: true,
+            message: 'Comment approved successfully',
+            data: comment
+        });
+    } catch (err) {
+        console.error('Approve blog comment error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+// Delete blog comment
+exports.deleteBlogComment = async (req, res) => {
+    try {
+        const { blogId, commentId } = req.params;
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                error: 'Blog not found'
+            });
+        }
+
+        blog.comments.pull(commentId);
+        await blog.save();
+
+        res.json({
+            success: true,
+            message: 'Comment deleted successfully'
+        });
+    } catch (err) {
+        console.error('Delete blog comment error:', err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
