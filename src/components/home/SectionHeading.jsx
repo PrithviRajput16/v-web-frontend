@@ -5,7 +5,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 
 
 // export default function SectionHeading({ title, subtitle, description, center = false }) {
-export default function SectionHeading({ title, page = 'home', detail = 'nav', subtitle = '', description = '', lang = 'EN', center = false, activeTab, setActiveTab }) {
+export default function SectionHeading({ title, page = 'home', detail = 'nav', subtitle = '', description = '', lang = 'EN', center = false, activeTab, setActiveTab, itemNo=0 }) {
   const [language] = useLanguage();
   const [navbarTabs, setNavbarTabs] = useState(['Not found for the selected language']);
 
@@ -103,5 +103,11 @@ export default function SectionHeading({ title, page = 'home', detail = 'nav', s
           </div>
         </div>
       );
+  }
+  if (detail = 'homenav') {
+    {console.log(navbarTabs);}
+    return (
+    navbarTabs[itemNo]
+    )
   }
 }

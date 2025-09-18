@@ -445,7 +445,7 @@ const TreatmentDetails = () => {
                 </div>
 
                 {/* Navigation Tabs */}
-                {/* <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
+                <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
                     <div className="flex space-x-8 border-b overflow-x-auto">
 
                         {['overview', 'hospitals', 'doctors', 'procedures'].map((tab) => (
@@ -461,15 +461,15 @@ const TreatmentDetails = () => {
                             </button>
                         ))}
                     </div>
-                </div> */}
+                </div>
 
-                <SectionHeading
+                {/* <SectionHeading
                     title="treatment"
                     page="detailPage"
                     detail="nav"
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
-                />
+                /> */}
 
                 {/* Tab Content */}
                 {activeTab === 'overview' && (
