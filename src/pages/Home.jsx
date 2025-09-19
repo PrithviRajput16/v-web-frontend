@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import Hero from "../components/Hero";
+import Blog from '../components/home/Blog';
 import FAQ from "../components/home/FAQ";
 import OurServices from "../components/home/OurServices";
 import PatientOpinions from "../components/home/PatientOpinions";
@@ -41,6 +41,8 @@ export default function Home() {
       <OurServices />
 
       <PatientOpinions />
+
+      <Blog />
 
       <FAQ />
 

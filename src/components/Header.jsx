@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { FiMenu, FiPhone, FiX } from "react-icons/fi";
+import { FiMenu, FiX } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
 import LanguageDropdown from "./LanguageDropdown";
+import SectionHeading from "./home/SectionHeading";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -49,7 +50,14 @@ export default function Header() {
                 : "text-darktext hover:text-primary transition"
             }
           >
-            Home
+            <SectionHeading 
+            title = 'navbar'
+            page="detailPage"
+            detail="homenav"
+            itemNo={0}
+            />
+
+
           </NavLink>
           <NavLink
             to="/treatments"
@@ -59,7 +67,13 @@ export default function Header() {
                 : "text-darktext hover:text-primary transition"
             }
           >
-            Treatments
+            {/* Treatments */}
+            <SectionHeading 
+            title = 'navbar'
+            page="detailPage"
+            detail="homenav"
+            itemNo={1}
+            />
           </NavLink>
           <NavLink
             to="/doctors"
@@ -69,7 +83,13 @@ export default function Header() {
                 : "text-darktext hover:text-primary transition"
             }
           >
-            Doctors
+            {/* Doctors */}
+            <SectionHeading 
+            title = 'navbar'
+            page="detailPage"
+            detail="homenav"
+            itemNo={2}
+            />
           </NavLink>
           <NavLink
             to="/hospitals"
@@ -79,7 +99,13 @@ export default function Header() {
                 : "text-darktext hover:text-primary transition"
             }
           >
-            Hospitals
+            {/* Hospitals */}
+            <SectionHeading 
+            title = 'navbar'
+            page="detailPage"
+            detail="homenav"
+            itemNo={3}
+            />
           </NavLink>
           <NavLink
             to="/about"
@@ -89,24 +115,46 @@ export default function Header() {
                 : "text-darktext hover:text-primary transition"
             }
           >
-            About
+            {/* About */}
+            <SectionHeading 
+            title = 'navbar'
+            page="detailPage"
+            detail="homenav"
+            itemNo={4}
+            />
+          </NavLink>
+          <NavLink
+            to="/patient/login"
+            className={({ isActive }) =>
+              isActive
+                ? "text-primary font-semibold"
+                : "text-darktext hover:text-primary transition"
+            }
+          >
+            {/* Log In */}
+            <SectionHeading 
+            title = 'navbar'
+            page="detailPage"
+            detail="homenav"
+            itemNo={5}
+            />
           </NavLink>
         </nav>
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-4">
           <Link
-            to="/appointment"
+            to={`/book`}
             className="px-4 py-2 rounded-md bg-primary text-white font-medium shadow-sm hover:scale-[1.02] transition-transform"
           >
             Book
           </Link>
-          <a
+          {/* <a
             href="tel:+911234567890"
             className="flex items-center gap-2 text-lighttext"
           >
             <FiPhone /> +91 12345 67890
-          </a>
+          </a> */}
           <LanguageDropdown />
         </div>
 
@@ -118,11 +166,11 @@ export default function Header() {
         >
           {open ? <FiX size={22} /> : <FiMenu size={22} />}
         </button>
-        <button
+        {/* <button
 
           onClick={() => console.log(language)}>
           click
-        </button>
+        </button> */}
       </div>
 
       {/* Mobile Menu */}
@@ -149,6 +197,7 @@ export default function Header() {
             <NavLink to="/about" onClick={() => setOpen(false)}>
               About
             </NavLink>
+
           </div>
         </motion.div>
       )}

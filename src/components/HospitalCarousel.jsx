@@ -114,9 +114,10 @@ const HospitalCarousel = () => { // Removed hospitals prop
             // title="Partner Hospitals"
             // subtitle="World-Class Healthcare Facilities"
             // description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
-            title={headings.title}
-            subtitle={headings.sub}
-            description={headings.desc}
+            // title={headings.title}
+            // subtitle={headings.sub}
+            // description={headings.desc}
+            title='hospital'
 
           />
           <div className="flex justify-center mb-8">
@@ -179,9 +180,10 @@ subtitle={headings.sub}
       <div className="container mx-auto px-4">
         <SectionHeading
           center={true}
-          title="Partner Hospitals"
-          subtitle="World-Class Healthcare Facilities"
-          // description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
+          // title="Partner Hospitals"
+          // subtitle="World-Class Healthcare Facilities"
+          // // description="We collaborate with accredited hospitals that offer state-of-the-art technology and expert medical staff"
+          title={'hospital'}
         />
 
         {/* Country tabs */}

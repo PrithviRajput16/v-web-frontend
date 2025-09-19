@@ -7,12 +7,13 @@ import SectionHeading from './home/SectionHeading';
 export default function Services() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const [headings, setHeadings] 
   const [error, setError] = useState(null);
   const [language] = useLanguage();
   const [headings, setHeadings] = useState({
-    'title': 'Not Available For Selected Language',
-    'sub': '',
-    'desc': ''
+    'heading': 'Not Available For Selected Language',
+    'subheading': '',
+    'description': ''
   });
 
   useEffect(() => {
@@ -47,11 +48,11 @@ export default function Services() {
             console.log('Setting aboutData:', dataToSet);
             setServices(dataToSet);
             console.log(services)
-            setHeadings({
-              title: dataToSet[0].htitle,
-              sub: dataToSet[0].hsubtitle,
-              desc: dataToSet[0].hdesc
-            })
+            // setHeadings({
+            //   title: dataToSet[0].htitle,
+            //   sub: dataToSet[0].hsubtitle,
+            //   desc: dataToSet[0].hdesc
+            // })
           }
         }
       } catch (err) {
@@ -67,7 +68,18 @@ export default function Services() {
       }
     };
 
+    const fetchHeadings = async () => {
+      const response = await fetch(url_prefix + '/api/headings/treatment/' + language);
+      const result = await response.json();
+      if (result.success) {
+        console.log(result.data['home'])
+        // setHeadings(result.data['home'][0])
+
+      }
+    }
+
     fetchServices();
+    fetchHeadings();
   }, [language]);
 
   if (loading) {
@@ -105,9 +117,10 @@ export default function Services() {
           // title="Our Medical Services"
           // subtitle="Specialized Treatments"
           // description="We offer a wide range of medical treatments and procedures with the highest standards of care"
-          title={headings.title}
-          subtitle={headings.sub}
-          description={headings.desc}
+          title='treatment'
+          subtitle={headings.subheading}
+          description={headings.description}
+          language={language}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4  mx-auto">
           {services.map((service) => (

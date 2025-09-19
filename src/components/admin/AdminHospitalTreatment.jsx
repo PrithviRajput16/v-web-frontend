@@ -6,6 +6,7 @@ import url_prefix from "../../data/variable";
 const HospitalTreatmentManagement = () => {
     const [treatments, setTreatments] = useState([]);
     const [hospitals, setHospitals] = useState([]);
+    const [allHospitals, setAllHospitals] = useState([]); // Store all hospitals initially
     const [allTreatments, setAllTreatments] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
@@ -16,6 +17,7 @@ const HospitalTreatmentManagement = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [currentTreatment, setCurrentTreatment] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [hospitalsLoading, setHospitalsLoading] = useState(false);
     const navigate = useNavigate();
     const limit = 10000;
 
@@ -48,7 +50,6 @@ const HospitalTreatmentManagement = () => {
             if (result.success) {
                 console.log('Fetched languages:', result.data);
                 setLanguages(result.data);
-
             } else {
                 console.error('Failed to fetch languages:', result.error);
                 alert('Failed to fetch languages: ' + result.error);
@@ -58,7 +59,6 @@ const HospitalTreatmentManagement = () => {
             alert('Error fetching languages');
         }
     };
-
 
     // Fetch hospital treatments
     const fetchHospitalTreatments = async (pageNum = 1, searchQuery = '') => {
@@ -95,8 +95,8 @@ const HospitalTreatmentManagement = () => {
         }
     };
 
-    // Fetch hospitals for dropdown
-    const fetchHospitals = async () => {
+    // Fetch all hospitals
+    const fetchAllHospitals = async () => {
         try {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
@@ -106,11 +106,25 @@ const HospitalTreatmentManagement = () => {
             });
             const result = await response.json();
             if (result.success) {
-                setHospitals(result.data);
+                setAllHospitals(result.data);
+                setHospitals(result.data); // Initially set hospitals to all hospitals
             }
         } catch (err) {
             console.error('Error fetching hospitals:', err);
         }
+    };
+
+    // Filter hospitals by language
+    const filterHospitalsByLanguage = (language) => {
+        if (!language || language === '') {
+            setHospitals(allHospitals);
+            return;
+        }
+
+        const filteredHospitals = allHospitals.filter(
+            hospital => hospital.language?.toLowerCase() === language?.toLowerCase()
+        );
+        setHospitals(filteredHospitals);
     };
 
     // Fetch all treatments for dropdown
@@ -134,6 +148,12 @@ const HospitalTreatmentManagement = () => {
     // Input handler
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'language') {
+            // Filter hospitals based on selected language
+            filterHospitalsByLanguage(value);
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -195,6 +215,9 @@ const HospitalTreatmentManagement = () => {
             language: treatment.language,
             isActive: treatment.isActive
         });
+
+        // Filter hospitals based on the treatment's language
+        filterHospitalsByLanguage(treatment.language);
         setIsModalOpen(true);
     };
 
@@ -291,7 +314,7 @@ const HospitalTreatmentManagement = () => {
             navigate('/admin');
         } else {
             fetchHospitalTreatments();
-            fetchHospitals();
+            fetchAllHospitals();
             fetchAllTreatments();
             fetchLanguages();
         }
@@ -325,6 +348,7 @@ const HospitalTreatmentManagement = () => {
                     languages={languages}
                     allTreatments={allTreatments}
                     title="Add New Hospital Treatment"
+                    hospitalsLoading={hospitalsLoading}
                 />
             )}
 
@@ -339,6 +363,7 @@ const HospitalTreatmentManagement = () => {
                     languages={languages}
                     allTreatments={allTreatments}
                     title="Update Hospital Treatment"
+                    hospitalsLoading={hospitalsLoading}
                 />
             )}
 
@@ -437,6 +462,7 @@ const HospitalTreatmentForm = ({
     hospitals,
     allTreatments,
     languages,
+    hospitalsLoading,
     title
 }) => {
     return (
@@ -465,20 +491,27 @@ const HospitalTreatmentForm = ({
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Hospital</label>
-                            <select
-                                name="hospital"
-                                value={formData.hospital}
-                                onChange={handleInputChange}
-                                required
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="">Select Hospital</option>
-                                {hospitals.map(hospital => (
-                                    <option key={hospital._id} value={hospital._id}>
-                                        {hospital.name}
-                                    </option>
-                                ))}
-                            </select>
+                            {hospitalsLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                                    <span>Loading hospitals...</span>
+                                </div>
+                            ) : (
+                                <select
+                                    name="hospital"
+                                    value={formData.hospital}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                >
+                                    <option value="">Select Hospital</option>
+                                    {hospitals.map(hospital => (
+                                        <option key={hospital._id} value={hospital._id}>
+                                            {hospital.name} ({hospital.language})
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Treatment</label>

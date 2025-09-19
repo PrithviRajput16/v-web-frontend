@@ -12,6 +12,7 @@ import {
     FaStar
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import SectionHeading from "../components/home/SectionHeading";
 import ProcedureCostCard from "../components/ProcedureCostCard";
 import url_prefix from "../data/variable";
 import { useLanguage } from '../hooks/useLanguage';
@@ -461,6 +462,14 @@ const TreatmentDetails = () => {
                         ))}
                     </div>
                 </div>
+
+                {/* <SectionHeading
+                    title="treatment"
+                    page="detailPage"
+                    detail="nav"
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                /> */}
 
                 {/* Tab Content */}
                 {activeTab === 'overview' && (

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ImageUpload from './ImageUpload';
 import url_prefix from "../../data/variable";
+import ImageUpload from './ImageUpload';
 
 // Procedure Cost Management Component
 const ProcedureCostManagement = () => {
     const [procedures, setProcedures] = useState([]);
+    const [languages, setLanguages] = useState([]);
     const [treatments, setTreatments] = useState([]);
+    const [allTreatments, setAllTreatments] = useState([]); // Store all treatments initially
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
@@ -15,6 +17,7 @@ const ProcedureCostManagement = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [currentProcedure, setCurrentProcedure] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [treatmentsLoading, setTreatmentsLoading] = useState(false);
     const navigate = useNavigate();
     const limit = 10;
 
@@ -34,6 +37,7 @@ const ProcedureCostManagement = () => {
         icon: '🦴',
         basePrice: 0,
         category: 'Orthopedics',
+        language: 'EN',
         duration: 60,
         complexity: 'Medium',
         recoveryTime: 'Varies',
@@ -41,6 +45,31 @@ const ProcedureCostManagement = () => {
     };
 
     const [formData, setFormData] = useState(initialFormData);
+
+    // Fetch languages
+    const fetchLanguages = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                navigate('/admin');
+                return;
+            }
+            const response = await fetch(`${url_prefix}/api/language/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Fetched languages:', result.data);
+                setLanguages(result.data);
+            } else {
+                console.error('Failed to fetch languages:', result.error);
+                alert('Failed to fetch languages: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error fetching languages:', err);
+            alert('Error fetching languages');
+        }
+    };
 
     // Fetch procedure costs
     const fetchProcedureCosts = async (pageNum = 1, searchQuery = '') => {
@@ -77,8 +106,8 @@ const ProcedureCostManagement = () => {
         }
     };
 
-    // Fetch treatments for dropdown
-    const fetchTreatments = async () => {
+    // Fetch all treatments
+    const fetchAllTreatments = async () => {
         try {
             const token = localStorage.getItem('adminToken');
             if (!token) return;
@@ -88,16 +117,36 @@ const ProcedureCostManagement = () => {
             });
             const result = await response.json();
             if (result.success) {
-                setTreatments(result.data);
+                setAllTreatments(result.data);
+                setTreatments(result.data); // Initially set treatments to all treatments
             }
         } catch (err) {
             console.error('Error fetching treatments:', err);
         }
     };
 
+    // Filter treatments by language
+    const filterTreatmentsByLanguage = (language) => {
+        if (!language || language === '') {
+            setTreatments(allTreatments);
+            return;
+        }
+
+        const filteredTreatments = allTreatments.filter(
+            treatment => treatment.language?.toLowerCase() === language?.toLowerCase()
+        );
+        setTreatments(filteredTreatments);
+    };
+
     // Input handler
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'language') {
+            // Filter treatments based on selected language
+            filterTreatmentsByLanguage(value);
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -152,12 +201,16 @@ const ProcedureCostManagement = () => {
             description: procedure.description || '',
             icon: procedure.icon || '🦴',
             basePrice: procedure.basePrice || 0,
+            language: procedure.language,
             category: procedure.category || 'Orthopedics',
             duration: procedure.duration || 60,
             complexity: procedure.complexity || 'Medium',
             recoveryTime: procedure.recoveryTime || 'Varies',
             isActive: procedure.isActive
         });
+
+        // Filter treatments based on the procedure's language
+        filterTreatmentsByLanguage(procedure.language);
         setIsModalOpen(true);
     };
 
@@ -252,7 +305,8 @@ const ProcedureCostManagement = () => {
             navigate('/admin');
         } else {
             fetchProcedureCosts();
-            fetchTreatments();
+            fetchAllTreatments();
+            fetchLanguages();
         }
     }, [navigate]);
 
@@ -282,8 +336,10 @@ const ProcedureCostManagement = () => {
                     }}
                     treatments={treatments}
                     categories={categories}
+                    languages={languages}
                     complexityLevels={complexityLevels}
                     title="Add New Procedure Cost"
+                    treatmentsLoading={treatmentsLoading}
                 />
             )}
 
@@ -294,10 +350,12 @@ const ProcedureCostManagement = () => {
                     handleInputChange={handleInputChange}
                     handleSubmit={handleUpdateProcedureCost}
                     onClose={() => setIsModalOpen(false)}
+                    languages={languages}
                     treatments={treatments}
                     categories={categories}
                     complexityLevels={complexityLevels}
                     title="Update Procedure Cost"
+                    treatmentsLoading={treatmentsLoading}
                 />
             )}
 
@@ -354,7 +412,7 @@ const ProcedureCostManagement = () => {
                                         </button>
                                         <button
                                             onClick={() => handleDeleteProcedureCost(proc._id)}
-                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                                         >
                                             Delete
                                         </button>
@@ -393,7 +451,9 @@ const ProcedureCostForm = ({
     onClose,
     treatments,
     categories,
+    languages,
     complexityLevels,
+    treatmentsLoading,
     title
 }) => {
     return (
@@ -402,6 +462,23 @@ const ProcedureCostForm = ({
                 <h2 className="text-xl font-semibold mb-4">{title}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Language</label>
+                            <select
+                                name="language"
+                                value={formData.language}
+                                onChange={handleInputChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+                            >
+                                <option value="">Select a language</option>
+                                {languages.map(lang => (
+                                    <option key={lang._id} value={lang.shortCode}>
+                                        {lang.fullName} ({lang.shortCode})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Title</label>
                             <input
@@ -417,20 +494,27 @@ const ProcedureCostForm = ({
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Treatment</label>
-                            <select
-                                name="treatment"
-                                value={formData.treatment}
-                                onChange={handleInputChange}
-                                required
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="">Select Treatment</option>
-                                {treatments.map(treatment => (
-                                    <option key={treatment._id} value={treatment._id}>
-                                        {treatment.title}
-                                    </option>
-                                ))}
-                            </select>
+                            {treatmentsLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                                    <span>Loading treatments...</span>
+                                </div>
+                            ) : (
+                                <select
+                                    name="treatment"
+                                    value={formData.treatment}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                >
+                                    <option value="">Select Treatment</option>
+                                    {treatments.map(treatment => (
+                                        <option key={treatment._id} value={treatment._id}>
+                                            {treatment.title} ({treatment.language})
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
                         <ImageUpload
                             onImageUpload={(imageUrl) => {

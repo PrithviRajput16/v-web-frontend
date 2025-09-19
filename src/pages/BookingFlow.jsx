@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import url_prefix from "../data/variable";
 
 export default function BookingFlow() {
   const { hospitalId, doctorId } = useParams();
-
-  console.log("Hospital ID:", hospitalId);
-  console.log("Doctor ID:", doctorId);
+  const navigate = useNavigate();
+  
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hospitals, setHospitals] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [patientData, setPatientData] = useState(null);
+  const [bookingType, setBookingType] = useState(""); // "appointment" or "query"
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,9 +23,29 @@ export default function BookingFlow() {
     hospitalId: hospitalId || "",
     date: "",
     time: "",
-    message: ""
+    message: "",
+    type: "appointment" // Default to appointment
   });
 
+  // Check if patient is logged in
+  useEffect(() => {
+    const token = localStorage.getItem('patientToken');
+    const patient = localStorage.getItem('patientData');
+    
+    if (token && patient) {
+      setIsLoggedIn(true);
+      setPatientData(JSON.parse(patient));
+      
+      // Pre-fill form with patient data
+      const patientInfo = JSON.parse(patient);
+      setFormData(prev => ({
+        ...prev,
+        name: `${patientInfo.firstName} ${patientInfo.lastName}`,
+        email: patientInfo.email,
+        phone: patientInfo.phone
+      }));
+    }
+  }, []);
 
   // Fetch hospitals and doctors
   useEffect(() => {
@@ -35,8 +57,6 @@ export default function BookingFlow() {
         if (hospitalsResult.success) {
           setHospitals(hospitalsResult.data);
         }
-
-
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -46,8 +66,6 @@ export default function BookingFlow() {
   }, []);
 
   useEffect(() => {
-
-
     if (hospitalId) {
       // Fetch doctors for the pre-filled hospital
       fetchDoctors(hospitalId);
@@ -69,14 +87,8 @@ export default function BookingFlow() {
           ? `${selectedDoctor.firstName} ${selectedDoctor.lastName}`
           : prev.doctor,
       }));
-
-
     }
-
-
-
   }, [hospitalId, doctorId, hospitals, doctors]);
-
 
   const fetchDoctors = async (hId) => {
     try {
@@ -89,10 +101,7 @@ export default function BookingFlow() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-
   };
-
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -126,19 +135,42 @@ export default function BookingFlow() {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
+  const handleLoginRedirect = () => {
+    // Store current booking data to restore after login
+    sessionStorage.setItem('bookingData', JSON.stringify(formData));
+    sessionStorage.setItem('bookingStep', step.toString());
+    navigate('/patient/login');
+  };
+
+  const handleSignupRedirect = () => {
+    // Store current booking data to restore after signup
+    sessionStorage.setItem('bookingData', JSON.stringify(formData));
+    sessionStorage.setItem('bookingStep', step.toString());
+    navigate('/patient/register');
+  };
+
+  const handleBookingTypeSelect = (type) => {
+    setBookingType(type);
+    setFormData(prev => ({ ...prev, type }));
+    nextStep();
+  };
+
   const handleConfirmBooking = async () => {
     setLoading(true);
     try {
-      // Prepare data for backend - send IDs instead of names
+      // Prepare data for backend
       const bookingData = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        doctor: formData.doctorId, // Send doctor ID
-        hospital: formData.hospitalId, // Send hospital ID
-        date: formData.date,
-        time: formData.time,
-        message: formData.message
+        doctor: formData.doctorId,
+        hospital: formData.hospitalId,
+        date: formData.type === 'appointment' ? formData.date : null,
+        time: formData.type === 'appointment' ? formData.time : null,
+        message: formData.message,
+        type: formData.type,
+        status: formData.type === 'appointment' ? 'scheduled' : 'query',
+        patientId: isLoggedIn ? patientData.id : null
       };
 
       const response = await fetch(url_prefix + '/api/booking/', {
@@ -155,26 +187,12 @@ export default function BookingFlow() {
         throw new Error(result.message || 'Failed to create booking');
       }
 
-      // Send WhatsApp notification
-      //       const whatsappMessage = `
-      // *NEW APPOINTMENT BOOKING* 🏥
-
-      // *Patient Name:* ${formData.name}
-      // *Email:* ${formData.email}
-      // *Phone:* ${formData.phone}
-      // *Doctor:* ${formData.doctor}
-      // *Hospital:* ${formData.hospital}
-      // *Date:* ${formData.date}
-      // *Time:* ${formData.time}
-      // *Message:* ${formData.message || "None"}
-
-      // *Booking Time:* ${new Date().toLocaleString()}
-      //       `.trim();
-
-      //       const whatsappLink = `https://wa.me/919876543210?text=${encodeURIComponent(whatsappMessage)}`;
-      //       window.open(whatsappLink, '_blank');
-
-      alert("Booking Confirmed ✅\nYour appointment has been scheduled successfully!");
+      // Show appropriate success message
+      if (formData.type === 'appointment') {
+        alert("Booking Confirmed ✅\nYour appointment has been scheduled successfully!");
+      } else {
+        alert("Query Submitted ✅\nWe'll get back to you soon with more information!");
+      }
 
       // Reset form
       setFormData({
@@ -187,23 +205,38 @@ export default function BookingFlow() {
         hospitalId: "",
         date: "",
         time: "",
-        message: ""
+        message: "",
+        type: "appointment"
       });
       setStep(1);
+      setBookingType("");
 
     } catch (error) {
       console.error("Booking error:", error);
-      alert("There was an issue processing your booking. Please try again.");
+      alert("There was an issue processing your request. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Restore booking data if returning from login/signup
+  useEffect(() => {
+    const savedBookingData = sessionStorage.getItem('bookingData');
+    const savedStep = sessionStorage.getItem('bookingStep');
+    
+    if (savedBookingData && savedStep) {
+      setFormData(JSON.parse(savedBookingData));
+      setStep(parseInt(savedStep));
+      sessionStorage.removeItem('bookingData');
+      sessionStorage.removeItem('bookingStep');
+    }
+  }, []);
+
   return (
     <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-xl mt-10">
       {/* Progress Steps */}
       <div className="flex justify-between mb-6">
-        {["Personal Info", "Appointment Details", "Confirm"].map((label, i) => (
+        {["Booking Type", "Details", "Confirm"].map((label, i) => (
           <div
             key={i}
             className={`flex-1 text-center text-sm font-medium ${step === i + 1 ? "text-teal-600" : "text-gray-400"
@@ -220,53 +253,99 @@ export default function BookingFlow() {
         ))}
       </div>
 
-      {/* Step 1: Personal Info */}
+      {/* Step 1: Booking Type Selection */}
       {step === 1 && (
         <div>
-          <h2 className="text-xl font-bold mb-4">Personal Information</h2>
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name *"
-            className="w-full border p-2 rounded mb-3"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email *"
-            className="w-full border p-2 rounded mb-3"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Phone Number *"
-            className="w-full border p-2 rounded mb-3"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-          <button
-            onClick={nextStep}
-            className="w-full bg-teal-600 text-white p-2 rounded hover:bg-teal-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={!formData.name || !formData.email || !formData.phone}
-          >
-            Next →
-          </button>
+          <h2 className="text-xl font-bold mb-6 text-center">What would you like to do?</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div 
+              className="border-2 border-teal-500 rounded-lg p-4 text-center cursor-pointer hover:bg-teal-50 transition-colors"
+              onClick={() => handleBookingTypeSelect("appointment")}
+            >
+              <div className="text-3xl mb-2">📅</div>
+              <h3 className="font-semibold mb-2">Book Appointment</h3>
+              <p className="text-sm text-gray-600">Schedule a medical consultation</p>
+              {!isLoggedIn && (
+                <div className="mt-2 text-xs text-orange-600">Login required</div>
+              )}
+            </div>
+            
+            <div 
+              className="border-2 border-blue-500 rounded-lg p-4 text-center cursor-pointer hover:bg-blue-50 transition-colors"
+              onClick={() => handleBookingTypeSelect("query")}
+            >
+              <div className="text-3xl mb-2">❓</div>
+              <h3 className="font-semibold mb-2">Send Query</h3>
+              <p className="text-sm text-gray-600">Ask questions about treatments or services</p>
+              <div className="mt-2 text-xs text-green-600">No login required</div>
+            </div>
+          </div>
+
+          {!isLoggedIn && (
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <p className="text-sm text-gray-600 mb-2">
+                <strong>Already have an account?</strong> Login to access your medical history and faster booking.
+              </p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleLoginRedirect}
+                  className="flex-1 bg-teal-600 text-white py-2 rounded hover:bg-teal-700 transition"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={handleSignupRedirect}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                >
+                  Sign Up
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Step 2: Appointment Details */}
+      {/* Step 2: Details */}
       {step === 2 && (
         <div>
-          <h2 className="text-xl font-bold mb-4">Appointment Details</h2>
+          <h2 className="text-xl font-bold mb-4">
+            {bookingType === "appointment" ? "Appointment Details" : "Query Details"}
+          </h2>
 
-          {/* Hospital Dropdown */}
+          {/* Personal Information */}
+          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+            <h3 className="font-semibold mb-2">Personal Information</h3>
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name *"
+              className="w-full border p-2 rounded mb-3"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email *"
+              className="w-full border p-2 rounded mb-3"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number *"
+              className="w-full border p-2 rounded mb-3"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Hospital and Doctor Selection */}
           <div className="mb-3">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Select Hospital *
@@ -287,7 +366,6 @@ export default function BookingFlow() {
             </select>
           </div>
 
-          {/* Doctor Dropdown */}
           <div className="mb-3">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Select Doctor *
@@ -317,31 +395,47 @@ export default function BookingFlow() {
             )}
           </div>
 
+          {/* Date and Time (only for appointments) */}
+          {bookingType === "appointment" && (
+            <>
+              <input
+                type="date"
+                name="date"
+                className="w-full border p-2 rounded mb-3"
+                value={formData.date}
+                onChange={handleChange}
+                required
+                min={new Date().toISOString().split('T')[0]}
+              />
+              <input
+                type="time"
+                name="time"
+                className="w-full border p-2 rounded mb-3"
+                value={formData.time}
+                onChange={handleChange}
+                required
+              />
+            </>
+          )}
 
-          <input
-            type="date"
-            name="date"
-            className="w-full border p-2 rounded mb-3"
-            value={formData.date}
-            onChange={handleChange}
-            required
-            min={new Date().toISOString().split('T')[0]}
-          />
-          <input
-            type="time"
-            name="time"
-            className="w-full border p-2 rounded mb-3"
-            value={formData.time}
-            onChange={handleChange}
-            required
-          />
           <textarea
             name="message"
-            placeholder="Additional message (optional)"
+            placeholder={bookingType === "appointment" ? "Additional message (optional)" : "Please describe your query *"}
             className="w-full border p-2 rounded mb-3 h-20 resize-none"
             value={formData.message}
             onChange={handleChange}
+            required={bookingType === "query"}
           />
+
+          {bookingType === "appointment" && !isLoggedIn && (
+            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg mb-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Note:</strong> You'll need to login or create an account to confirm your appointment. 
+                This helps us keep your medical records secure.
+              </p>
+            </div>
+          )}
+
           <div className="flex justify-between">
             <button
               onClick={prevStep}
@@ -352,7 +446,10 @@ export default function BookingFlow() {
             <button
               onClick={nextStep}
               className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-              disabled={!formData.doctorId || !formData.hospitalId || !formData.date || !formData.time}
+              disabled={!formData.name || !formData.email || !formData.phone || 
+                       !formData.doctorId || !formData.hospitalId || 
+                       (bookingType === "appointment" && (!formData.date || !formData.time)) ||
+                       (bookingType === "query" && !formData.message)}
             >
               Next →
             </button>
@@ -363,21 +460,56 @@ export default function BookingFlow() {
       {/* Step 3: Confirmation */}
       {step === 3 && (
         <div>
-          <h2 className="text-xl font-bold mb-4">Confirm Booking</h2>
+          <h2 className="text-xl font-bold mb-4">
+            Confirm {bookingType === "appointment" ? "Appointment" : "Query"}
+          </h2>
+          
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
+            <div className="mb-3">
+              <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded uppercase mb-2">
+                {bookingType === "appointment" ? "APPOINTMENT" : "QUERY"}
+              </span>
+            </div>
+            
             <ul className="space-y-2 text-gray-700">
               <li><strong>Name:</strong> {formData.name}</li>
               <li><strong>Email:</strong> {formData.email}</li>
               <li><strong>Phone:</strong> {formData.phone}</li>
               <li><strong>Hospital:</strong> {formData.hospital}</li>
               <li><strong>Doctor:</strong> {formData.doctor}</li>
-              <li><strong>Date:</strong> {formData.date}</li>
-              <li><strong>Time:</strong> {formData.time}</li>
+              {bookingType === "appointment" && (
+                <>
+                  <li><strong>Date:</strong> {formData.date}</li>
+                  <li><strong>Time:</strong> {formData.time}</li>
+                </>
+              )}
               {formData.message && (
                 <li><strong>Message:</strong> {formData.message}</li>
               )}
             </ul>
           </div>
+
+          {bookingType === "appointment" && !isLoggedIn && (
+            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg mb-4">
+              <p className="text-sm text-yellow-800 mb-2">
+                <strong>Final step:</strong> Please login or create an account to confirm your appointment.
+              </p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleLoginRedirect}
+                  className="flex-1 bg-teal-600 text-white py-2 rounded text-sm hover:bg-teal-700 transition"
+                >
+                  Login & Confirm
+                </button>
+                <button
+                  onClick={handleSignupRedirect}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded text-sm hover:bg-blue-700 transition"
+                >
+                  Sign Up & Confirm
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-between">
             <button
@@ -386,20 +518,23 @@ export default function BookingFlow() {
             >
               ← Back
             </button>
-            <button
-              onClick={handleConfirmBooking}
-              disabled={loading}
-              className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Processing...
-                </>
-              ) : (
-                "Confirm Booking ✔"
-              )}
-            </button>
+            
+            {bookingType === "query" || (bookingType === "appointment" && isLoggedIn) ? (
+              <button
+                onClick={handleConfirmBooking}
+                disabled={loading}
+                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Processing...
+                  </>
+                ) : (
+                  `Confirm ${bookingType === "appointment" ? "Appointment" : "Query"} ✔`
+                )}
+              </button>
+            ) : null}
           </div>
         </div>
       )}

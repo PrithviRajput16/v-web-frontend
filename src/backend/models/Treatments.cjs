@@ -98,6 +98,6 @@ treatmentSchema.virtual('doctorCapabilities', {
 // Indexes
 treatmentSchema.index({ category: 1 });
 treatmentSchema.index({ isActive: 1 });
-treatmentSchema.index({ title: 'text', description: 'text' });
+
 
 module.exports = mongoose.model('Treatment', treatmentSchema);

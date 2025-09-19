@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaClock, FaFilter, FaProcedures, FaSearch, FaStar } from "react-icons/fa";
+import SectionHeading from "../components/home/SectionHeading";
 import TreatmentCard from "../components/TreatmentCard";
 import url_prefix from "../data/variable";
 import { useLanguage } from '../hooks/useLanguage';
@@ -20,6 +21,16 @@ const Treatments = () => {
     if (!language) {
       console.log('Language not yet available, skipping fetch');
       return;
+    }
+
+    const fetchHeadings = async () => {
+      const response = await fetch(url_prefix + '/api/headings/treatment/' + language);
+      const result = await response.json();
+      if (result.success) {
+        console.log(result.data['home'])
+        // setHeadings(result.data['home'][0])
+
+      }
     }
     const fetchTreatments = async () => {
       try {
@@ -273,14 +284,13 @@ const Treatments = () => {
         {/* Main Content */}
         <div className="lg:col-span-3">
           {/* Header */}
-          <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
-            {/* <h1 className="text-3xl font-bold text-gray-800 mb-2">Medical Treatments & Procedures</h1> */}
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">{headings.title}</h1>
-            <p className="text-gray-600">
-              {/* Explore {treatments.length} medical treatments and procedures with advanced filtering options to find the right care for your needs. */}
-              {headings.desc}
-            </p>
-          </div>
+
+          <SectionHeading
+            center={false}
+            title={'treatment'}
+            page={'page'}
+          />
+
 
           {/* Treatments Grid */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">

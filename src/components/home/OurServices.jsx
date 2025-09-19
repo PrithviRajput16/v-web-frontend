@@ -182,9 +182,10 @@ const OurServices = () => {
             </span>
           </div> */}
           <SectionHeading
-            title={headings.title}
-            subtitle={headings.sub}
-            description={headings.desc}
+            // title={headings.title}
+            // subtitle={headings.sub}
+            // description={headings.desc}
+            title='service'
           />
         </div>
 

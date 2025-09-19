@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaFilter, FaHospital, FaMapMarkerAlt, FaSearch, FaStar } from "react-icons/fa";
+import SectionHeading from "../components/home/SectionHeading";
 import HospitalCard from "../components/HospitalCard";
 import url_prefix from "../data/variable";
 import { useLanguage } from '../hooks/useLanguage';
@@ -283,14 +284,20 @@ const Hospitals = () => {
         {/* Main Content */}
         <div className="lg:col-span-3">
           {/* Header */}
-          <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
+          {/* <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">{headings.title}</h1>
-            {/* <h1 className="text-3xl font-bold text-gray-800 mb-2">Find Hospitals</h1> */}
-            <p className="text-gray-600">
-              {/* Discover {hospitals.length} healthcare facilities worldwide with advanced filtering options. */}
-              {headings.desc}
-            </p>
-          </div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Find Hospitals</h1> */}
+          {/* <p className="text-gray-600"> */}
+          {/* Discover {hospitals.length} healthcare facilities worldwide with advanced filtering options. */}
+          {/* {headings.desc} */}
+          {/* </p> */}
+          {/* </div> */}
+
+          <SectionHeading
+            center={false}
+            title={'hospital'}
+            page={'page'}
+          />
 
           {/* Hospitals Grid */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">

@@ -74,7 +74,41 @@ const {
     createLanguage,
     updateLanguage,
     deleteLanguage,
-    setDefaultLanguage
+    setDefaultLanguage,
+
+    getHeadings,
+    createHeading,
+    getHeadingById,
+    updateHeading,
+    deleteHeading,
+
+
+    // Add the new patient and appointment controller functions
+    getPatients,
+    createPatient,
+    getPatientById,
+    updatePatient,
+    deletePatient,
+    getAppointments,
+    createAppointment,
+    getAppointmentById,
+    updateAppointment,
+    deleteAppointment,
+    getPatientDashboard,
+
+    registerPatient,
+
+    generatePassword,
+
+    // Blog management functions
+    getBlogs,
+    getBlogById,
+    createBlog,
+    updateBlog,
+    deleteBlog,
+    approveBlogComment,
+    deleteBlogComment,
+    getBlogStats
 
 } = require('../controllers/adminController.cjs');
 const { protectAdmin, restrictTo } = require('../middleware/authAdmin.cjs');
@@ -204,3 +238,50 @@ router.post('/languages', protectAdmin, restrictTo('superadmin', 'admin'), creat
 router.put('/languages/:id', protectAdmin, restrictTo('superadmin', 'admin'), updateLanguage);
 router.delete('/languages/:id', protectAdmin, restrictTo('superadmin'), deleteLanguage);
 router.patch('/languages/:id/set-default', protectAdmin, restrictTo('superadmin', 'admin'), setDefaultLanguage);
+
+// Headings routes
+// Headings management
+router.get('/headings', protectAdmin, restrictTo('admin', 'superadmin'), getHeadings);
+router.post('/headings', protectAdmin, restrictTo('admin', 'superadmin'), createHeading);
+router.get('/headings/:id', protectAdmin, restrictTo('admin', 'superadmin'), getHeadingById);
+router.put('/headings/:id', protectAdmin, restrictTo('admin', 'superadmin'), updateHeading);
+router.delete('/headings/:id', protectAdmin, restrictTo('superadmin'), deleteHeading);
+
+
+
+// ================= APPOINTMENT MANAGEMENT ROUTES =================
+router.get('/appointments', protectAdmin, restrictTo('admin', 'superadmin'), getAppointments);
+router.post('/appointments', protectAdmin, restrictTo('admin', 'superadmin'), createAppointment);
+router.get('/appointments/:id', protectAdmin, restrictTo('admin', 'superadmin'), getAppointmentById);
+router.put('/appointments/:id', protectAdmin, restrictTo('admin', 'superadmin'), updateAppointment);
+router.delete('/appointments/:id', protectAdmin, restrictTo('superadmin'), deleteAppointment);
+
+// ================= PATIENT DASHBOARD ROUTE =================
+router.get('/patients/:patientId/dashboard', protectAdmin, restrictTo('admin', 'superadmin'), getPatientDashboard);
+
+// Patient registration route
+router.post('/patients/register', protectAdmin, restrictTo('admin', 'superadmin'), registerPatient);
+
+// Generate password route
+router.get('/patients/generate-password', protectAdmin, restrictTo('admin', 'superadmin'), generatePassword);
+
+
+
+router.get('/patients', protectAdmin, restrictTo('admin', 'superadmin'), getPatients);
+router.post('/patients', protectAdmin, restrictTo('admin', 'superadmin'), createPatient);
+router.get('/patients/:id', protectAdmin, restrictTo('admin', 'superadmin'), getPatientById);
+router.put('/patients/:id', protectAdmin, restrictTo('admin', 'superadmin'), updatePatient);
+router.delete('/patients/:id', protectAdmin, restrictTo('superadmin'), deletePatient);
+
+
+router.get('/blogs', protectAdmin, getBlogs);
+router.get('/blogs/stats', protectAdmin, getBlogStats);
+router.get('/blogs/:id', protectAdmin, getBlogById);
+router.post('/blogs', protectAdmin, restrictTo('admin', 'superadmin'), createBlog);
+router.put('/blogs/:id', protectAdmin, restrictTo('admin', 'superadmin'), updateBlog);
+router.delete('/blogs/:id', protectAdmin, restrictTo('superadmin'), deleteBlog);
+router.patch('/blogs/:blogId/comments/:commentId/approve', protectAdmin, restrictTo('admin', 'superadmin'), approveBlogComment);
+router.delete('/blogs/:blogId/comments/:commentId', protectAdmin, restrictTo('admin', 'superadmin'), deleteBlogComment);
+
+
+module.exports = router;
