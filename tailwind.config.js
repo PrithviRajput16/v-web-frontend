@@ -23,6 +23,9 @@ module.exports = {
       borderRadius: {
         xl: "1rem",
       },
+      animation: {
+        "pulse-slow": "pulse 3s ease-in-out infinite",
+      },
     },
   },
   plugins: [],
