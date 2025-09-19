@@ -39,7 +39,7 @@ export default function Home() {
       <ProcessFlow />
 
       <OurServices />
-
+      <WhatsAppButton />
       <PatientOpinions />
 
       <Blog />

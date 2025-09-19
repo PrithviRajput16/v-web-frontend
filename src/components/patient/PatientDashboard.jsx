@@ -97,6 +97,78 @@ const PatientDashboard = () => {
 
     // ... rest of the handle functions remain the same ...
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            setFormData(prev => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: value
+                }
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
+    };
+
+    const handleArrayChange = (field, index, value) => {
+        setFormData(prev => {
+            const newArray = [...prev[field]];
+            newArray[index] = value;
+            return {
+                ...prev,
+                [field]: newArray
+            };
+        });
+    };
+
+    const addArrayItem = (field, defaultValue = '') => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: [...prev[field], defaultValue]
+        }));
+    };
+
+    const removeArrayItem = (field, index) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: prev[field].filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleSaveDetails = async () => {
+        try {
+            const token = localStorage.getItem('patientToken');
+            const response = await fetch(`${url_prefix}/api/patients/profile`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Details updated successfully!');
+                setShowDetailsModal(false);
+                fetchPatientData(); // Refresh patient data
+            } else {
+                alert('Failed to update details: ' + result.error);
+            }
+        } catch (err) {
+            console.error('Error updating details:', err);
+            alert('Error updating details. Please try again.');
+        }
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('patientToken');
         localStorage.removeItem('patientData');
@@ -234,8 +306,8 @@ const PatientDashboard = () => {
                                             </td>
                                             <td className="px-4 py-2">
                                                 <span className={`px-2 py-1 rounded text-xs ${booking.status?.mainStatus === 'confirmed' ? 'bg-green-100 text-green-800' :
-                                                        booking.status?.mainStatus === 'scheduled' ? 'bg-blue-100 text-blue-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                    booking.status?.mainStatus === 'scheduled' ? 'bg-blue-100 text-blue-800' :
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {booking.status?.mainStatus || 'Pending'}
                                                 </span>
@@ -280,8 +352,8 @@ const PatientDashboard = () => {
                                             </td>
                                             <td className="px-4 py-2">
                                                 <span className={`px-2 py-1 rounded text-xs ${booking.status?.mainStatus === 'completed' ? 'bg-green-100 text-green-800' :
-                                                        booking.status?.mainStatus === 'cancelled' ? 'bg-red-100 text-red-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                    booking.status?.mainStatus === 'cancelled' ? 'bg-red-100 text-red-800' :
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {booking.status?.mainStatus || 'N/A'}
                                                 </span>
@@ -328,8 +400,8 @@ const PatientDashboard = () => {
                                             </td>
                                             <td className="px-4 py-2">
                                                 <span className={`px-2 py-1 rounded text-xs ${booking.status?.mainStatus === 'query-responded' ? 'bg-green-100 text-green-800' :
-                                                        booking.status?.mainStatus === 'query-received' ? 'bg-blue-100 text-blue-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                    booking.status?.mainStatus === 'query-received' ? 'bg-blue-100 text-blue-800' :
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {booking.status?.mainStatus || 'Received'}
                                                 </span>
