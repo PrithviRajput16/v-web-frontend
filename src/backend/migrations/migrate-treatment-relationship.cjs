@@ -35,7 +35,7 @@ async function migrate() {
             {
                 title: 'Angioplasty',
                 description: 'Heart artery procedure with stent placement',
-                icon: '❤️',
+                image: 'https://images.unsplash.com/photo-1588776814546-7f07b0da7a2e?auto=format&fit=crop&w=800&q=60',
                 category: 'Cardiology',
                 typicalDuration: 120,
                 typicalComplexity: 'High',
@@ -44,7 +44,7 @@ async function migrate() {
             {
                 title: 'Knee Replacement Surgery',
                 description: 'Total knee joint replacement with artificial implant',
-                icon: '🦴',
+                image: 'https://images.unsplash.com/photo-1588774069260-2850b9abf229?auto=format&fit=crop&w=800&q=60',
                 category: 'Orthopedics',
                 typicalDuration: 180,
                 typicalComplexity: 'High',
@@ -53,13 +53,179 @@ async function migrate() {
             {
                 title: 'Root Canal Treatment',
                 description: 'Dental procedure to treat infected tooth root',
-                icon: '🦷',
+                image: 'https://images.unsplash.com/photo-1606813907563-9b8f45b6a8f8?auto=format&fit=crop&w=800&q=60',
                 category: 'Dentistry',
                 typicalDuration: 90,
                 typicalComplexity: 'Medium',
                 typicalRecoveryTime: '2-3 days'
+            },
+            {
+                title: 'Cataract Surgery',
+                description: 'Removal of cloudy lens and replacement with an artificial lens',
+                image: 'https://images.unsplash.com/photo-1588776814582-7f07b0da7b1e?auto=format&fit=crop&w=800&q=60',
+                category: 'Ophthalmology',
+                typicalDuration: 45,
+                typicalComplexity: 'Medium',
+                typicalRecoveryTime: '1-2 weeks'
+            },
+            {
+                title: 'Appendectomy',
+                description: 'Surgical removal of the appendix',
+                image: 'https://images.unsplash.com/photo-1584367365345-123456789abc?auto=format&fit=crop&w=800&q=60',
+                category: 'General Surgery',
+                typicalDuration: 60,
+                typicalComplexity: 'Medium',
+                typicalRecoveryTime: '2-4 weeks'
+            },
+            {
+                title: 'Chemotherapy',
+                description: 'Cancer treatment using chemical substances or drugs',
+                image: 'https://images.unsplash.com/photo-1596547601163-987654321def?auto=format&fit=crop&w=800&q=60',
+                category: 'Oncology',
+                typicalDuration: 240,
+                typicalComplexity: 'High',
+                typicalRecoveryTime: 'Varies'
+            },
+            {
+                title: 'Hip Replacement Surgery',
+                description: 'Replacement of hip joint with a prosthetic implant',
+                image: 'https://images.unsplash.com/photo-1614287309389-123456abcd?auto=format&fit=crop&w=800&q=60',
+                category: 'Orthopedics',
+                typicalDuration: 150,
+                typicalComplexity: 'High',
+                typicalRecoveryTime: '6-12 weeks'
+            },
+            {
+                title: 'Coronary Bypass Surgery',
+                description: 'Redirecting blood around blocked coronary arteries',
+                image: 'https://images.unsplash.com/photo-1600959936371-98765abcd123?auto=format&fit=crop&w=800&q=60',
+                category: 'Cardiothoracic',
+                typicalDuration: 240,
+                typicalComplexity: 'High',
+                typicalRecoveryTime: '6-12 weeks'
+            },
+            {
+                title: 'Endoscopy',
+                description: 'Minimally invasive procedure to examine internal organs',
+                image: 'https://images.unsplash.com/photo-1600959936321-12345abcde?auto=format&fit=crop&w=800&q=60',
+                category: 'Gastroenterology',
+                typicalDuration: 30,
+                typicalComplexity: 'Low',
+                typicalRecoveryTime: '1-2 days'
+            },
+            {
+                title: 'Cesarean Section (C-Section)',
+                description: 'Surgical delivery of a baby through the abdomen',
+                image: 'https://images.unsplash.com/photo-1610026829841-abcdef123456?auto=format&fit=crop&w=800&q=60',
+                category: 'Obstetrics',
+                typicalDuration: 90,
+                typicalComplexity: 'High',
+                typicalRecoveryTime: '4-6 weeks'
+            },
+
+            {
+                title: 'एंजियोप्लास्टी',
+                description: 'हृदय की धमनियों की प्रक्रिया जिसमें स्टेंट लगाया जाता है',
+                image: 'https://images.unsplash.com/photo-1588776814546-7f07b0da7a2e?auto=format&fit=crop&w=800&q=60',
+                category: 'हृदय रोग',
+                typicalDuration: 120,
+                typicalComplexity: 'उच्च',
+                typicalRecoveryTime: '1-2 सप्ताह',
+                language: 'HI'
+            },
+            {
+                title: 'घुटने का प्रतिस्थापन शल्यक्रिया',
+                description: 'कुल घुटने के जोड़ का कृत्रिम प्रत्यारोपण के साथ प्रतिस्थापन',
+                image: 'https://images.unsplash.com/photo-1588774069260-2850b9abf229?auto=format&fit=crop&w=800&q=60',
+                category: 'हड्डी रोग',
+                typicalDuration: 180,
+                typicalComplexity: 'उच्च',
+                typicalRecoveryTime: '6-12 सप्ताह',
+                language: 'HI'
+            },
+            {
+                title: 'रूट कैनाल उपचार',
+                description: 'दांत की जड़ में संक्रमण का उपचार करने की दंत चिकित्सा प्रक्रिया',
+                image: 'https://images.unsplash.com/photo-1606813907563-9b8f45b6a8f8?auto=format&fit=crop&w=800&q=60',
+                category: 'दंत चिकित्सा',
+                typicalDuration: 90,
+                typicalComplexity: 'मध्यम',
+                typicalRecoveryTime: '2-3 दिन',
+                language: 'HI'
+            },
+            {
+                title: 'मोतियाबिंद शल्यक्रिया',
+                description: 'धुंधली लेंस को निकालना और कृत्रिम लेंस से बदलना',
+                image: 'https://images.unsplash.com/photo-1588776814582-7f07b0da7b1e?auto=format&fit=crop&w=800&q=60',
+                category: 'नेत्र विज्ञान',
+                typicalDuration: 45,
+                typicalComplexity: 'मध्यम',
+                typicalRecoveryTime: '1-2 सप्ताह',
+                language: 'HI'
+            },
+            {
+                title: 'अपेंडेक्टॉमी',
+                description: 'अपेंडिक्स का शल्यक्रियात्मक हटाना',
+                image: 'https://images.unsplash.com/photo-1584367365345-123456789abc?auto=format&fit=crop&w=800&q=60',
+                category: 'सामान्य शल्यक्रिया',
+                typicalDuration: 60,
+                typicalComplexity: 'मध्यम',
+                typicalRecoveryTime: '2-4 सप्ताह',
+                language: 'HI'
+            },
+            {
+                title: 'कीमोथेरेपी',
+                description: 'रासायनिक पदार्थों या दवाओं का उपयोग करके कैंसर का उपचार',
+                image: 'https://images.unsplash.com/photo-1596547601163-987654321def?auto=format&fit=crop&w=800&q=60',
+                category: 'कैंसर विज्ञान',
+                typicalDuration: 240,
+                typicalComplexity: 'उच्च',
+                typicalRecoveryTime: 'विविध',
+                language: 'HI'
+            },
+            {
+                title: 'कूल्हे का प्रतिस्थापन शल्यक्रिया',
+                description: 'कूल्हे के जोड़ का कृत्रिम प्रत्यारोपण से प्रतिस्थापन',
+                image: 'https://images.unsplash.com/photo-1614287309389-123456abcd?auto=format&fit=crop&w=800&q=60',
+                category: 'हड्डी रोग',
+                typicalDuration: 150,
+                typicalComplexity: 'उच्च',
+                typicalRecoveryTime: '6-12 सप्ताह',
+                language: 'HI'
+            },
+            {
+                title: 'कोरोनरी बाईपास शल्यक्रिया',
+                description: 'ब्लॉक की हुई कोरोनरी धमनियों के चारों ओर रक्त का पुनर्निर्देशन',
+                image: 'https://images.unsplash.com/photo-1600959936371-98765abcd123?auto=format&fit=crop&w=800&q=60',
+                category: 'हृदय शल्यक्रिया',
+                typicalDuration: 240,
+                typicalComplexity: 'उच्च',
+                typicalRecoveryTime: '6-12 सप्ताह',
+                language: 'HI'
+            },
+            {
+                title: 'एंडोस्कोपी',
+                description: 'आंतरिक अंगों की जाँच के लिए न्यूनतम इनवेसिव प्रक्रिया',
+                image: 'https://images.unsplash.com/photo-1600959936321-12345abcde?auto=format&fit=crop&w=800&q=60',
+                category: 'जठरांत्र विज्ञान',
+                typicalDuration: 30,
+                typicalComplexity: 'कम',
+                typicalRecoveryTime: '1-2 दिन',
+                language: 'HI'
+            },
+            {
+                title: 'सिज़ेरियन सेक्शन (C-Section)',
+                description: 'पेट के माध्यम से बच्चे का शल्यक्रियात्मक प्रसव',
+                image: 'https://images.unsplash.com/photo-1610026829841-abcdef123456?auto=format&fit=crop&w=800&q=60',
+                category: 'स्त्रीरोग',
+                typicalDuration: 90,
+                typicalComplexity: 'उच्च',
+                typicalRecoveryTime: '4-6 सप्ताह',
+                language: 'HI'
             }
+
         ];
+
 
 
         const createdTreatments = await Treatment.insertMany(baseTreatments);

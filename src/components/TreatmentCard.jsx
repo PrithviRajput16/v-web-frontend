@@ -17,7 +17,7 @@ const TreatmentCard = ({ t }) => {
       <div className="p-6">
         {/* Icon and Title */}
         <div className="flex items-center gap-3 mb-4">
-          <img src={t.icon} alt={t.title} className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
+          <img src={t.icon} alt={t.title} className="w-20 h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
           <h3 className="text-xl font-bold text-gray-800">{t.title}</h3>
         </div>
 
@@ -28,7 +28,7 @@ const TreatmentCard = ({ t }) => {
         </div>
 
         {/* Description */}
-        <p className="text-gray-600 mb-4 line-clamp-3">{t.description}</p>
+        <p className="text-gray-600 mb-4 line-clamp-3">{t.description} jjj</p>
 
         {/* Details Grid */}
         <div className="grid grid-cols-2 gap-4 mb-4">

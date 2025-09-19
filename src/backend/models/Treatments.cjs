@@ -44,12 +44,12 @@ const treatmentSchema = new mongoose.Schema({
     category: {
         type: String,
         required: [true, 'Please add a category'],
-        enum: [
-            'Cardiology', 'Orthopedics', 'Neurology', 'Dentistry',
-            'Ophthalmology', 'Dermatology', 'Gastroenterology',
-            'Urology', 'Oncology', 'ENT', 'General Surgery',
-            'Plastic Surgery', 'Other'
-        ]
+        // enum: [
+        //     'Cardiology', 'Orthopedics', 'Neurology', 'Dentistry',
+        //     'Ophthalmology', 'Dermatology', 'Gastroenterology',
+        //     'Urology', 'Oncology', 'ENT', 'General Surgery',
+        //     'Plastic Surgery', 'Other'
+        // ]
     },
 
     // GENERAL TREATMENT DETAILS (not specific to hospital/doctor)
@@ -60,7 +60,7 @@ const treatmentSchema = new mongoose.Schema({
     },
     typicalComplexity: {
         type: String,
-        enum: ['Low', 'Medium', 'High', 'Very High'],
+        // enum: ['Low', 'Medium', 'High', 'Very High'],
         default: 'Medium'
     },
     typicalRecoveryTime: {

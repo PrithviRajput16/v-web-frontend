@@ -32,7 +32,7 @@ const TreatmentDetails = () => {
     const [filteredHospitalTreatments, setFilteredHospitalTreatments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState('overview');
+    const [activeTab, setActiveTab] = useState(0);
     const [filters, setFilters] = useState({
         hospital: "",
         minPrice: "",
@@ -445,13 +445,13 @@ const TreatmentDetails = () => {
                 </div>
 
                 {/* Navigation Tabs */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
+                {/* <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
                     <div className="flex space-x-8 border-b overflow-x-auto">
 
-                        {['overview', 'hospitals', 'doctors', 'procedures'].map((tab) => (
+                        {['overview', 'hospitals', 'doctors', 'procedures'].map((tab, index) => (
                             <button
                                 key={tab}
-                                onClick={() => setActiveTab(tab)}
+                                onClick={() => setActiveTab(index)}
                                 className={`pb-4 px-2 font-medium transition-colors ${activeTab === tab
                                     ? 'text-teal-600 border-b-2 border-teal-600'
                                     : 'text-gray-500 hover:text-gray-700'
@@ -461,18 +461,18 @@ const TreatmentDetails = () => {
                             </button>
                         ))}
                     </div>
-                </div>
+                </div> */}
 
-                {/* <SectionHeading
+                <SectionHeading
                     title="treatment"
                     page="detailPage"
                     detail="nav"
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
-                /> */}
+                />
 
                 {/* Tab Content */}
-                {activeTab === 'overview' && (
+                {activeTab === 0  && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Main Information */}
                         <div className="lg:col-span-2 space-y-6">
@@ -591,7 +591,7 @@ const TreatmentDetails = () => {
                     </div>
                 )}
 
-                {activeTab === 'hospitals' && (
+                {activeTab === 1 && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
                         <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
@@ -796,7 +796,7 @@ const TreatmentDetails = () => {
                     </div>
                 )}
 
-                {activeTab === 'doctors' && (
+                {activeTab === 2 && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
                         <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">
@@ -1032,7 +1032,7 @@ const TreatmentDetails = () => {
                     </div>
                 )}
 
-                {activeTab === 'procedures' && (
+                {activeTab === 3 && (
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Filter Sidebar */}
                         <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100  top-6 h-fit">

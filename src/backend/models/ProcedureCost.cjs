@@ -37,6 +37,7 @@ const procedureCostSchema = new mongoose.Schema({
         default: '🦴'
     },
     basePrice: {
+
         type: Number,
         required: [true, 'Base price is required'],
         min: [0, 'Price cannot be negative']
@@ -44,12 +45,12 @@ const procedureCostSchema = new mongoose.Schema({
     category: {
         type: String,
         required: [true, 'Category is required'],
-        enum: [
-            'Cardiology', 'Orthopedics', 'Neurology', 'Dentistry',
-            'Ophthalmology', 'Dermatology', 'Gastroenterology',
-            'Urology', 'Oncology', 'ENT', 'General Surgery',
-            'Plastic Surgery', 'Other'
-        ]
+        // enum: [
+        //     'Cardiology', 'Orthopedics', 'Neurology', 'Dentistry',
+        //     'Ophthalmology', 'Dermatology', 'Gastroenterology',
+        //     'Urology', 'Oncology', 'ENT', 'General Surgery',
+        //     'Plastic Surgery', 'Other'
+        // ]
     },
     duration: {
         type: Number, // in minutes
@@ -58,7 +59,7 @@ const procedureCostSchema = new mongoose.Schema({
     },
     complexity: {
         type: String,
-        enum: ['Low', 'Medium', 'High', 'Very High'],
+        // enum: ['Low', 'Medium', 'High', 'Very High'],
         default: 'Medium'
     },
     recoveryTime: {

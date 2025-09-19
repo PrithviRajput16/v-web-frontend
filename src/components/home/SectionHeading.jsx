@@ -5,7 +5,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 
 
 // export default function SectionHeading({ title, subtitle, description, center = false }) {
-export default function SectionHeading({ title, page = 'home', detail = 'nav', subtitle = '', description = '', lang = 'EN', center = false, activeTab, setActiveTab, itemNo=0 }) {
+export default function SectionHeading({ title, page = 'home', detail = 'nav', subtitle = '', description = '', lang = 'EN', center = false, activeTab, setActiveTab, itemNo = 0 }) {
   const [language] = useLanguage();
   const [navbarTabs, setNavbarTabs] = useState(['Not found for the selected language']);
 
@@ -88,11 +88,11 @@ export default function SectionHeading({ title, page = 'home', detail = 'nav', s
       return (
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
           <div className="flex space-x-8 border-b overflow-x-auto">
-            {navbarTabs.map((tab) => (
+            {navbarTabs.map((tab, index) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab.toLowerCase())}
-                className={`pb-4 px-2 font-medium transition-colors ${activeTab === tab.toLowerCase()
+                key={index}
+                onClick={() => setActiveTab(index)}
+                className={`pb-4 px-2 font-medium transition-colors ${activeTab === index
                   ? 'text-teal-600 border-b-2 border-teal-600'
                   : 'text-gray-500 hover:text-gray-700'
                   }`}
@@ -105,9 +105,9 @@ export default function SectionHeading({ title, page = 'home', detail = 'nav', s
       );
   }
   if (detail = 'homenav') {
-    {console.log(navbarTabs);}
+    // {console.log(navbarTabs);}
     return (
-    navbarTabs[itemNo]
+      navbarTabs[itemNo]
     )
   }
 }

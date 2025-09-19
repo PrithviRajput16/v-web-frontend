@@ -43,7 +43,7 @@ export default function Hero() {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="mt-8 flex gap-4 justify-center"
         >
-          <button className="px-6 py-3 bg-teal-600 rounded-md font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-transform duration-300">
+          <button to='/doctors' className="px-6 py-3 bg-teal-600 rounded-md font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-transform duration-300">
             Find Doctors
           </button>
           <button className="px-6 py-3 border border-white rounded-md hover:bg-white hover:text-black transition-all duration-300">
