@@ -125,14 +125,6 @@ export default function Hero() {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto"
         >
-<<<<<<< HEAD
-          <button to='/doctors' className="px-6 py-3 bg-teal-600 rounded-md font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-transform duration-300">
-            Find Doctors
-          </button>
-          <button className="px-6 py-3 border border-white rounded-md hover:bg-white hover:text-black transition-all duration-300">
-            Explore Treatments
-          </button>
-=======
           {[
             {
               icon: "⏰",
@@ -170,7 +162,6 @@ export default function Hero() {
               <p className="text-sm mt-2">{feature.desc}</p>
             </motion.div>
           ))}
->>>>>>> refs/remotes/origin/main
         </motion.div>
 
         {/* Countries Belt */}
