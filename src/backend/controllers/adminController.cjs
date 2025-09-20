@@ -549,6 +549,7 @@ exports.updateTreatment = async (req, res) => {
 exports.deleteTreatment = async (req, res) => {
     try {
         const treatment = await Treatment.findByIdAndDelete(req.params.id);
+   
 
         if (!treatment) {
             return res.status(404).json({ success: false, error: 'Treatment not found' });

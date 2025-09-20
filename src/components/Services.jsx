@@ -25,7 +25,7 @@ export default function Services() {
 
       try {
         // 1. Make the API request
-        const response = await fetch(url_prefix + '/api/treatments/all?pages=1&limit=9');
+        const response = await fetch(url_prefix + '/api/treatments/all?page=1&limit=9');
         const result = await response.json();
 
 
@@ -45,6 +45,12 @@ export default function Services() {
           }
 
           if (dataToSet.length > 0) {
+            dataToSet = dataToSet.slice(0, 9); // takes elements from index 0 up to, but not including, index 9
+          }
+
+
+          if (dataToSet.length > 0) {
+
             // console.log('Setting aboutData:', dataToSet);
             setServices(dataToSet);
             // console.log(services)

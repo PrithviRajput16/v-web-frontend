@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import url_prefix from "../data/variable";
+import { useLanguage } from '../hooks/useLanguage';
 
 
 const HospitalDetails = () => {
@@ -25,6 +26,7 @@ const HospitalDetails = () => {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [language] = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
   const [doctors, setDoctors] = useState([]);
   const [treatments, setTreatments] = useState([]);
@@ -52,7 +54,7 @@ const HospitalDetails = () => {
 
   // Get unique categories from treatments
   const treatmentCategories = useMemo(() => {
-    return [...new Set(treatments.map(treatment => treatment.category))].filter(Boolean);
+    return [...new Set(treatments.map(treatment => treatment?.category))].filter(Boolean);
   }, [treatments]);
 
   // Filter doctors based on filters
@@ -93,7 +95,10 @@ const HospitalDetails = () => {
 
   // Filter treatments based on filters
   const filteredTreatments = useMemo(() => {
+    console.log(treatments)
     return treatments.filter(treatment => {
+
+
       // Name filter
       if (treatmentFilters.name &&
         !treatment.name.toLowerCase().includes(treatmentFilters.name.toLowerCase())) {
@@ -106,7 +111,7 @@ const HospitalDetails = () => {
       }
 
       // Price filter
-      const price = treatment.price || 0;
+      const price = treatment?.price || 0;
       if (treatmentFilters.minPrice && price < parseInt(treatmentFilters.minPrice)) {
         return false;
       }
@@ -115,7 +120,7 @@ const HospitalDetails = () => {
       }
 
       // Duration filter
-      const duration = treatment.duration || 0;
+      const duration = treatment?.duration || 0;
       if (treatmentFilters.minDuration && duration < parseInt(treatmentFilters.minDuration)) {
         return false;
       }
@@ -128,6 +133,9 @@ const HospitalDetails = () => {
   }, [treatments, treatmentFilters]);
 
   useEffect(() => {
+    if (!language) {
+      return;
+    }
     const fetchHospitalData = async () => {
       try {
         setLoading(true);
@@ -149,6 +157,8 @@ const HospitalDetails = () => {
         const detailsResponse = await fetch(`${url_prefix}/api/hospitals/${id}/details`);
         if (detailsResponse.ok) {
           const detailsResult = await detailsResponse.json();
+
+
           if (detailsResult.success) {
             setDetails(detailsResult.data);
           }
@@ -166,10 +176,35 @@ const HospitalDetails = () => {
         // Fetch Treatment details
         const treatmentResponse = await fetch(`${url_prefix}/api/hospital-treatment/by-hospital/${id}`);
         if (treatmentResponse.ok) {
+          let dataToSet;
           const treatmentResult = await treatmentResponse.json();
-          if (treatmentResult.success) {
-            setTreatments(treatmentResult.data);
+          if (Array.isArray(treatmentResult.data)) {
+            // const cleanData = treatments.filter(item => item !== null);
+            // console.log('result', treatmentResult.data)
+            // console.log('clean', cleanData)
+
+            dataToSet = treatmentResult.data
+              // .filter(item => item && item.language)
+              .filter(
+                item => item.language?.toLowerCase() === language?.toLowerCase()
+              );
+          } else {
+            dataToSet =
+              treatmentResult.data.language?.toLowerCase() === language?.toLowerCase()
+                ? [treatmentResult.data]
+                : [];
           }
+
+          if (dataToSet.length > 0) {
+            console.log('Setting aboutData:', dataToSet);
+            setTreatments(dataToSet);
+            // setError(null);
+
+          }
+          // if (treatmentResult.success) {
+          //   setTreatments(treatmentResult.data);
+          //   console.log(treatments)
+          // }
         }
 
         setError(null);
@@ -182,7 +217,7 @@ const HospitalDetails = () => {
     };
 
     fetchHospitalData();
-  }, [id]);
+  }, [id, language]);
 
   // Loading and error states remain the same...
 
@@ -441,10 +476,6 @@ const HospitalDetails = () => {
               </div>
             </div>
 
-
-
-
-
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Quick Info Card */}
@@ -615,214 +646,213 @@ const HospitalDetails = () => {
           </div>
         )}
 
-        
+
 
         {activeTab === "treatments" && (
-  <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-    {/* Filter Sidebar */}
-    <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
-      <div className="flex items-center gap-2 mb-6">
-        <FaFilter className="text-teal-600 text-lg" />
-        <h2 className="text-xl font-semibold text-gray-800">Filter Treatments</h2>
-      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Filter Sidebar */}
+            <div className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 border border-gray-100 sticky top-6 h-fit">
+              <div className="flex items-center gap-2 mb-6">
+                <FaFilter className="text-teal-600 text-lg" />
+                <h2 className="text-xl font-semibold text-gray-800">Filter Treatments</h2>
+              </div>
 
-      {/* Treatment Name Filter */}
-      <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-2">
-          Treatment Name
-        </label>
-        <input
-          type="text"
-          placeholder="Search treatments..."
-          className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
-          value={treatmentFilters.name}
-          onChange={(e) => setTreatmentFilters({ ...treatmentFilters, name: e.target.value })}
-        />
-      </div>
+              {/* Treatment Name Filter */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-medium mb-2">
+                  Treatment Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Search treatments..."
+                  className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                  value={treatmentFilters.name}
+                  onChange={(e) => setTreatmentFilters({ ...treatmentFilters, name: e.target.value })}
+                />
+              </div>
 
-      {/* Category Filter */}
-      <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-2">
-          Category
-        </label>
-        <select
-          className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
-          value={treatmentFilters.category}
-          onChange={(e) => setTreatmentFilters({ ...treatmentFilters, category: e.target.value })}
-        >
-          <option value="">All Categories</option>
-          {treatmentCategories.map((category, i) => (
-            <option key={i} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
+              {/* Category Filter */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-medium mb-2">
+                  Category
+                </label>
+                <select
+                  className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                  value={treatmentFilters.category}
+                  onChange={(e) => setTreatmentFilters({ ...treatmentFilters, category: e.target.value })}
+                >
+                  <option value="">All Categories</option>
+                  {treatmentCategories.map((category, i) => (
+                    <option key={i} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-      {/* Complexity Filter */}
-      <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-2">
-          Complexity
-        </label>
-        <select
-          className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
-          value={treatmentFilters.complexity}
-          onChange={(e) => setTreatmentFilters({ ...treatmentFilters, complexity: e.target.value })}
-        >
-          <option value="">All Complexities</option>
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
-      </div>
+              {/* Complexity Filter */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-medium mb-2">
+                  Complexity
+                </label>
+                <select
+                  className="w-full border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                  value={treatmentFilters.complexity}
+                  onChange={(e) => setTreatmentFilters({ ...treatmentFilters, complexity: e.target.value })}
+                >
+                  <option value="">All Complexities</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
 
-      {/* Duration Filter */}
-      <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-2">
-          Duration (minutes)
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          <input
-            type="number"
-            placeholder="Min"
-            min="0"
-            className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
-            value={treatmentFilters.minDuration}
-            onChange={(e) => setTreatmentFilters({ ...treatmentFilters, minDuration: e.target.value })}
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            min="0"
-            className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
-            value={treatmentFilters.maxDuration}
-            onChange={(e) => setTreatmentFilters({ ...treatmentFilters, maxDuration: e.target.value })}
-          />
-        </div>
-      </div>
-
-      {/* Results Count */}
-      <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-        <p className="text-sm text-gray-600">
-          Showing {filteredTreatments.length} of {treatments.length} treatments
-        </p>
-      </div>
-
-      {/* Reset Filters Button */}
-      <button
-        onClick={() => setTreatmentFilters({
-          name: "",
-          category: "",
-          complexity: "",
-          minDuration: "",
-          maxDuration: ""
-        })}
-        className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-300 transition"
-      >
-        Reset Filters
-      </button>
-    </div>
-
-    {/* Treatments List */}
-    <div className="lg:col-span-3">
-      <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Treatments Offered</h2>
-        <p className="text-gray-600">
-          {treatments.length} specialized treatments available at {hospital?.name}
-        </p>
-      </div>
-
-      <div className="grid gap-6">
-        {filteredTreatments.length > 0 ? (
-          filteredTreatments.map((treatment) => (
-            <div key={treatment._id} className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* Treatment Icon/Image */}
-                <div className="flex-shrink-0">
-                  <div className="w-20 h-20 bg-teal-100 rounded-lg flex items-center justify-center">
-                    {treatment.icon ? (
-                      <img 
-                        src={treatment.icon} 
-                        alt={treatment.title}
-                        className="w-12 h-12 object-contain"
-                      />
-                    ) : (
-                      <span className="text-3xl">⚕️</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Treatment Info */}
-                <div className="flex-grow">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">
-                    {treatment.title}
-                  </h3>
-
-                  <div className="flex items-center text-teal-600 font-semibold mb-3">
-                    <FaStethoscope className="mr-2" />
-                    <span>{treatment.category}</span>
-                  </div>
-
-                  <p className="text-gray-600 mb-4">
-                    {treatment.description}
-                  </p>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <span className="text-sm text-gray-500">Duration</span>
-                      <div className="font-semibold text-gray-700">
-                        {treatment.typicalDuration} minutes
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Complexity</span>
-                      <div className={`font-semibold ${
-                        treatment.typicalComplexity === 'High' ? 'text-red-600' :
-                        treatment.typicalComplexity === 'Medium' ? 'text-yellow-600' :
-                        'text-green-600'
-                      }`}>
-                        {treatment.typicalComplexity}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Category</span>
-                      <div className="font-semibold text-gray-700">
-                        {treatment.category}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-4">
-                    <Link
-                      to={`/treatments/${treatment._id}`}
-                      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
-                    >
-                      View Details
-                    </Link>
-                    <Link
-                      to={`/hospitals/${hospital?._id}/book?treatment=${treatment._id}`}
-                      className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
-                    >
-                      Book This Treatment
-                    </Link>
-                  </div>
+              {/* Duration Filter */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-medium mb-2">
+                  Duration (minutes)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    min="0"
+                    className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                    value={treatmentFilters.minDuration}
+                    onChange={(e) => setTreatmentFilters({ ...treatmentFilters, minDuration: e.target.value })}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    min="0"
+                    className="border rounded-lg p-2 text-gray-700 focus:ring-2 focus:ring-teal-400 focus:outline-none"
+                    value={treatmentFilters.maxDuration}
+                    onChange={(e) => setTreatmentFilters({ ...treatmentFilters, maxDuration: e.target.value })}
+                  />
                 </div>
               </div>
+
+              {/* Results Count */}
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  Showing {filteredTreatments.length} of {treatments.length} treatments
+                </p>
+              </div>
+
+              {/* Reset Filters Button */}
+              <button
+                onClick={() => setTreatmentFilters({
+                  name: "",
+                  category: "",
+                  complexity: "",
+                  minDuration: "",
+                  maxDuration: ""
+                })}
+                className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-300 transition"
+              >
+                Reset Filters
+              </button>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">⚕️</div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No treatments found</h3>
-            <p className="text-gray-600 mb-4">
-              Try adjusting your filters to find treatments offered by this hospital.
-            </p>
+
+            {/* Treatments List */}
+            <div className="lg:col-span-3">
+              <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Treatments Offered</h2>
+                <p className="text-gray-600">
+                  {treatments.length} specialized treatments available at {hospital?.name}
+                </p>
+              </div>
+
+              <div className="grid gap-6">
+                {filteredTreatments.length > 0 ? (
+                  filteredTreatments.map((treatment) => (
+                    <div key={treatment?._id} className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+                      <div className="flex flex-col md:flex-row gap-6">
+                        {/* Treatment Icon/Image */}
+                        <div className="flex-shrink-0">
+                          <div className="w-20 h-20 bg-teal-100 rounded-lg flex items-center justify-center">
+                            {treatment?.icon ? (
+                              <img
+                                src={treatment?.icon}
+                                alt={treatment?.title}
+                                className="w-12 h-12 object-contain"
+                              />
+                            ) : (
+                              <span className="text-3xl">⚕️</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Treatment Info */}
+                        <div className="flex-grow">
+                          <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            {treatment?.title}
+                          </h3>
+
+                          <div className="flex items-center text-teal-600 font-semibold mb-3">
+                            <FaStethoscope className="mr-2" />
+                            <span>{treatment?.category}</span>
+                          </div>
+
+                          <p className="text-gray-600 mb-4">
+                            {treatment?.description}
+                          </p>
+
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                              <span className="text-sm text-gray-500">Duration</span>
+                              <div className="font-semibold text-gray-700">
+                                {treatment?.typicalDuration} minutes
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-sm text-gray-500">Complexity</span>
+                              <div className={`font-semibold ${treatment?.typicalComplexity === 'High' ? 'text-red-600' :
+                                treatment?.typicalComplexity === 'Medium' ? 'text-yellow-600' :
+                                  'text-green-600'
+                                }`}>
+                                {treatment?.typicalComplexity}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-sm text-gray-500">Category</span>
+                              <div className="font-semibold text-gray-700">
+                                {treatment?.category}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex space-x-4">
+                            <Link
+                              to={`/treatments/${treatment?._id}`}
+                              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                            >
+                              View Details
+                            </Link>
+                            <Link
+                              to={`/hospitals/${hospital?._id}/book?treatment=${treatment?._id}`}
+                              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+                            >
+                              Book This Treatment
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="text-6xl mb-4">⚕️</div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">No treatments found</h3>
+                    <p className="text-gray-600 mb-4">
+                      Try adjusting your filters to find treatments offered by this hospital.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
-      </div>
-    </div>
-  </div>
-)}
 
 
         {activeTab === 'doctors' && (

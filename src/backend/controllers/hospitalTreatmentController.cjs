@@ -116,9 +116,10 @@ exports.getTreatmentsByHospital = async (req, res) => {
 
         const hospitalTreatments = await HospitalTreatment.find({
             hospital: hospitalId,
+            // language: 'EN',
             isActive: true
         })
-            .populate('treatment', 'title description category icon typicalDuration typicalComplexity')
+            .populate('treatment', 'language title description category icon typicalDuration typicalComplexity')
             .sort({ finalPrice: 1 });
 
         const treatments = hospitalTreatments.map(ht => ht.treatment);
